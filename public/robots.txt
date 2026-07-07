@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+
+Sitemap: http://localhost/ProjetMenuCraft/public/?page=sitemap.xml
+
+Disallow: /uploads/
+Disallow: /?page=login
+Disallow: /?page=register
+Disallow: /?page=auto-register
+Disallow: /?page=dashboard
+Disallow: /?page=settings
+Disallow: /?page=edit-card
+Disallow: /?page=edit-contact
+Disallow: /?page=edit-logo-banner
+Disallow: /?page=edit-services
+Disallow: /?page=edit-template
+Disallow: /?page=reservations
+Disallow: /?page=stats
+Disallow: /?page=floor-plan
+Disallow: /?page=manage-clients

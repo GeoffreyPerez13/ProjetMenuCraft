@@ -1,0 +1,98 @@
+/* MenuCraft — Variables CSS Globales */
+:root {
+    /* Couleurs primaires */
+    --color-primary: #b45309;
+    --color-primary-dark: #92400e;
+    --color-primary-light: #d97706;
+    --color-primary-lighter: #f59e0b;
+    --color-primary-bg: rgba(180, 83, 9, 0.08);
+
+    /* Textes */
+    --color-text: #1c1917;
+    --color-text-light: #57534e;
+    --color-text-muted: #a8a29e;
+    --color-text-inverse: #ffffff;
+
+    /* Fonds */
+    --color-bg: #ffffff;
+    --color-bg-alt: #fafaf9;
+    --color-bg-warm: #fef7ed;
+    --color-bg-dark: #1c1917;
+
+    /* Bordures */
+    --color-border: #e7e5e4;
+    --color-border-light: #f5f5f4;
+
+    /* Statuts */
+    --color-success: #16a34a;
+    --color-success-bg: #f0fdf4;
+    --color-error: #dc2626;
+    --color-error-bg: #fef2f2;
+    --color-warning: #f59e0b;
+    --color-warning-bg: #fffbeb;
+    --color-info: #2563eb;
+    --color-info-bg: #eff6ff;
+
+    /* Typographie */
+    --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-display: 'Playfair Display', Georgia, serif;
+
+    /* Rayons */
+    --radius-xs: 4px;
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --radius-xl: 28px;
+    --radius-full: 9999px;
+
+    /* Ombres */
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+
+    /* Espacements */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 40px;
+    --spacing-2xl: 64px;
+    --spacing-3xl: 96px;
+
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+
+    /* Container */
+    --container-max: 1200px;
+    --container-narrow: 800px;
+}
+
+/* Dark Mode */
+html.dark-mode {
+    --color-primary: #d97706;
+    --color-primary-dark: #b45309;
+    --color-primary-light: #f59e0b;
+    --color-primary-bg: rgba(217, 119, 6, 0.12);
+
+    --color-text: #fafaf9;
+    --color-text-light: #d6d3d1;
+    --color-text-muted: #78716c;
+
+    --color-bg: #1c1917;
+    --color-bg-alt: #292524;
+    --color-bg-warm: #292524;
+    --color-bg-dark: #0c0a09;
+
+    --color-border: #44403c;
+    --color-border-light: #292524;
+
+    --color-success-bg: #052e16;
+    --color-error-bg: #450a0a;
+    --color-warning-bg: #451a03;
+    --color-info-bg: #1e3a5f;
+}

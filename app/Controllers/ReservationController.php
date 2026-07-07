@@ -1,0 +1,139 @@
+<?php
+class ReservationController extends BaseController
+{
+    public function list(): void
+    {
+        $this->requireAuth();
+        $adminId = $this->getAdminId();
+
+        if (!PremiumFeature::isEnabled($this->pdo, $adminId, 'online_booking')) {
+            $this->flash('error', 'Fonctionnalité premium requise.');
+            $this->redirect('settings', ['section' => 'premium']);
+            return;
+        }
+
+        $resModel = new Reservation($this->pdo);
+        $status = $_GET['status'] ?? null;
+        $date = $_GET['date'] ?? null;
+
+        $this->render('admin/reservations', [
+            'pageTitle' => 'Réservations — MenuCraft',
+            'reservations' => $resModel->getByAdmin($adminId, $status, $date),
+            'pendingCount' => $resModel->getPendingCount($adminId),
+            'todayCount' => $resModel->getTodayCount($adminId),
+            'confirmedCount' => $resModel->getConfirmedCount($adminId),
+            'filterStatus' => $status,
+            'filterDate' => $date,
+        ]);
+    }
+
+    public function updateStatus(): void
+    {
+        $this->requireAuth();
+        $this->verifyCsrfToken();
+        $adminId = $this->getAdminId();
+
+        $id = (int)($_POST['reservation_id'] ?? 0);
+        $status = $_POST['status'] ?? '';
+        $validStatuses = ['confirmed', 'rejected', 'completed', 'cancelled', 'no_show'];
+
+        if (!in_array($status, $validStatuses)) {
+            $this->flash('error', 'Statut invalide.');
+            $this->redirect('reservations');
+            return;
+        }
+
+        $resModel = new Reservation($this->pdo);
+        $reservation = $resModel->findById($id);
+
+        if (!$reservation || $reservation->admin_id !== $adminId) {
+            $this->flash('error', 'Réservation introuvable.');
+            $this->redirect('reservations');
+            return;
+        }
+
+        $resModel->updateStatus($id, $status);
+
+        // Notification email
+        $notifService = new NotificationService($this->pdo);
+        $notifService->notifyReservationStatus([
+            'customer_email' => $reservation->customer_email,
+            'reservation_date' => $reservation->reservation_date,
+            'reservation_time' => $reservation->reservation_time,
+            'party_size' => $reservation->party_size,
+        ], $status);
+
+        $this->flash('success', 'Réservation mise à jour.');
+        $this->redirect('reservations');
+    }
+
+    public function publicBooking(): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->json(['error' => 'Méthode non autorisée'], 405);
+            return;
+        }
+
+        $rateLimiter = new RateLimiter();
+        if ($rateLimiter->isLimited('booking', 10, 3600)) {
+            $this->json(['error' => 'Trop de demandes. Réessayez plus tard.'], 429);
+            return;
+        }
+
+        $adminId = (int)($_POST['admin_id'] ?? 0);
+        if (!$adminId || !PremiumFeature::isEnabled($this->pdo, $adminId, 'online_booking')) {
+            $this->json(['error' => 'Réservations non disponibles.'], 400);
+            return;
+        }
+
+        $name = trim($_POST['customer_name'] ?? '');
+        $phone = trim($_POST['customer_phone'] ?? '');
+        $email = trim($_POST['customer_email'] ?? '');
+        $date = $_POST['reservation_date'] ?? '';
+        $time = $_POST['reservation_time'] ?? '';
+        $size = (int)($_POST['party_size'] ?? 2);
+
+        if (empty($name) || empty($date) || empty($time)) {
+            $this->json(['error' => 'Champs requis manquants.'], 400);
+            return;
+        }
+
+        $resModel = new Reservation($this->pdo);
+        $resModel->create([
+            'admin_id' => $adminId,
+            'customer_name' => $name,
+            'customer_phone' => $phone,
+            'customer_email' => $email,
+            'reservation_date' => $date,
+            'reservation_time' => $time,
+            'party_size' => $size,
+            'special_requests' => trim($_POST['special_requests'] ?? ''),
+        ]);
+
+        $rateLimiter->hit('booking');
+
+        // Notifications
+        $notifService = new NotificationService($this->pdo);
+        $notifService->notifyNewReservation($adminId, [
+            'customer_name' => $name,
+            'reservation_date' => $date,
+            'reservation_time' => $time,
+            'party_size' => $size,
+            'special_requests' => $_POST['special_requests'] ?? '',
+        ]);
+
+        // Confirmation au client
+        if ($email) {
+            $mailer = new Mailer();
+            $mailer->send($email, 'Confirmation de réservation — MenuCraft',
+                '<h2>Réservation reçue !</h2>
+                <p>Votre demande de réservation a bien été enregistrée.</p>
+                <p><strong>Date :</strong> ' . $date . ' à ' . $time . '</p>
+                <p><strong>Personnes :</strong> ' . $size . '</p>
+                <p>Vous recevrez un email de confirmation sous peu.</p>'
+            );
+        }
+
+        $this->json(['success' => true, 'message' => 'Réservation envoyée avec succès !']);
+    }
+}
