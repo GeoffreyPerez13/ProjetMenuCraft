@@ -38,7 +38,7 @@ $socialLabels = [
                 <i class="fas fa-check-double"></i> Tout cocher / décocher
             </button>
         </div>
-        <div id="services-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--spacing-md);">
+        <div id="services-grid" class="services-grid">
             <?php foreach ($serviceLabels as $key => [$label, $icon]): ?>
             <label class="toggle-switch" style="padding:12px;background:var(--color-bg-alt);border-radius:var(--radius-sm);border:1px solid var(--color-border);">
                 <input type="checkbox" name="<?= $key ?>" <?= ($options[$key] ?? '0') === '1' ? 'checked' : '' ?>>
@@ -57,7 +57,7 @@ $socialLabels = [
                 <i class="fas fa-check-double"></i> Tout cocher / décocher
             </button>
         </div>
-        <div id="payments-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--spacing-md);">
+        <div id="payments-grid" class="services-grid">
             <?php foreach ($paymentLabels as $key => [$label, $icon]): ?>
             <label class="toggle-switch" style="padding:12px;background:var(--color-bg-alt);border-radius:var(--radius-sm);border:1px solid var(--color-border);">
                 <input type="checkbox" name="<?= $key ?>" <?= ($options[$key] ?? '0') === '1' ? 'checked' : '' ?>>

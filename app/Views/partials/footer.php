@@ -21,15 +21,6 @@ if (document.documentElement.classList.contains('dark-mode')) {
     const icon = document.getElementById('darkModeIcon');
     if (icon) icon.className = 'fas fa-sun';
 }
-// Auto-dismiss flash messages after 6 seconds
-document.querySelectorAll('.flash-message').forEach(function(el) {
-    setTimeout(function() {
-        el.style.transition = 'opacity 0.5s, transform 0.5s';
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(-10px)';
-        setTimeout(function() { el.remove(); }, 500);
-    }, 6000);
-});
 </script>
 </body>
 </html>

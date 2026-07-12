@@ -33,7 +33,7 @@ $siteUrl = $slug ? APP_URL . '?page=display&slug=' . urlencode($slug) : '';
         <div class="card-header">
             <h2><i class="fas fa-palette"></i> Palette de couleurs</h2>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:var(--spacing-md);">
+        <div class="template-palettes-grid">
             <?php foreach ($palettes as $key => [$name, $desc, $primary, $bg]): ?>
             <label style="cursor:pointer;border:2px solid <?= $currentPalette === $key ? $primary : 'var(--color-border)' ?>;border-radius:var(--radius-md);overflow:hidden;transition:all 0.2s;">
                 <input type="radio" name="site_palette" value="<?= $key ?>" <?= $currentPalette === $key ? 'checked' : '' ?> style="display:none;">
@@ -76,7 +76,7 @@ $siteUrl = $slug ? APP_URL . '?page=display&slug=' . urlencode($slug) : '';
         </div>
     </div>
 
-    <div style="display:flex;gap:12px;align-items:center;">
+    <div style="display:flex;flex-direction:column;gap:12px;align-items:center;">
         <button type="submit" class="btn btn-primary btn-lg">
             <i class="fas fa-save"></i> Enregistrer le template
         </button>

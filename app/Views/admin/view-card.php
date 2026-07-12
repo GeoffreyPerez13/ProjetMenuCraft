@@ -1,6 +1,6 @@
 <?php require BASE_PATH . '/app/Views/partials/header.php'; ?>
 
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--spacing-lg);">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--spacing-lg);flex-wrap:wrap;gap:8px;">
     <a href="<?= APP_URL ?>?page=edit-card" class="btn btn-secondary btn-sm">
         <i class="fas fa-arrow-left"></i> Retour à l'édition
     </a>
@@ -60,15 +60,12 @@
             <div class="card">
                 <div class="card-header">
                     <h2 style="font-family:var(--font-display);"><?= htmlspecialchars($cat->name) ?></h2>
-                    <?php if ($cat->description): ?>
-                    <span style="font-size:0.8rem;color:var(--color-text-muted);font-style:italic;"><?= htmlspecialchars($cat->description) ?></span>
-                    <?php endif; ?>
                 </div>
-                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:var(--spacing-md);">
+                <div class="view-card-grid">
                     <?php foreach ($dishes as $dish): ?>
-                    <div style="display:flex;gap:12px;padding:12px;border:1px solid var(--color-border);border-radius:var(--radius-sm);<?= !$dish->is_active ? 'opacity:0.4;' : '' ?>">
+                    <div class="view-card-dish" <?= !$dish->is_active ? 'style="opacity:0.4;"' : '' ?>>
                         <?php if ($dish->image): ?>
-                        <img src="<?= APP_URL ?>/uploads/<?= htmlspecialchars($dish->image) ?>" alt="" style="width:70px;height:70px;border-radius:var(--radius-sm);object-fit:cover;">
+                        <img src="<?= APP_URL ?>/uploads/<?= htmlspecialchars($dish->image) ?>" alt="" class="view-card-dish-img">
                         <?php endif; ?>
                         <div style="flex:1;">
                             <div style="display:flex;justify-content:space-between;align-items:flex-start;">

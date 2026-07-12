@@ -635,7 +635,40 @@ table.admin-table tr:hover td { background: var(--color-bg-warm); }
     color: var(--color-text-muted);
 }
 
-/* ─── Template Layouts Grid ──────────────────────────── */
+/* ─── Services Grid ──────────────────────────────────── */
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+}
+
+/* ─── View Card Grid ─────────────────────────────────── */
+.view-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--spacing-md);
+}
+.view-card-dish {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+}
+.view-card-dish-img {
+    width: 70px;
+    height: 70px;
+    border-radius: var(--radius-sm);
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+/* ─── Template Grids ─────────────────────────────────── */
+.template-palettes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: var(--spacing-md);
+}
 .template-layouts-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -742,6 +775,9 @@ table.admin-table tr:hover td { background: var(--color-bg-warm); }
 
     .stat-card { padding: var(--spacing-md); }
     .stat-value { font-size: 1.3rem; }
+
+    .view-card-grid { grid-template-columns: 1fr; }
+    .view-card-dish-img { width: 55px; height: 55px; }
 }
 
 @media (max-width: 400px) {
@@ -762,6 +798,28 @@ table.admin-table tr:hover td { background: var(--color-bg-warm); }
     .btn-sm .fa-list,
     .btn-sm .fa-pen,
     .btn-sm .fa-trash { font-size: 0.7rem; }
+
+    .view-card-dish { flex-direction: column; gap: 8px; padding: 10px; }
+    .view-card-dish-img { width: 100%; height: 140px; }
+
+    .upload-area { padding: var(--spacing-md); }
+    .upload-area i { font-size: 1.8rem; margin-bottom: 8px; }
+    .upload-area p { font-size: 0.8rem; }
+
+    .preview-image { max-width: 100%; }
+
+    .services-grid { grid-template-columns: 1fr; gap: 8px; }
+    .services-grid .toggle-switch { padding: 8px !important; font-size: 0.82rem; }
+
+    .template-palettes-grid { grid-template-columns: 1fr; gap: 8px; }
+    .template-layouts-grid { grid-template-columns: 1fr; gap: 8px; }
+    .template-layouts-grid label { padding: var(--spacing-md) !important; }
+
+    .admin-main .card i,
+    .admin-main .btn i { display: none; }
+
+    .category-card .category-header .btn i,
+    .dish-item .btn i { display: inline-block !important; }
 }
 
 /* ─── Sidebar Overlay (mobile) ───────────────────────── */
