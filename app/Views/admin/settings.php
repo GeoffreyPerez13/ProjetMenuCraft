@@ -3,9 +3,9 @@ $section = $section ?? 'profile';
 $adminRole = $admin->role ?? 'ADMIN';
 ?>
 
-<div style="display:flex;gap:var(--spacing-lg);flex-wrap:wrap;">
+<div class="settings-layout">
     <!-- Sidebar Settings -->
-    <div style="width:220px;flex-shrink:0;">
+    <div class="settings-sidebar">
         <div class="card" style="position:sticky;top:80px;">
             <nav style="display:flex;flex-direction:column;gap:4px;">
                 <?php
@@ -33,7 +33,7 @@ $adminRole = $admin->role ?? 'ADMIN';
     </div>
 
     <!-- Content -->
-    <div style="flex:1;min-width:0;">
+    <div class="settings-content">
         <?php if ($section === 'profile'): ?>
         <div class="card">
             <div class="card-header"><h2><i class="fas fa-user"></i> Profil</h2></div>

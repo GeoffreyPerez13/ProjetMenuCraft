@@ -61,7 +61,7 @@ $siteUrl = $slug ? APP_URL . '?page=display&slug=' . urlencode($slug) : '';
         <div class="card-header">
             <h2><i class="fas fa-columns"></i> Disposition du site</h2>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--spacing-md);">
+        <div class="template-layouts-grid">
             <?php foreach ($layouts as $key => [$name, $desc]): ?>
             <label style="cursor:pointer;border:2px solid <?= $currentLayout === $key ? 'var(--color-primary)' : 'var(--color-border)' ?>;border-radius:var(--radius-md);padding:var(--spacing-lg);text-align:center;transition:all 0.2s;">
                 <input type="radio" name="site_layout" value="<?= $key ?>" <?= $currentLayout === $key ? 'checked' : '' ?> style="display:none;">

@@ -1,16 +1,12 @@
 <?php require BASE_PATH . '/app/Views/partials/header.php'; ?>
 
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--spacing-lg);flex-wrap:wrap;gap:12px;">
-    <div>
-        <span class="badge <?= $carteMode === 'editable' ? 'badge-primary' : 'badge-warning' ?>">
-            Mode : <?= $carteMode === 'editable' ? 'Éditable' : 'Images' ?>
-        </span>
-    </div>
-    <div style="display:flex;gap:8px;">
-        <a href="<?= APP_URL ?>?page=view-card" class="btn btn-outline btn-sm">
-            <i class="fas fa-eye"></i> Prévisualiser
-        </a>
-    </div>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--spacing-lg);flex-wrap:wrap;gap:8px;">
+    <span class="badge <?= $carteMode === 'editable' ? 'badge-primary' : 'badge-warning' ?>">
+        Mode : <?= $carteMode === 'editable' ? 'Éditable' : 'Images' ?>
+    </span>
+    <a href="<?= APP_URL ?>?page=view-card" class="btn btn-outline btn-sm">
+        <i class="fas fa-eye"></i> Prévisualiser
+    </a>
 </div>
 
 <?php if ($carteMode === 'editable'): ?>
@@ -19,7 +15,7 @@
 <div class="card">
     <div class="card-header">
         <h2><i class="fas fa-layer-group"></i> Catégories</h2>
-        <div style="display:flex;gap:6px;align-items:center;">
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
             <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('newCategoryForm').style.display='block'" title="Ajouter une catégorie">
                 <i class="fas fa-plus"></i> Ajouter
             </button>
@@ -84,11 +80,8 @@
                     <h3>
                         <span class="drag-handle"><i class="fas fa-grip-vertical"></i></span>
                         <?= htmlspecialchars($cat->name) ?>
-                        <?php if ($cat->description): ?>
-                            <span style="font-size:0.8rem;color:var(--color-text-muted);font-weight:400;"> — <?= htmlspecialchars($cat->description) ?></span>
-                        <?php endif; ?>
                     </h3>
-                    <div style="display:flex;gap:6px;align-items:center;">
+                    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
                         <button type="button" class="btn btn-primary btn-sm" onclick="toggleDishForm(<?= $cat->id ?>)" title="Ajouter un plat">
                             <i class="fas fa-plus"></i> Plat
                         </button>

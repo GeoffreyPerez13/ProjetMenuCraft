@@ -91,6 +91,8 @@ img { max-width: 100%; height: auto; }
     flex: 1;
     margin-left: 260px;
     padding: var(--spacing-lg) var(--spacing-xl);
+    overflow-x: hidden;
+    word-break: break-word;
     max-width: 100%;
 }
 
@@ -294,6 +296,11 @@ img { max-width: 100%; height: auto; }
     font-weight: 600;
     color: var(--color-text);
     margin-bottom: 6px;
+}
+
+.form-group label.toggle-switch {
+    display: inline-flex;
+    margin-bottom: 0;
 }
 
 .form-control {
@@ -628,6 +635,28 @@ table.admin-table tr:hover td { background: var(--color-bg-warm); }
     color: var(--color-text-muted);
 }
 
+/* ─── Template Layouts Grid ──────────────────────────── */
+.template-layouts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-md);
+}
+
+/* ─── Settings Layout ────────────────────────────────── */
+.settings-layout {
+    display: flex;
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+}
+.settings-sidebar {
+    width: 220px;
+    flex-shrink: 0;
+}
+.settings-content {
+    flex: 1;
+    min-width: 0;
+}
+
 /* ─── Demo Banner ────────────────────────────────────── */
 .demo-banner {
     background: linear-gradient(135deg, #f59e0b, #d97706);
@@ -664,6 +693,15 @@ table.admin-table tr:hover td { background: var(--color-bg-warm); }
     .form-row { grid-template-columns: 1fr; }
 
     .quick-actions { grid-template-columns: repeat(2, 1fr); }
+
+    .card-header { flex-wrap: wrap; gap: 8px; }
+
+    .settings-layout { flex-direction: column; }
+    .settings-sidebar { width: 100%; }
+    .settings-sidebar .card { position: static !important; }
+    .settings-sidebar nav { flex-direction: row !important; flex-wrap: wrap; gap: 4px !important; }
+
+    .template-layouts-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 500px) {
@@ -671,6 +709,59 @@ table.admin-table tr:hover td { background: var(--color-bg-warm); }
     .card { padding: var(--spacing-md); }
     .quick-actions { grid-template-columns: 1fr; }
     .auth-card { padding: var(--spacing-lg); }
+
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .card-header h2 { font-size: 1rem; }
+
+    .category-card .category-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .category-card .category-header h3 { font-size: 0.9rem; }
+
+    .btn-sm {
+        padding: 5px 8px;
+        font-size: 0.75rem;
+    }
+
+    .dish-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .admin-topbar h1 { font-size: 1rem; }
+    .topbar-actions span { display: none; }
+
+    .stat-card { padding: var(--spacing-md); }
+    .stat-value { font-size: 1.3rem; }
+}
+
+@media (max-width: 400px) {
+    .admin-main { padding: 8px; }
+    .card { padding: 12px; }
+
+    .card-header h2 { font-size: 0.9rem; }
+
+    .category-card .category-header h3 { font-size: 0.85rem; }
+
+    .btn-sm {
+        padding: 4px 6px;
+        font-size: 0.72rem;
+        white-space: nowrap;
+    }
+
+    .btn-sm .fa-plus,
+    .btn-sm .fa-list,
+    .btn-sm .fa-pen,
+    .btn-sm .fa-trash { font-size: 0.7rem; }
 }
 
 /* ─── Sidebar Overlay (mobile) ───────────────────────── */

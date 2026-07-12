@@ -790,4 +790,22 @@ html.dark-mode .display-header {
 @media (max-width: 500px) {
     .display-section { padding: 40px 0; }
     .services-grid { grid-template-columns: repeat(2, 1fr); }
+
+    .cookie-banner-inner { flex-direction: column; text-align: center; }
+    .cookie-actions { flex-direction: column; width: 100%; }
+    .cookie-actions button { width: 100%; }
+
+    .display-banner { height: 220px; }
+    .display-banner .banner-content h1 { font-size: 1.4rem; }
+
+    .header-actions { gap: 6px; }
+    .dark-mode-toggle { width: 34px; height: 34px; font-size: 0.95rem; }
+}
+
+@media (max-width: 400px) {
+    .display-section .container { padding: 0 12px; }
+    .services-grid { grid-template-columns: 1fr; }
+    .display-header .header-inner { padding: 0 12px; }
+    .display-header .restaurant-name { font-size: 1rem; }
+    .display-header .restaurant-logo { width: 36px; height: 36px; }
 }
