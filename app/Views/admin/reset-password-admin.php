@@ -1,3 +1,8 @@
+<?php
+if (!isset($csrf_token)) $csrf_token = '';
+if (!isset($flash)) $flash = null;
+if (!isset($token)) $token = $_GET['token'] ?? '';
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -7,6 +12,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="<?= APP_URL ?>/assets/css/admin.css">
+    <script>
+        if (localStorage.getItem('darkMode') === 'true' || (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark-mode');
+        }
+    </script>
 </head>
 <body>
 <div class="auth-page">
@@ -51,6 +61,23 @@
             </a>
         </div>
     </div>
+
+    <button type="button" id="darkModeToggle" style="position:absolute;top:16px;right:16px;background:var(--color-bg-alt, #f3f4f6);border:1px solid var(--color-border, #e5e7eb);border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.1rem;color:var(--color-text, #1f2937);transition:all 0.2s;" aria-label="Basculer mode sombre">
+        <i class="fas fa-moon"></i>
+    </button>
 </div>
+<script>
+const dmToggle = document.getElementById('darkModeToggle');
+const dmIcon = dmToggle.querySelector('i');
+function updateDmIcon() {
+    dmIcon.className = document.documentElement.classList.contains('dark-mode') ? 'fas fa-sun' : 'fas fa-moon';
+}
+updateDmIcon();
+dmToggle.addEventListener('click', function() {
+    document.documentElement.classList.toggle('dark-mode');
+    localStorage.setItem('darkMode', document.documentElement.classList.contains('dark-mode') ? 'true' : 'false');
+    updateDmIcon();
+});
+</script>
 </body>
 </html>

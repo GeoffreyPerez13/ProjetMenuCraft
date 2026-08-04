@@ -1,6 +1,11 @@
 <?php require BASE_PATH . '/app/Views/partials/header.php'; ?>
-
 <?php
+if (!isset($admin)) $admin = null;
+if (!isset($restaurant)) $restaurant = null;
+if (!isset($siteOnline)) $siteOnline = '0';
+if (!isset($subscription)) $subscription = null;
+if (!isset($pendingReservations)) $pendingReservations = 0;
+if (!isset($demoTokens)) $demoTokens = [];
 $slug = $restaurant->slug ?? '';
 $siteUrl = APP_URL . '?page=display&slug=' . urlencode($slug);
 $isOnline = ($siteOnline ?? '0') === '1';

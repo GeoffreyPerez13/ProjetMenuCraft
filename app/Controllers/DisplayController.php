@@ -55,7 +55,7 @@ class DisplayController extends BaseController
             return;
         }
 
-        $isPreview = $isOwner;
+        $isPreview = $isOwner && ($siteOnline === '0' || isset($_GET['preview']));
 
         // Charger les données
         $logo = $this->pdo->prepare('SELECT * FROM logos WHERE admin_id = :aid');

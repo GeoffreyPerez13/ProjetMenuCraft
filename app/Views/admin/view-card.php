@@ -1,4 +1,12 @@
 <?php require BASE_PATH . '/app/Views/partials/header.php'; ?>
+<?php
+if (!isset($carteMode)) $carteMode = 'editable';
+if (!isset($categories)) $categories = [];
+if (!isset($dishesByCategory)) $dishesByCategory = [];
+if (!isset($cardImages)) $cardImages = [];
+if (!isset($dailyMenus)) $dailyMenus = [];
+if (!isset($admin)) $admin = null;
+?>
 
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--spacing-lg);flex-wrap:wrap;gap:8px;">
     <a href="<?= APP_URL ?>?page=edit-card" class="btn btn-secondary btn-sm">

@@ -1,4 +1,14 @@
 <?php require BASE_PATH . '/app/Views/partials/header.php'; ?>
+<?php
+if (!isset($carteMode)) $carteMode = 'editable';
+if (!isset($categories)) $categories = [];
+if (!isset($dishesByCategory)) $dishesByCategory = [];
+if (!isset($allergenesByDish)) $allergenesByDish = [];
+if (!isset($allergenes)) $allergenes = [];
+if (!isset($cardImages)) $cardImages = [];
+if (!isset($dailyMenus)) $dailyMenus = [];
+if (!isset($admin)) $admin = null;
+?>
 
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--spacing-lg);flex-wrap:wrap;gap:8px;">
     <span class="badge <?= $carteMode === 'editable' ? 'badge-primary' : 'badge-warning' ?>">

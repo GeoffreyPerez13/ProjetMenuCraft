@@ -1,7 +1,12 @@
 <?php
+if (!isset($csrf_token)) $csrf_token = '';
+if (!isset($flash)) $flash = null;
+if (!isset($pageTitle)) $pageTitle = 'MenuCraft';
+if (!isset($currentAdmin)) $currentAdmin = null;
+if (!isset($pendingReservationsCount)) $pendingReservationsCount = 0;
+if (!isset($isDemo)) $isDemo = false;
 $currentPage = $_GET['page'] ?? 'dashboard';
 $adminRole = $currentAdmin->role ?? 'ADMIN';
-$isDemo = $isDemo ?? false;
 ?>
 <!DOCTYPE html>
 <html lang="fr" <?= (isset($_COOKIE['darkMode']) && $_COOKIE['darkMode'] === 'true') || (isset($_SESSION['darkMode']) && $_SESSION['darkMode']) ? 'class="dark-mode"' : '' ?>>
@@ -12,6 +17,8 @@ $isDemo = $isDemo ?? false;
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="<?= APP_URL ?>/assets/css/admin.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css">
+    <link rel="stylesheet" href="<?= APP_URL ?>/assets/css/tour.css">
     <script>if(localStorage.getItem('darkMode')==='true')document.documentElement.classList.add('dark-mode');</script>
 </head>
 <body>

@@ -16,6 +16,24 @@ class ReservationController extends BaseController
         $status = $_GET['status'] ?? null;
         $date = $_GET['date'] ?? null;
 
+        // Load floor plan tables for table assignment
+        $floorModel = new Floor($this->pdo);
+        $floors = $floorModel->getByAdmin($adminId);
+        $allTables = [];
+        $tableModel = new RestaurantTable($this->pdo);
+        foreach ($floors as $floor) {
+            $tables = $tableModel->getByFloor($floor->id);
+            foreach ($tables as $t) {
+                $allTables[] = (object)[
+                    'id' => $t->id,
+                    'table_number' => $t->table_number,
+                    'name' => $t->name ?? '',
+                    'seats' => $t->seats,
+                    'floor_name' => $floor->name,
+                ];
+            }
+        }
+
         $this->render('admin/reservations', [
             'pageTitle' => 'Réservations — MenuCraft',
             'reservations' => $resModel->getByAdmin($adminId, $status, $date),
@@ -24,6 +42,7 @@ class ReservationController extends BaseController
             'confirmedCount' => $resModel->getConfirmedCount($adminId),
             'filterStatus' => $status,
             'filterDate' => $date,
+            'floorTables' => $allTables,
         ]);
     }
 
@@ -52,7 +71,8 @@ class ReservationController extends BaseController
             return;
         }
 
-        $resModel->updateStatus($id, $status);
+        $tableId = !empty($_POST['table_id']) ? (int)$_POST['table_id'] : null;
+        $resModel->updateStatus($id, $status, $tableId);
 
         // Notification email
         $notifService = new NotificationService($this->pdo);

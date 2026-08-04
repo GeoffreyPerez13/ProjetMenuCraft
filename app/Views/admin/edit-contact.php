@@ -1,4 +1,8 @@
 <?php require BASE_PATH . '/app/Views/partials/header.php'; ?>
+<?php
+if (!isset($csrf_token)) $csrf_token = '';
+if (!isset($contact)) $contact = null;
+?>
 
 <div class="card">
     <div class="card-header">

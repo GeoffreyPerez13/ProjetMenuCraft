@@ -1,3 +1,21 @@
+<?php
+if (!isset($admin)) $admin = null;
+if (!isset($restaurant)) $restaurant = null;
+if (!isset($banner)) $banner = null;
+if (!isset($logo)) $logo = null;
+if (!isset($contact)) $contact = null;
+if (!isset($categories)) $categories = [];
+if (!isset($dishesByCategory)) $dishesByCategory = [];
+if (!isset($allergenesByDish)) $allergenesByDish = [];
+if (!isset($cardImages)) $cardImages = [];
+if (!isset($dailyMenus)) $dailyMenus = [];
+if (!isset($options)) $options = [];
+if (!isset($carteMode)) $carteMode = 'editable';
+if (!isset($palette)) $palette = 'classic';
+if (!isset($layout)) $layout = 'standard';
+if (!isset($isPreview)) $isPreview = false;
+if (!isset($bookingEnabled)) $bookingEnabled = false;
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -33,7 +51,7 @@
     <link rel="stylesheet" href="<?= APP_URL ?>/assets/css/display/templates.css">
     <script>if(localStorage.getItem('displayDarkMode')==='true')document.documentElement.classList.add('dark-mode');</script>
 </head>
-<body class="display-page template-<?= htmlspecialchars($palette) ?> layout-<?= htmlspecialchars($layout) ?>">
+<body class="display-page template-<?= htmlspecialchars($palette) ?> layout-<?= htmlspecialchars($layout) ?>"<?php if ($palette === 'custom'): ?> style="--custom-primary:<?= htmlspecialchars($options['custom_primary'] ?? '#b45309') ?>;--custom-bg:<?= htmlspecialchars($options['custom_bg'] ?? '#ffffff') ?>;"<?php endif; ?>>
 
 <?php if ($isPreview ?? false): ?>
 <div class="preview-banner">
@@ -112,7 +130,7 @@
                     <?php if (!empty($activeDishes)): ?>
                     <div class="carte-category">
                         <h3><?= htmlspecialchars($cat->name) ?></h3>
-                        <?php if ($cat->description): ?>
+                        <?php if (!empty(trim($cat->description ?? ''))): ?>
                         <p class="category-description"><?= htmlspecialchars($cat->description) ?></p>
                         <?php endif; ?>
                         <div class="dish-grid">
@@ -148,9 +166,9 @@
         <?php else: ?>
             <!-- Mode images -->
             <?php if (!empty($cardImages)): ?>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:var(--spacing-md);">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:var(--spacing-md);">
                 <?php foreach ($cardImages as $img): ?>
-                <img src="<?= APP_URL ?>/uploads/<?= htmlspecialchars($img->filename) ?>" alt="Carte" style="width:100%;border-radius:var(--radius-md);cursor:pointer;" onclick="openLightbox(this.src)">
+                <img src="<?= APP_URL ?>/uploads/<?= htmlspecialchars($img->filename) ?>" alt="Carte" style="width:100%;max-width:100%;border-radius:var(--radius-md);cursor:pointer;" onclick="openLightbox(this.src)">
                 <?php endforeach; ?>
             </div>
             <?php endif; ?>
@@ -328,7 +346,7 @@
                 <label>Demandes spéciales</label>
                 <textarea id="bookRequests" rows="3" placeholder="Allergies, occasion spéciale..."></textarea>
             </div>
-            <button type="button" onclick="submitBooking()" class="btn btn-primary btn-block btn-lg" style="background:var(--color-primary);color:#fff;border:none;padding:14px;border-radius:var(--radius-sm);font-size:1rem;font-weight:700;cursor:pointer;width:100%;">
+            <button type="button" onclick="submitBooking()" class="display-btn display-btn-primary display-btn-block display-btn-lg">
                 <i class="fas fa-calendar-check"></i> Réserver
             </button>
             <div id="bookingMessage" style="margin-top:12px;text-align:center;display:none;"></div>
@@ -428,6 +446,11 @@
     </div>
 </div>
 
+<!-- Cookie Settings Shortcut -->
+<button class="cookie-reopen-btn" id="cookieReopenBtn" onclick="reopenCookieBanner()" title="Paramètres des cookies">
+    <i class="fas fa-cookie-bite"></i>
+</button>
+
 <!-- Lightbox -->
 <div class="lightbox-overlay" id="lightbox" onclick="closeLightbox()">
     <button class="lightbox-close" onclick="closeLightbox()"><i class="fas fa-times"></i></button>
@@ -472,16 +495,27 @@ function closeLightbox() {
 }
 
 // Cookies
+const cookieReopenBtn = document.getElementById('cookieReopenBtn');
+function showReopenBtn() {
+    if (cookieReopenBtn) cookieReopenBtn.classList.add('visible');
+}
+function hideReopenBtn() {
+    if (cookieReopenBtn) cookieReopenBtn.classList.remove('visible');
+}
 if (!localStorage.getItem('display_cookie_consent')) {
     document.getElementById('cookieBanner').classList.add('show');
+} else {
+    showReopenBtn();
 }
 function acceptCookies() {
     localStorage.setItem('display_cookie_consent', 'accepted');
     document.getElementById('cookieBanner').classList.remove('show');
+    showReopenBtn();
 }
 function refuseCookies() {
     localStorage.setItem('display_cookie_consent', 'refused');
     document.getElementById('cookieBanner').classList.remove('show');
+    showReopenBtn();
 }
 function toggleCookiePrefs() {
     const prefs = document.getElementById('cookiePrefs');
@@ -494,6 +528,11 @@ function saveCustomCookies() {
     localStorage.setItem('cookie_analytics', analytics);
     localStorage.setItem('cookie_marketing', marketing);
     document.getElementById('cookieBanner').classList.remove('show');
+    showReopenBtn();
+}
+function reopenCookieBanner() {
+    hideReopenBtn();
+    document.getElementById('cookieBanner').classList.add('show');
 }
 
 // Booking
@@ -512,7 +551,7 @@ function submitBooking() {
     }
 
     const data = new FormData();
-    data.append('admin_id', '<?= $admin->id ?>');
+    data.append('admin_id', '<?= $admin->id ?? 0 ?>');
     data.append('customer_name', name);
     data.append('customer_phone', document.getElementById('bookPhone').value);
     data.append('customer_email', document.getElementById('bookEmail').value);

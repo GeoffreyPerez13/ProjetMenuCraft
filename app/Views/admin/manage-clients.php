@@ -1,4 +1,5 @@
 <?php require BASE_PATH . '/app/Views/partials/header.php'; ?>
+<?php if (!isset($clients)) $clients = []; ?>
 
 <div class="card">
     <div class="card-header">

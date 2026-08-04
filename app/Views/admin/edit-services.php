@@ -1,5 +1,7 @@
 <?php require BASE_PATH . '/app/Views/partials/header.php'; ?>
 <?php
+if (!isset($csrf_token)) $csrf_token = '';
+if (!isset($options)) $options = [];
 $serviceLabels = [
     'service_sur_place' => ['Sur place', 'fa-chair'],
     'service_a_emporter' => ['À emporter', 'fa-bag-shopping'],

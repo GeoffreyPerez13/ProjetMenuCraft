@@ -55,10 +55,20 @@ class Reservation
         return (int)$this->pdo->lastInsertId();
     }
 
-    public function updateStatus(int $id, string $status): bool
+    public function updateStatus(int $id, string $status, ?int $tableId = null): bool
     {
+        if ($tableId !== null) {
+            $stmt = $this->pdo->prepare('UPDATE reservations SET status = :s, table_id = :tid WHERE id = :id');
+            return $stmt->execute([':s' => $status, ':tid' => $tableId, ':id' => $id]);
+        }
         $stmt = $this->pdo->prepare('UPDATE reservations SET status = :s WHERE id = :id');
         return $stmt->execute([':s' => $status, ':id' => $id]);
+    }
+
+    public function assignTable(int $id, ?int $tableId): bool
+    {
+        $stmt = $this->pdo->prepare('UPDATE reservations SET table_id = :tid WHERE id = :id');
+        return $stmt->execute([':tid' => $tableId, ':id' => $id]);
     }
 
     public function getPendingCount(int $adminId): int

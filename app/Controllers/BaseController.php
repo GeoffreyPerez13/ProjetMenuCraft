@@ -57,6 +57,17 @@ class BaseController
         $data['isDemo'] = $_SESSION['demo_mode'] ?? false;
         $data['currentAdmin'] = $this->getCurrentAdmin();
 
+        // Load hide_tour_button option for footer
+        if (!isset($data['_hideTourButton'])) {
+            $adminId = $_SESSION['admin_id'] ?? null;
+            if ($adminId) {
+                $optModel = new OptionModel($this->pdo);
+                $data['_hideTourButton'] = ($optModel->get($adminId, 'hide_tour_button') ?? '0') === '1';
+            } else {
+                $data['_hideTourButton'] = true;
+            }
+        }
+
         extract($data);
         $viewPath = BASE_PATH . '/app/Views/' . $view . '.php';
         if (file_exists($viewPath)) {

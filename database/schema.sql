@@ -261,11 +261,13 @@ CREATE TABLE IF NOT EXISTS `reservations` (
     `party_size` INT DEFAULT 2,
     `special_requests` TEXT,
     `status` ENUM('pending', 'confirmed', 'rejected', 'completed', 'cancelled', 'no_show') DEFAULT 'pending',
+    `table_id` INT DEFAULT NULL,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX `idx_admin_status` (`admin_id`, `status`),
     INDEX `idx_admin_date` (`admin_id`, `reservation_date`),
-    FOREIGN KEY (`admin_id`) REFERENCES `admins`(`id`) ON DELETE CASCADE
+    FOREIGN KEY (`admin_id`) REFERENCES `admins`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`table_id`) REFERENCES `restaurant_tables`(`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================
@@ -314,13 +316,16 @@ CREATE TABLE IF NOT EXISTS `restaurant_tables` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `floor_id` INT NOT NULL,
     `table_number` VARCHAR(20) DEFAULT NULL,
+    `name` VARCHAR(100) DEFAULT '',
     `seats` INT DEFAULT 4,
     `x` FLOAT DEFAULT 0,
     `y` FLOAT DEFAULT 0,
     `width` FLOAT DEFAULT 80,
     `height` FLOAT DEFAULT 80,
-    `shape` ENUM('square', 'round') DEFAULT 'square',
+    `shape` ENUM('square', 'round', 'rectangle') DEFAULT 'square',
     `rotation` FLOAT DEFAULT 0,
+    `zone` ENUM('interieur', 'terrasse', 'prive', 'bar') DEFAULT 'interieur',
+    `notes` TEXT DEFAULT NULL,
     FOREIGN KEY (`floor_id`) REFERENCES `floors`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

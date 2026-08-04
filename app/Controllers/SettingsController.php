@@ -125,7 +125,9 @@ class SettingsController extends BaseController
         $adminId = $this->getAdminId();
         $optModel = new OptionModel($this->pdo);
 
-        $booleanOptions = ['site_online', 'email_notifications', 'mail_reminder', 'booking_enabled', 'booking_auto_complete'];
+        $booleanOptions = ['site_online', 'email_notifications', 'mail_reminder', 'hide_tour_button',
+            'booking_enabled', 'booking_auto_complete', 'booking_daily_limit_enabled',
+            'booking_require_phone', 'booking_require_email', 'booking_confirmation_email'];
         foreach ($booleanOptions as $key) {
             if (isset($_POST[$key])) {
                 $optModel->set($adminId, $key, $_POST[$key]);
@@ -133,7 +135,8 @@ class SettingsController extends BaseController
         }
 
         $textOptions = ['google_place_id', 'google_api_key', 'booking_message',
-            'booking_min_party', 'booking_max_party', 'booking_advance_days'];
+            'booking_min_party', 'booking_max_party', 'booking_advance_days',
+            'booking_daily_limit', 'booking_min_hours_before'];
         foreach ($textOptions as $key) {
             if (isset($_POST[$key])) {
                 $optModel->set($adminId, $key, trim($_POST[$key]));
@@ -165,11 +168,18 @@ class SettingsController extends BaseController
         $palette = $_POST['site_palette'] ?? 'classic';
         $layout = $_POST['site_layout'] ?? 'standard';
 
-        $validPalettes = ['classic', 'modern', 'elegant', 'nature', 'rose', 'bistro', 'ocean'];
+        $validPalettes = ['classic', 'modern', 'elegant', 'nature', 'rose', 'bistro', 'ocean', 'custom'];
         $validLayouts = ['standard', 'bistro', 'ocean'];
 
         if (in_array($palette, $validPalettes)) $optModel->set($adminId, 'site_palette', $palette);
         if (in_array($layout, $validLayouts)) $optModel->set($adminId, 'site_layout', $layout);
+
+        if ($palette === 'custom') {
+            $customPrimary = $_POST['custom_primary'] ?? '#b45309';
+            $customBg = $_POST['custom_bg'] ?? '#ffffff';
+            if (preg_match('/^#[0-9a-fA-F]{6}$/', $customPrimary)) $optModel->set($adminId, 'custom_primary', $customPrimary);
+            if (preg_match('/^#[0-9a-fA-F]{6}$/', $customBg)) $optModel->set($adminId, 'custom_bg', $customBg);
+        }
 
         $this->flash('success', 'Template mis à jour.');
         $this->redirect('edit-template');

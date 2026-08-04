@@ -97,12 +97,24 @@ body.template-ocean {
     --color-bg-warm: #ecfeff;
 }
 
+/* ─── Custom (inline vars set via style attribute) ───── */
+body.template-custom {
+    /* Colors injected via inline style --custom-primary and --custom-bg */
+    --color-primary: var(--custom-primary, #b45309);
+    --color-primary-dark: var(--custom-primary, #b45309);
+    --color-primary-light: var(--custom-primary, #b45309);
+    --color-primary-bg: color-mix(in srgb, var(--custom-primary, #b45309) 8%, transparent);
+    --color-bg: var(--custom-bg, #ffffff);
+    --color-bg-alt: color-mix(in srgb, var(--custom-bg, #ffffff) 95%, var(--custom-primary, #b45309));
+    --color-bg-warm: var(--custom-bg, #ffffff);
+}
+
 /* ─── Layout: Bistro ─────────────────────────────────── */
 body.layout-bistro .display-banner { height: 500px; }
 body.layout-bistro .display-banner .banner-content h1 { font-size: clamp(2.5rem, 6vw, 4rem); }
 
 body.layout-bistro .dish-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
 }
 
 body.layout-bistro .dish-card {
@@ -145,6 +157,21 @@ body.layout-ocean .daily-menu-card {
     border-radius: var(--radius-lg);
 }
 
+/* ─── Template Responsive ───────────────────────────── */
+@media (max-width: 768px) {
+    body.layout-bistro .display-banner { height: 350px; }
+    body.layout-bistro .dish-card .dish-image { height: 150px; }
+    body.layout-ocean .display-banner { height: 320px; }
+    body.layout-ocean .display-banner::after { height: 40px; }
+}
+
+@media (max-width: 420px) {
+    body.layout-bistro .display-banner { height: 250px; }
+    body.layout-bistro .dish-card .dish-image { height: 130px; }
+    body.layout-ocean .display-banner { height: 230px; }
+    body.layout-ocean .display-banner::after { height: 30px; }
+}
+
 /* ─── Dark Mode overrides for templates ──────────────── */
 html.dark-mode body.template-classic,
 html.dark-mode body.template-modern,
@@ -163,4 +190,15 @@ html.dark-mode body.template-ocean {
 
 html.dark-mode body.template-elegant {
     /* Already dark, keep as is */
+    color: inherit;
+}
+
+html.dark-mode body.template-custom {
+    --color-bg: #1c1917;
+    --color-bg-alt: #292524;
+    --color-text: #fafaf9;
+    --color-text-light: #d6d3d1;
+    --color-text-muted: #78716c;
+    --color-border: #44403c;
+    --color-border-light: #292524;
 }

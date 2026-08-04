@@ -4,6 +4,11 @@
  * Point d'entrée unique de l'application
  */
 
+// Erreurs : logger mais ne pas afficher
+error_reporting(E_ALL);
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
+
 // Session sécurisée
 ini_set('session.cookie_httponly', 1);
 ini_set('session.use_strict_mode', 1);
@@ -78,8 +83,9 @@ switch ($page) {
         break;
 
     case 'auto-register':
-        $adminCtrl->autoRegister();
-        break;
+        // Registration disabled
+        header('Location: ' . $siteUrl . '?page=login');
+        exit;
 
     case 'register':
         $adminCtrl->register();
@@ -368,8 +374,9 @@ switch ($page) {
         $optModel = new OptionModel($pdo);
         $admin = (new Admin($pdo))->findById($adminId);
         $restaurant = $admin->restaurant_id ? (new Restaurant($pdo))->findById($admin->restaurant_id) : null;
-        $currentPalette = $optModel->get($adminId, 'site_palette', 'classic');
-        $currentLayout = $optModel->get($adminId, 'site_layout', 'standard');
+        $options = $optModel->getAll($adminId);
+        $currentPalette = $options['site_palette'] ?? 'classic';
+        $currentLayout = $options['site_layout'] ?? 'standard';
         $csrf_token = $_SESSION['csrf_token'] ?? bin2hex(random_bytes(32));
         $_SESSION['csrf_token'] = $csrf_token;
         $flash = $_SESSION['flash'] ?? null;
@@ -386,6 +393,18 @@ switch ($page) {
 
     case 'floor-plan-save':
         $floorPlanCtrl->save();
+        break;
+
+    case 'floor-plan-create-room':
+        $floorPlanCtrl->createFloor();
+        break;
+
+    case 'floor-plan-rename-room':
+        $floorPlanCtrl->renameFloor();
+        break;
+
+    case 'floor-plan-delete-room':
+        $floorPlanCtrl->deleteFloor();
         break;
 
     case 'stats':

@@ -52,4 +52,55 @@ class FloorPlanController extends BaseController
 
         $this->json(['success' => true]);
     }
+
+    public function createFloor(): void
+    {
+        $this->requireAuth();
+        $adminId = $this->getAdminId();
+        $data = json_decode(file_get_contents('php://input'), true);
+        $name = trim($data['name'] ?? 'Nouvelle salle');
+        if ($name === '') $name = 'Nouvelle salle';
+
+        $floorModel = new Floor($this->pdo);
+        $id = $floorModel->create($adminId, $name);
+
+        $this->json(['success' => true, 'id' => $id, 'name' => $name]);
+    }
+
+    public function renameFloor(): void
+    {
+        $this->requireAuth();
+        $data = json_decode(file_get_contents('php://input'), true);
+        $id = (int)($data['id'] ?? 0);
+        $name = trim($data['name'] ?? '');
+        if ($id <= 0 || $name === '') {
+            $this->json(['error' => 'Données invalides'], 400);
+            return;
+        }
+
+        (new Floor($this->pdo))->rename($id, $name);
+        $this->json(['success' => true]);
+    }
+
+    public function deleteFloor(): void
+    {
+        $this->requireAuth();
+        $adminId = $this->getAdminId();
+        $data = json_decode(file_get_contents('php://input'), true);
+        $id = (int)($data['id'] ?? 0);
+        if ($id <= 0) {
+            $this->json(['error' => 'ID invalide'], 400);
+            return;
+        }
+
+        $floorModel = new Floor($this->pdo);
+        $floors = $floorModel->getByAdmin($adminId);
+        if (count($floors) <= 1) {
+            $this->json(['error' => 'Impossible de supprimer la dernière salle'], 400);
+            return;
+        }
+
+        $floorModel->delete($id);
+        $this->json(['success' => true]);
+    }
 }
