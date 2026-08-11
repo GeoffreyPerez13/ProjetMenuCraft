@@ -157,12 +157,114 @@ body.layout-ocean .daily-menu-card {
     border-radius: var(--radius-lg);
 }
 
+/* ─── Layout: Elegant ───────────────────────────────── */
+body.layout-elegant .display-banner {
+    height: 550px;
+}
+
+body.layout-elegant .display-banner .banner-content {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+body.layout-elegant .display-banner .banner-content h1 {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    letter-spacing: -0.02em;
+}
+
+body.layout-elegant .display-section {
+    text-align: center;
+}
+
+body.layout-elegant .display-section-title {
+    margin-bottom: 40px;
+}
+
+body.layout-elegant .display-section-title h2 {
+    font-size: 2.2rem;
+    letter-spacing: -0.01em;
+}
+
+body.layout-elegant .dish-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
+    gap: 24px;
+}
+
+body.layout-elegant .dish-card {
+    text-align: left;
+    border: none;
+    border-bottom: 1px solid var(--color-border-light);
+    border-radius: 0;
+    padding: var(--spacing-md) 0;
+}
+
+body.layout-elegant .carte-category h3 {
+    text-align: center;
+    font-size: 1.6rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+body.layout-elegant .daily-menu-card {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* ─── Layout: Magazine ──────────────────────────────── */
+body.layout-magazine .display-banner {
+    height: 400px;
+}
+
+body.layout-magazine .display-banner .banner-content h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+body.layout-magazine .dish-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
+    gap: 16px;
+}
+
+body.layout-magazine .dish-card {
+    border-radius: 0;
+    border: 1px solid var(--color-border);
+}
+
+body.layout-magazine .dish-card .dish-image {
+    border-radius: 0;
+}
+
+body.layout-magazine .carte-category h3 {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 1.1rem;
+    border-bottom: 2px solid var(--color-primary);
+    padding-bottom: 8px;
+    display: inline-block;
+}
+
+body.layout-magazine .display-section-title h2 {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 1.5rem;
+}
+
+body.layout-magazine .daily-menu-card {
+    border-radius: 0;
+    border: 2px solid var(--color-primary);
+}
+
 /* ─── Template Responsive ───────────────────────────── */
 @media (max-width: 768px) {
     body.layout-bistro .display-banner { height: 350px; }
     body.layout-bistro .dish-card .dish-image { height: 150px; }
     body.layout-ocean .display-banner { height: 320px; }
     body.layout-ocean .display-banner::after { height: 40px; }
+    body.layout-elegant .display-banner { height: 400px; }
+    body.layout-magazine .display-banner { height: 300px; }
 }
 
 @media (max-width: 420px) {
@@ -170,6 +272,8 @@ body.layout-ocean .daily-menu-card {
     body.layout-bistro .dish-card .dish-image { height: 130px; }
     body.layout-ocean .display-banner { height: 230px; }
     body.layout-ocean .display-banner::after { height: 30px; }
+    body.layout-elegant .display-banner { height: 300px; }
+    body.layout-magazine .display-banner { height: 220px; }
 }
 
 /* ─── Dark Mode overrides for templates ──────────────── */

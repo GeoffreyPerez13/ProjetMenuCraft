@@ -3,14 +3,17 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+html:has(body.display-page) { overflow-x: hidden; }
+
 body.display-page {
     font-family: var(--font-family);
     background: var(--color-bg);
     color: var(--color-text);
     line-height: 1.6;
-    overflow-x: clip;
+    overflow-x: hidden;
     width: 100%;
     min-width: 0;
+    max-width: 100vw;
 }
 
 /* ─── Header / Navigation ────────────────────────────── */
@@ -375,15 +378,15 @@ html.dark-mode .display-header {
 
 .daily-menu-card .menu-item {
     display: flex;
-    justify-content: space-between;
-    padding: 6px 0;
+    flex-direction: column;
+    padding: 8px 0;
     font-size: 0.9rem;
     border-bottom: 1px dashed var(--color-border-light);
 }
 
 .daily-menu-card .menu-item:last-child { border-bottom: none; }
-.daily-menu-card .menu-item .item-label { font-weight: 600; color: var(--color-text-light); word-break: break-word; min-width: 0; }
-.daily-menu-card .menu-item .item-value { color: var(--color-text); white-space: nowrap; flex-shrink: 0; margin-left: 8px; }
+.daily-menu-card .menu-item .item-label { font-weight: 600; color: var(--color-primary-light, var(--color-text-light)); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 2px; }
+.daily-menu-card .menu-item .item-value { color: var(--color-text); word-break: break-word; }
 
 /* ─── Services ───────────────────────────────────────── */
 .services-grid {
@@ -704,7 +707,7 @@ html.dark-mode .display-header {
     flex-wrap: wrap;
 }
 
-.cookie-banner p { font-size: 0.85rem; flex: 1; min-width: 200px; }
+.cookie-banner p { font-size: 0.85rem; flex: 1; min-width: 0; }
 .cookie-banner .cookie-actions { display: flex; gap: 10px; }
 
 .cookie-banner .cookie-actions button {
@@ -1140,14 +1143,67 @@ html.dark-mode .display-header {
 
 /* Tiny screens (fold phones, very small) */
 @media (max-width: 320px) {
-    .display-header .restaurant-name { font-size: 0.88rem; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .display-header .header-inner { padding: 0 8px; }
+    .display-header .restaurant-name { font-size: 0.85rem; max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .display-header .restaurant-logo { width: 30px; height: 30px; }
+    .header-actions { gap: 4px; }
+    .dark-mode-toggle { width: 30px; height: 30px; font-size: 0.8rem; }
+    .display-mobile-toggle { width: 30px; height: 30px; font-size: 0.9rem; }
+
     .display-banner { height: 180px; }
+    .display-banner .banner-content { padding: var(--spacing-sm); }
     .display-banner .banner-content h1 { font-size: 1.1rem; }
-    .display-section { padding: 24px 0; }
-    .display-container { padding: 0 10px; }
-    .services-grid { grid-template-columns: 1fr 1fr; }
+    .display-banner .banner-content p { font-size: 0.75rem; }
+    .no-banner { height: 140px; }
+
+    .display-section { padding: 20px 0; }
+    .display-container { padding: 0 8px; }
+    .display-section-title h2 { font-size: 1.15rem; }
+
+    .dish-card { padding: var(--spacing-sm); }
     .dish-card .dish-image { height: 120px; }
-    .reservation-form { margin: 0 -4px; }
+    .dish-card .dish-name { font-size: 0.85rem; }
+    .dish-card .dish-price { font-size: 0.82rem; }
+    .dish-card .dish-desc { font-size: 0.75rem; }
+
+    .daily-menu-card .menu-header { padding: 8px 12px; }
+    .daily-menu-card .menu-header h4 { font-size: 0.85rem; }
+    .daily-menu-card .menu-header .menu-price { font-size: 0.9rem; }
+    .daily-menu-card .menu-body { padding: 10px; }
+    .daily-menu-card .menu-item { font-size: 0.78rem; }
+
+    .services-grid { grid-template-columns: repeat(2, 1fr); gap: 4px; }
+    .service-item { padding: 8px 4px; }
+    .service-item i { font-size: 1rem; margin-bottom: 2px; }
+    .service-item span { font-size: 0.65rem; }
+
+    .payment-methods { gap: 4px; }
+    .payment-badge { padding: 4px 8px; font-size: 0.68rem; }
+
+    .social-links { gap: 8px; }
+    .social-link { width: 36px; height: 36px; font-size: 0.9rem; }
+
+    .reservation-form { padding: var(--spacing-sm); margin: 0; }
+    .reservation-form label { font-size: 0.75rem; }
+    .reservation-form input,
+    .reservation-form select,
+    .reservation-form textarea { padding: 8px 10px; font-size: 0.8rem; }
+    .display-btn-lg { padding: 10px 16px; font-size: 0.82rem; }
+
+    .footer-content { padding: 0 8px; }
+    .footer-info h3 { font-size: 1rem; }
+    .footer-info p { font-size: 0.75rem; }
+    .footer-hours p { font-size: 0.75rem; }
+    .footer-map iframe { height: 130px; }
+    .footer-bottom-display { padding: var(--spacing-sm) 8px 0; font-size: 0.68rem; }
+    .footer-legal-links a { font-size: 0.68rem; }
+
+    .cookie-banner { padding: 10px 8px; }
+    .cookie-banner p { font-size: 0.72rem; }
+    .cookie-banner .cookie-actions button { padding: 7px 12px; font-size: 0.72rem; }
+
+    .review-card { padding: var(--spacing-sm); }
+    .review-card .review-text { font-size: 0.78rem; }
 }
 
 /* Touch-friendly: increase tap targets on mobile */

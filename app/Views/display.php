@@ -45,13 +45,13 @@ if (!isset($bookingEnabled)) $bookingEnabled = false;
     </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800<?php if (($palette === 'custom') && !empty($options['custom_font']) && !in_array($options['custom_font'], ['Inter', 'Playfair Display'])): ?>&family=<?= urlencode($options['custom_font']) ?>:wght@400;500;600;700;800<?php endif; ?>&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="<?= APP_URL ?>/assets/css/display/base.css">
     <link rel="stylesheet" href="<?= APP_URL ?>/assets/css/display/templates.css">
     <script>if(localStorage.getItem('displayDarkMode')==='true')document.documentElement.classList.add('dark-mode');</script>
 </head>
-<body class="display-page template-<?= htmlspecialchars($palette) ?> layout-<?= htmlspecialchars($layout) ?>"<?php if ($palette === 'custom'): ?> style="--custom-primary:<?= htmlspecialchars($options['custom_primary'] ?? '#b45309') ?>;--custom-bg:<?= htmlspecialchars($options['custom_bg'] ?? '#ffffff') ?>;"<?php endif; ?>>
+<body class="display-page template-<?= htmlspecialchars($palette) ?> layout-<?= htmlspecialchars($layout) ?>"<?php if ($palette === 'custom'): ?> style="--custom-primary:<?= htmlspecialchars($options['custom_primary'] ?? '#b45309') ?>;--custom-bg:<?= htmlspecialchars($options['custom_bg'] ?? '#ffffff') ?>;--font-family:'<?= htmlspecialchars($options['custom_font'] ?? 'Inter') ?>', system-ui, sans-serif;--font-display:'<?= htmlspecialchars($options['custom_font'] ?? 'Inter') ?>', system-ui, sans-serif;"<?php endif; ?>>
 
 <?php if ($isPreview ?? false): ?>
 <div class="preview-banner">
@@ -331,7 +331,19 @@ if (!isset($bookingEnabled)) $bookingEnabled = false;
                 </div>
                 <div class="form-group">
                     <label>Heure *</label>
+                    <?php
+                    $timeSlots = array_filter(array_map('trim', explode("\n", $options['booking_time_slots'] ?? '')));
+                    if (!empty($timeSlots)): ?>
+                    <select id="bookTime" required>
+                        <option value="">Choisir un créneau</option>
+                        <?php foreach ($timeSlots as $slot):
+                            if (preg_match('/^\d{1,2}:\d{2}$/', $slot)): ?>
+                        <option value="<?= htmlspecialchars($slot) ?>"><?= htmlspecialchars($slot) ?></option>
+                        <?php endif; endforeach; ?>
+                    </select>
+                    <?php else: ?>
                     <input type="time" id="bookTime" required>
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="form-group">

@@ -15,10 +15,13 @@ $palettes = [
 ];
 $customPrimary = $options['custom_primary'] ?? '#b45309';
 $customBg = $options['custom_bg'] ?? '#ffffff';
+$customFont = $options['custom_font'] ?? 'Inter';
 $layouts = [
-    'standard' => ['Standard', 'Disposition verticale classique'],
-    'bistro' => ['Bistro', 'Accent sur l\'ambiance et photos'],
-    'ocean' => ['Océan', 'Éléments visuels aquatiques'],
+    'standard' => ['Standard', 'Disposition verticale classique', 'align-left'],
+    'bistro' => ['Bistro', 'Accent sur les photos', 'images'],
+    'ocean' => ['Océan', 'Visuels aquatiques', 'water'],
+    'elegant' => ['Élégant', 'Centré, aéré et raffiné', 'feather'],
+    'magazine' => ['Magazine', 'Style éditorial moderne', 'newspaper'],
 ];
 $slug = $restaurant->slug ?? '';
 $siteUrl = $slug ? APP_URL . '?page=display&slug=' . urlencode($slug) : '';
@@ -98,6 +101,17 @@ $siteUrl = $slug ? APP_URL . '?page=display&slug=' . urlencode($slug) : '';
                     </div>
                 </div>
             </div>
+
+            <div class="form-group" style="margin-top:16px;">
+                <label style="font-size:0.78rem;"><i class="fas fa-font"></i> Police d'écriture</label>
+                <select name="custom_font" class="form-control" style="max-width:250px;" id="customFontSelect">
+                    <?php
+                    $fonts = ['Inter', 'Playfair Display', 'Roboto', 'Lora', 'Montserrat', 'Open Sans', 'Raleway', 'Poppins', 'Merriweather', 'Oswald', 'Nunito', 'Cormorant Garamond'];
+                    foreach ($fonts as $f): ?>
+                    <option value="<?= $f ?>" <?= $customFont === $f ? 'selected' : '' ?> style="font-family:'<?= $f ?>'"><?= $f ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
         </div>
     </div>
 
@@ -107,10 +121,10 @@ $siteUrl = $slug ? APP_URL . '?page=display&slug=' . urlencode($slug) : '';
             <h2><i class="fas fa-columns"></i> Disposition du site</h2>
         </div>
         <div class="template-layouts-grid">
-            <?php foreach ($layouts as $key => [$name, $desc]): ?>
+            <?php foreach ($layouts as $key => [$name, $desc, $icon]): ?>
             <label style="cursor:pointer;border:2px solid <?= $currentLayout === $key ? 'var(--color-primary)' : 'var(--color-border)' ?>;border-radius:var(--radius-md);padding:var(--spacing-lg);text-align:center;transition:all 0.2s;">
                 <input type="radio" name="site_layout" value="<?= $key ?>" <?= $currentLayout === $key ? 'checked' : '' ?> style="display:none;">
-                <i class="fas fa-<?= $key === 'standard' ? 'align-left' : ($key === 'bistro' ? 'images' : 'water') ?>" style="font-size:2rem;color:var(--color-primary);margin-bottom:8px;display:block;"></i>
+                <i class="fas fa-<?= $icon ?>" style="font-size:2rem;color:var(--color-primary);margin-bottom:8px;display:block;"></i>
                 <strong style="display:block;font-size:0.9rem;"><?= $name ?></strong>
                 <p style="font-size:0.78rem;color:var(--color-text-muted);margin-top:4px;"><?= $desc ?></p>
                 <?php if ($currentLayout === $key): ?>

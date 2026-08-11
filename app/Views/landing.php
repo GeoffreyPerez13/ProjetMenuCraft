@@ -67,7 +67,7 @@
                     <i class="fas fa-rocket"></i> Créer mon site
                 </a>
             <?php endif; ?>
-            <a href="#demo" class="btn-hero btn-hero-secondary">
+            <a href="<?= APP_URL ?>?page=display&slug=demo-restaurant" target="_blank" class="btn-hero btn-hero-secondary">
                 <i class="fas fa-play-circle"></i> Voir la démo
             </a>
         </div>
@@ -248,12 +248,13 @@
         <div class="section-header">
             <div class="section-badge"><i class="fas fa-play-circle"></i> Démo</div>
             <h2>Découvrez MenuCraft en action</h2>
-            <p>Testez toutes les fonctionnalités sans créer de compte.</p>
+            <p>Explorez un site de démonstration complet : carte, réservations, horaires… comme si vous étiez client.</p>
         </div>
         <div style="text-align: center;">
-            <a href="mailto:contact.menucraft@gmail.com?subject=Demande de démo MenuCraft" class="btn-hero btn-hero-primary">
-                <i class="fas fa-envelope"></i> Demander une démo
+            <a href="<?= APP_URL ?>?page=display&slug=demo-restaurant" target="_blank" class="btn-hero btn-hero-primary">
+                <i class="fas fa-external-link-alt"></i> Voir le restaurant démo
             </a>
+            <p style="margin-top:12px;font-size:0.85rem;color:var(--color-text-muted);">Aucune inscription requise — naviguez librement.</p>
         </div>
     </div>
 </section>
@@ -332,6 +333,58 @@
     </div>
 </section>
 
+<!-- Cookie Banner -->
+<div class="cookie-banner" id="cookieBanner">
+    <div class="cookie-banner-inner">
+        <p>🍪 Ce site utilise des cookies pour améliorer votre expérience. En continuant, vous acceptez notre <a href="<?= APP_URL ?>?page=legal&section=cookies">politique de cookies</a>.</p>
+        <div class="cookie-actions">
+            <button class="cookie-accept" onclick="acceptCookies()">Accepter</button>
+            <button class="cookie-customize" onclick="toggleCookiePrefs()">Personnaliser</button>
+            <button class="cookie-refuse" onclick="refuseCookies()">Refuser</button>
+        </div>
+    </div>
+    <div class="cookie-prefs" id="cookiePrefs">
+        <div class="cookie-pref-item">
+            <div>
+                <strong>Cookies essentiels</strong>
+                <p>Nécessaires au fonctionnement du site.</p>
+            </div>
+            <label class="cookie-toggle">
+                <input type="checkbox" checked disabled>
+                <span class="cookie-toggle-slider"></span>
+            </label>
+        </div>
+        <div class="cookie-pref-item">
+            <div>
+                <strong>Cookies analytiques</strong>
+                <p>Nous aident à comprendre comment vous utilisez le site.</p>
+            </div>
+            <label class="cookie-toggle">
+                <input type="checkbox" id="cookieAnalytics">
+                <span class="cookie-toggle-slider"></span>
+            </label>
+        </div>
+        <div class="cookie-pref-item">
+            <div>
+                <strong>Cookies marketing</strong>
+                <p>Utilisés pour vous proposer du contenu pertinent.</p>
+            </div>
+            <label class="cookie-toggle">
+                <input type="checkbox" id="cookieMarketing">
+                <span class="cookie-toggle-slider"></span>
+            </label>
+        </div>
+        <div style="display:flex;justify-content:flex-end;padding-top:12px;">
+            <button class="cookie-save-prefs" onclick="saveCustomCookies()"><i class="fas fa-check"></i> Enregistrer mes choix</button>
+        </div>
+    </div>
+</div>
+
+<!-- Cookie Settings Shortcut -->
+<button class="cookie-reopen-btn" id="cookieReopenBtn" onclick="reopenCookieBanner()" title="Paramètres des cookies">
+    <i class="fas fa-cookie-bite"></i>
+</button>
+
 <!-- Footer -->
 <footer class="landing-footer">
     <div class="footer-container">
@@ -409,6 +462,43 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         }
     });
 });
+
+// Cookies
+const cookieReopenBtn = document.getElementById('cookieReopenBtn');
+function showReopenBtn() { if (cookieReopenBtn) cookieReopenBtn.classList.add('visible'); }
+function hideReopenBtn() { if (cookieReopenBtn) cookieReopenBtn.classList.remove('visible'); }
+if (!localStorage.getItem('landing_cookie_consent')) {
+    document.getElementById('cookieBanner').classList.add('show');
+} else {
+    showReopenBtn();
+}
+function acceptCookies() {
+    localStorage.setItem('landing_cookie_consent', 'accepted');
+    document.getElementById('cookieBanner').classList.remove('show');
+    showReopenBtn();
+}
+function refuseCookies() {
+    localStorage.setItem('landing_cookie_consent', 'refused');
+    document.getElementById('cookieBanner').classList.remove('show');
+    showReopenBtn();
+}
+function toggleCookiePrefs() {
+    const prefs = document.getElementById('cookiePrefs');
+    prefs.style.display = prefs.style.display === 'block' ? 'none' : 'block';
+}
+function saveCustomCookies() {
+    const analytics = document.getElementById('cookieAnalytics')?.checked ? '1' : '0';
+    const marketing = document.getElementById('cookieMarketing')?.checked ? '1' : '0';
+    localStorage.setItem('landing_cookie_consent', 'custom');
+    localStorage.setItem('cookie_analytics', analytics);
+    localStorage.setItem('cookie_marketing', marketing);
+    document.getElementById('cookieBanner').classList.remove('show');
+    showReopenBtn();
+}
+function reopenCookieBanner() {
+    hideReopenBtn();
+    document.getElementById('cookieBanner').classList.add('show');
+}
 </script>
 </body>
 </html>

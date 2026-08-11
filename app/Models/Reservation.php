@@ -37,10 +37,11 @@ class Reservation
 
     public function create(array $data): int
     {
+        $status = $data['status'] ?? 'pending';
         $stmt = $this->pdo->prepare(
             'INSERT INTO reservations (admin_id, customer_name, customer_phone, customer_email,
              reservation_date, reservation_time, party_size, special_requests, status)
-             VALUES (:aid, :name, :phone, :email, :date, :time, :size, :requests, "pending")'
+             VALUES (:aid, :name, :phone, :email, :date, :time, :size, :requests, :status)'
         );
         $stmt->execute([
             ':aid' => $data['admin_id'],
@@ -51,6 +52,7 @@ class Reservation
             ':time' => $data['reservation_time'],
             ':size' => $data['party_size'] ?? 2,
             ':requests' => $data['special_requests'] ?? null,
+            ':status' => $status,
         ]);
         return (int)$this->pdo->lastInsertId();
     }

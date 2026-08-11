@@ -127,7 +127,8 @@ class SettingsController extends BaseController
 
         $booleanOptions = ['site_online', 'email_notifications', 'mail_reminder', 'hide_tour_button',
             'booking_enabled', 'booking_auto_complete', 'booking_daily_limit_enabled',
-            'booking_require_phone', 'booking_require_email', 'booking_confirmation_email'];
+            'booking_require_phone', 'booking_require_email', 'booking_confirmation_email',
+            'booking_auto_confirm'];
         foreach ($booleanOptions as $key) {
             if (isset($_POST[$key])) {
                 $optModel->set($adminId, $key, $_POST[$key]);
@@ -136,7 +137,7 @@ class SettingsController extends BaseController
 
         $textOptions = ['google_place_id', 'google_api_key', 'booking_message',
             'booking_min_party', 'booking_max_party', 'booking_advance_days',
-            'booking_daily_limit', 'booking_min_hours_before'];
+            'booking_daily_limit', 'booking_min_hours_before', 'booking_time_slots'];
         foreach ($textOptions as $key) {
             if (isset($_POST[$key])) {
                 $optModel->set($adminId, $key, trim($_POST[$key]));
@@ -169,7 +170,8 @@ class SettingsController extends BaseController
         $layout = $_POST['site_layout'] ?? 'standard';
 
         $validPalettes = ['classic', 'modern', 'elegant', 'nature', 'rose', 'bistro', 'ocean', 'custom'];
-        $validLayouts = ['standard', 'bistro', 'ocean'];
+        $validLayouts = ['standard', 'bistro', 'ocean', 'elegant', 'magazine'];
+        $validFonts = ['Inter', 'Playfair Display', 'Roboto', 'Lora', 'Montserrat', 'Open Sans', 'Raleway', 'Poppins', 'Merriweather', 'Oswald', 'Nunito', 'Cormorant Garamond'];
 
         if (in_array($palette, $validPalettes)) $optModel->set($adminId, 'site_palette', $palette);
         if (in_array($layout, $validLayouts)) $optModel->set($adminId, 'site_layout', $layout);
@@ -177,8 +179,10 @@ class SettingsController extends BaseController
         if ($palette === 'custom') {
             $customPrimary = $_POST['custom_primary'] ?? '#b45309';
             $customBg = $_POST['custom_bg'] ?? '#ffffff';
+            $customFont = $_POST['custom_font'] ?? 'Inter';
             if (preg_match('/^#[0-9a-fA-F]{6}$/', $customPrimary)) $optModel->set($adminId, 'custom_primary', $customPrimary);
             if (preg_match('/^#[0-9a-fA-F]{6}$/', $customBg)) $optModel->set($adminId, 'custom_bg', $customBg);
+            if (in_array($customFont, $validFonts)) $optModel->set($adminId, 'custom_font', $customFont);
         }
 
         $this->flash('success', 'Template mis à jour.');

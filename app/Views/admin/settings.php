@@ -544,6 +544,27 @@ $adminRole = ($admin->role ?? 'ADMIN');
                     <p class="form-hint">Envoyer un email de confirmation automatique au client après réservation.</p>
                 </div>
 
+                <hr style="margin:24px 0;border:none;border-top:1px solid var(--color-border);">
+
+                <div class="form-group">
+                    <label class="toggle-switch">
+                        <input type="hidden" name="booking_auto_confirm" value="0">
+                        <input type="checkbox" name="booking_auto_confirm" value="1" <?= ($options['booking_auto_confirm'] ?? '0') === '1' ? 'checked' : '' ?>>
+                        <span class="toggle-slider"></span>
+                        <span>Confirmation automatique des réservations</span>
+                    </label>
+                    <p class="form-hint">Les réservations sont confirmées immédiatement. Le client reçoit directement l'email de confirmation (pas d'email "en attente").</p>
+                </div>
+
+                <hr style="margin:24px 0;border:none;border-top:1px solid var(--color-border);">
+
+                <div class="form-group">
+                    <label><i class="fas fa-clock"></i> Créneaux horaires disponibles</label>
+                    <p class="form-hint" style="margin-bottom:8px;">Définissez les heures auxquelles les clients peuvent réserver. Un créneau par ligne (format HH:MM).</p>
+                    <textarea name="booking_time_slots" class="form-control" rows="6" placeholder="12:00&#10;12:30&#10;13:00&#10;19:00&#10;19:30&#10;20:00&#10;20:30&#10;21:00"><?= htmlspecialchars($options['booking_time_slots'] ?? '') ?></textarea>
+                    <p class="form-hint" style="margin-top:6px;">Laissez vide pour permettre au client de choisir n'importe quelle heure.</p>
+                </div>
+
                 <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Enregistrer</button>
             </form>
         </div>

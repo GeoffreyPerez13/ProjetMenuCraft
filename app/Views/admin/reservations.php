@@ -241,7 +241,12 @@ if (!isset($floorTables)) $floorTables = [];
 <div class="card">
     <div class="card-header">
         <h2><i class="fas fa-calendar-check"></i> Réservations</h2>
-        <span class="badge badge-primary"><?= count($reservations) ?></span>
+        <div style="display:flex;align-items:center;gap:10px;">
+            <span class="badge badge-primary"><?= count($reservations) ?></span>
+            <a href="<?= APP_URL ?>?page=settings&section=online-booking" class="btn btn-secondary btn-sm" title="Paramètres de réservation">
+                <i class="fas fa-cog"></i> Paramètres
+            </a>
+        </div>
     </div>
 
     <?php if (empty($reservations)): ?>

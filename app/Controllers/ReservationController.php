@@ -118,6 +118,9 @@ class ReservationController extends BaseController
             return;
         }
 
+        $optModel = new OptionModel($this->pdo);
+        $autoConfirm = ($optModel->get($adminId, 'booking_auto_confirm', '0') === '1');
+
         $resModel = new Reservation($this->pdo);
         $resModel->create([
             'admin_id' => $adminId,
@@ -128,11 +131,12 @@ class ReservationController extends BaseController
             'reservation_time' => $time,
             'party_size' => $size,
             'special_requests' => trim($_POST['special_requests'] ?? ''),
+            'status' => $autoConfirm ? 'confirmed' : 'pending',
         ]);
 
         $rateLimiter->hit('booking');
 
-        // Notifications
+        // Notifications au restaurateur
         $notifService = new NotificationService($this->pdo);
         $notifService->notifyNewReservation($adminId, [
             'customer_name' => $name,
@@ -142,18 +146,29 @@ class ReservationController extends BaseController
             'special_requests' => $_POST['special_requests'] ?? '',
         ]);
 
-        // Confirmation au client
+        // Email au client
         if ($email) {
             $mailer = new Mailer();
-            $mailer->send($email, 'Confirmation de réservation — MenuCraft',
-                '<h2>Réservation reçue !</h2>
-                <p>Votre demande de réservation a bien été enregistrée.</p>
-                <p><strong>Date :</strong> ' . $date . ' à ' . $time . '</p>
-                <p><strong>Personnes :</strong> ' . $size . '</p>
-                <p>Vous recevrez un email de confirmation sous peu.</p>'
-            );
+            if ($autoConfirm) {
+                $mailer->send($email, 'Réservation confirmée — MenuCraft',
+                    '<h2>Votre réservation est confirmée !</h2>
+                    <p>Nous avons le plaisir de vous confirmer votre réservation.</p>
+                    <p><strong>Date :</strong> ' . $date . ' à ' . $time . '</p>
+                    <p><strong>Personnes :</strong> ' . $size . '</p>
+                    <p>À bientôt !</p>'
+                );
+            } else {
+                $mailer->send($email, 'Demande de réservation reçue — MenuCraft',
+                    '<h2>Réservation reçue !</h2>
+                    <p>Votre demande de réservation a bien été enregistrée.</p>
+                    <p><strong>Date :</strong> ' . $date . ' à ' . $time . '</p>
+                    <p><strong>Personnes :</strong> ' . $size . '</p>
+                    <p>Vous recevrez un email de confirmation sous peu.</p>'
+                );
+            }
         }
 
-        $this->json(['success' => true, 'message' => 'Réservation envoyée avec succès !']);
+        $message = $autoConfirm ? 'Réservation confirmée !' : 'Réservation envoyée avec succès !';
+        $this->json(['success' => true, 'message' => $message]);
     }
 }
