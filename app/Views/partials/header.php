@@ -33,9 +33,14 @@ $adminRole = $currentAdmin->role ?? 'ADMIN';
 <div class="admin-layout">
     <!-- Sidebar -->
     <aside class="admin-sidebar" id="adminSidebar">
-        <a href="<?= APP_URL ?>?page=dashboard" class="sidebar-logo">
-            <i class="fas fa-utensils"></i> MenuCraft
-        </a>
+        <div class="sidebar-header-mobile">
+            <a href="<?= APP_URL ?>?page=dashboard" class="sidebar-logo">
+                <i class="fas fa-utensils"></i> MenuCraft
+            </a>
+            <button class="sidebar-close-btn" onclick="closeSidebar()" title="Fermer">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
 
         <ul class="sidebar-nav">
             <li><a href="<?= APP_URL ?>?page=dashboard" class="<?= $currentPage === 'dashboard' ? 'active' : '' ?>">
@@ -63,11 +68,9 @@ $adminRole = $currentAdmin->role ?? 'ADMIN';
             <div class="nav-divider"></div>
             <div class="nav-label">Premium</div>
 
-            <li><a href="<?= APP_URL ?>?page=reservations" class="<?= $currentPage === 'reservations' ? 'active' : '' ?>">
+            <li><a href="<?= APP_URL ?>?page=reservations" class="<?= $currentPage === 'reservations' ? 'active' : '' ?>" id="navReservations">
                 <i class="fas fa-calendar-check"></i> Réservations
-                <?php if (($pendingReservationsCount ?? 0) > 0): ?>
-                    <span class="badge-count"><?= $pendingReservationsCount ?></span>
-                <?php endif; ?>
+                <span class="badge-count" id="pendingBadge" style="<?= ($pendingReservationsCount ?? 0) > 0 ? '' : 'display:none;' ?>"><?= $pendingReservationsCount ?></span>
             </a></li>
             <li><a href="<?= APP_URL ?>?page=stats" class="<?= $currentPage === 'stats' ? 'active' : '' ?>">
                 <i class="fas fa-chart-line"></i> Statistiques

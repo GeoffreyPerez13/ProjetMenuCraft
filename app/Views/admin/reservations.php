@@ -130,11 +130,41 @@ if (!isset($floorTables)) $floorTables = [];
     font-style: italic;
 }
 
+/* ─── Badge improvements ─── */
+.resa-table-wrap .badge,
+.resa-cards-wrap .badge,
+.resa-card-top .badge {
+    white-space: nowrap;
+    font-size: 0.72rem;
+    padding: 4px 10px;
+}
+
+/* ─── Table assignment span ─── */
+.resa-table-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.75rem;
+    background: var(--color-primary-bg);
+    color: var(--color-primary);
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    white-space: nowrap;
+    border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+}
+
 /* ─── Responsive ─── */
 @media (max-width: 992px) {
     .resa-stats { gap: var(--spacing-sm); }
     .resa-stat { padding: var(--spacing-md); }
     .resa-stat-value { font-size: 1.6rem; }
+
+    .resa-table-wrap .admin-table th,
+    .resa-table-wrap .admin-table td {
+        padding: 10px 8px;
+        font-size: 0.82rem;
+    }
 }
 
 @media (max-width: 768px) {
@@ -200,6 +230,20 @@ if (!isset($floorTables)) $floorTables = [];
     .resa-card-actions .btn {
         justify-content: center;
     }
+    .card-header h2 {
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 320px) {
+    .resa-stat { padding: 10px 12px; }
+    .resa-stat-value { font-size: 1.3rem; }
+    .resa-stat-label { font-size: 0.72rem; }
+    .resa-card { padding: 10px; }
+    .resa-card-client { font-size: 0.85rem; }
+    .resa-card-meta { font-size: 0.78rem; }
+    .resa-card-top .badge { font-size: 0.65rem; padding: 3px 7px; }
+    .btn-sm { font-size: 0.72rem; padding: 5px 8px; }
 }
 </style>
 
@@ -225,14 +269,14 @@ if (!isset($floorTables)) $floorTables = [];
         <input type="hidden" name="page" value="reservations">
         <select name="status" class="form-control">
             <option value="">Tous les statuts</option>
-            <?php foreach (['pending' => 'En attente', 'confirmed' => 'Confirmée', 'rejected' => 'Refusée', 'completed' => 'Terminée', 'cancelled' => 'Annulée', 'no_show' => 'No show'] as $val => $label): ?>
+            <?php foreach (['pending' => 'En attente', 'confirmed' => 'Confirmée', 'rejected' => 'Refusée', 'completed' => 'Terminée', 'cancelled' => 'Annulée', 'no_show' => 'Absent'] as $val => $label): ?>
             <option value="<?= $val ?>" <?= $filterStatus === $val ? 'selected' : '' ?>><?= $label ?></option>
             <?php endforeach; ?>
         </select>
         <input type="date" name="date" class="form-control" value="<?= htmlspecialchars($filterDate) ?>">
         <div class="resa-filter-actions">
             <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-filter"></i> Filtrer</button>
-            <a href="<?= APP_URL ?>?page=reservations" class="btn btn-secondary btn-sm"><i class="fas fa-times"></i> Reset</a>
+            <a href="<?= APP_URL ?>?page=reservations" class="btn btn-secondary btn-sm"><i class="fas fa-undo"></i> Réinitialiser</a>
         </div>
     </form>
 </div>
@@ -265,7 +309,7 @@ if (!isset($floorTables)) $floorTables = [];
         'rejected'  => ['badge' => 'badge-danger',  'label' => 'Refusée'],
         'completed' => ['badge' => 'badge-primary', 'label' => 'Terminée'],
         'cancelled' => ['badge' => 'badge-danger',  'label' => 'Annulée'],
-        'no_show'   => ['badge' => 'badge-danger',  'label' => 'No show'],
+        'no_show'   => ['badge' => 'badge-danger',  'label' => 'Absent'],
     ];
     // Table lookup map (id => label)
     $tableLabels = [];
@@ -336,7 +380,7 @@ if (!isset($floorTables)) $floorTables = [];
                             <?php elseif ($res->status === 'confirmed'): ?>
                             <div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;">
                                 <?php if (!empty($res->table_id) && isset($tableLabels[$res->table_id])): ?>
-                                <span style="font-size:0.75rem;background:var(--color-primary-bg);color:var(--color-primary);padding:3px 8px;border-radius:var(--radius-full);font-weight:600;">
+                                <span class="resa-table-badge">
                                     <i class="fas fa-chair"></i> <?= htmlspecialchars($tableLabels[$res->table_id]) ?>
                                 </span>
                                 <?php endif; ?>
@@ -350,7 +394,7 @@ if (!isset($floorTables)) $floorTables = [];
                                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
                                     <input type="hidden" name="reservation_id" value="<?= $res->id ?>">
                                     <input type="hidden" name="status" value="no_show">
-                                    <button type="submit" class="btn btn-danger btn-sm" title="No show"><i class="fas fa-user-slash"></i></button>
+                                    <button type="submit" class="btn btn-danger btn-sm" title="Absent"><i class="fas fa-user-slash"></i></button>
                                 </form>
                             </div>
                             <?php endif; ?>
@@ -438,7 +482,7 @@ if (!isset($floorTables)) $floorTables = [];
                     </form>
                     <?php elseif ($res->status === 'confirmed'): ?>
                     <?php if (!empty($res->table_id) && isset($tableLabels[$res->table_id])): ?>
-                    <span style="font-size:0.8rem;background:var(--color-primary-bg);color:var(--color-primary);padding:5px 10px;border-radius:var(--radius-full);font-weight:600;align-self:flex-start;">
+                    <span class="resa-table-badge" style="align-self:flex-start;">
                         <i class="fas fa-chair"></i> <?= htmlspecialchars($tableLabels[$res->table_id]) ?>
                     </span>
                     <?php endif; ?>
@@ -453,7 +497,7 @@ if (!isset($floorTables)) $floorTables = [];
                             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
                             <input type="hidden" name="reservation_id" value="<?= $res->id ?>">
                             <input type="hidden" name="status" value="no_show">
-                            <button type="submit" class="btn btn-danger btn-sm" style="width:100%;"><i class="fas fa-user-slash"></i> No show</button>
+                            <button type="submit" class="btn btn-danger btn-sm" style="width:100%;"><i class="fas fa-user-slash"></i> Absent</button>
                         </form>
                     </div>
                     <?php endif; ?>

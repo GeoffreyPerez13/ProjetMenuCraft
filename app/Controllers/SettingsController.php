@@ -126,7 +126,7 @@ class SettingsController extends BaseController
         $optModel = new OptionModel($this->pdo);
 
         $booleanOptions = ['site_online', 'email_notifications', 'mail_reminder', 'hide_tour_button',
-            'booking_enabled', 'booking_auto_complete', 'booking_daily_limit_enabled',
+            'hide_reservation_fab', 'booking_enabled', 'booking_auto_complete', 'booking_daily_limit_enabled',
             'booking_require_phone', 'booking_require_email', 'booking_confirmation_email',
             'booking_auto_confirm'];
         foreach ($booleanOptions as $key) {

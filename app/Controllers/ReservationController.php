@@ -171,4 +171,52 @@ class ReservationController extends BaseController
         $message = $autoConfirm ? 'Réservation confirmée !' : 'Réservation envoyée avec succès !';
         $this->json(['success' => true, 'message' => $message]);
     }
+
+    public function pendingCount(): void
+    {
+        if (empty($_SESSION['admin_logged'])) {
+            $this->json(['count' => 0]);
+            return;
+        }
+        $adminId = $this->getAdminId();
+        $stmt = $this->pdo->prepare('SELECT COUNT(*) FROM reservations WHERE admin_id = :id AND status = "pending"');
+        $stmt->execute([':id' => $adminId]);
+        $count = (int)$stmt->fetchColumn();
+        $this->json(['count' => $count]);
+    }
+
+    public function pendingList(): void
+    {
+        if (empty($_SESSION['admin_logged'])) {
+            $this->json(['reservations' => [], 'tables' => []]);
+            return;
+        }
+        $adminId = $this->getAdminId();
+
+        $stmt = $this->pdo->prepare(
+            'SELECT id, customer_name, customer_phone, customer_email, reservation_date, reservation_time, party_size, special_requests, created_at
+             FROM reservations WHERE admin_id = :id AND status = "pending" ORDER BY created_at DESC'
+        );
+        $stmt->execute([':id' => $adminId]);
+        $reservations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $floorModel = new Floor($this->pdo);
+        $floors = $floorModel->getByAdmin($adminId);
+        $tables = [];
+        $tableModel = new RestaurantTable($this->pdo);
+        foreach ($floors as $floor) {
+            $floorTables = $tableModel->getByFloor($floor->id);
+            foreach ($floorTables as $t) {
+                $tables[] = [
+                    'id' => $t->id,
+                    'table_number' => $t->table_number,
+                    'name' => $t->name ?? '',
+                    'seats' => $t->seats,
+                    'floor_name' => $floor->name,
+                ];
+            }
+        }
+
+        $this->json(['reservations' => $reservations, 'tables' => $tables]);
+    }
 }

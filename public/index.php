@@ -423,6 +423,14 @@ switch ($page) {
         $reservationCtrl->updateStatus();
         break;
 
+    case 'reservation-pending-count':
+        $reservationCtrl->pendingCount();
+        break;
+
+    case 'reservation-pending-list':
+        $reservationCtrl->pendingList();
+        break;
+
     case 'feedback':
         $feedbackCtrl->show();
         break;

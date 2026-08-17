@@ -399,6 +399,16 @@ $adminRole = ($admin->role ?? 'ADMIN');
                     <p class="form-hint">Masquer le bouton d'aide (Tour JS) sur toutes les pages de l'administration.</p>
                 </div>
 
+                <div class="form-group">
+                    <label class="toggle-switch">
+                        <input type="hidden" name="hide_reservation_fab" value="0">
+                        <input type="checkbox" name="hide_reservation_fab" value="1" <?= ($options['hide_reservation_fab'] ?? '0') === '1' ? 'checked' : '' ?>>
+                        <span class="toggle-slider"></span>
+                        <span>Masquer le bouton de réservations rapides</span>
+                    </label>
+                    <p class="form-hint">Masquer le bouton flottant de gestion rapide des réservations.</p>
+                </div>
+
                 <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Enregistrer</button>
             </form>
         </div>
