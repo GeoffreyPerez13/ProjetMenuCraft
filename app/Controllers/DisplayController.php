@@ -1,6 +1,8 @@
 <?php
 class DisplayController extends BaseController
 {
+    private const CACHE_TTL = 60; // secondes
+
     public function show(): void
     {
         $slug = $_GET['slug'] ?? '';
@@ -56,6 +58,18 @@ class DisplayController extends BaseController
         }
 
         $isPreview = $isOwner && ($siteOnline === '0' || isset($_GET['preview']));
+
+        // Cache : seulement pour les visiteurs publics (pas owner/preview/demo)
+        $useCache = !$isPreview && !$isOwner && !$isSuperAdmin && !$isDemo;
+        if ($useCache) {
+            $cached = $this->getCache($slug);
+            if ($cached !== null) {
+                // Tracking quand même
+                (new SiteVisit($this->pdo))->track($adminId, '/display/' . $slug);
+                echo $cached;
+                return;
+            }
+        }
 
         // Charger les données
         $logo = $this->pdo->prepare('SELECT * FROM logos WHERE admin_id = :aid');
@@ -117,7 +131,7 @@ class DisplayController extends BaseController
         // Dates de fermeture
         $closureDates = json_decode($options['closure_dates'] ?? '[]', true) ?: [];
 
-        $this->render('display', [
+        $viewData = [
             'pageTitle' => $admin->restaurant_name,
             'admin' => $admin,
             'restaurant' => $restaurant,
@@ -137,6 +151,49 @@ class DisplayController extends BaseController
             'googleReviewsData' => $googleReviewsData,
             'bookingEnabled' => $bookingEnabled,
             'closureDates' => $closureDates,
-        ]);
+        ];
+
+        if ($useCache) {
+            ob_start();
+            $this->render('display', $viewData);
+            $output = ob_get_flush();
+            $this->setCache($slug, $output);
+        } else {
+            $this->render('display', $viewData);
+        }
+    }
+
+    private function getCachePath(string $slug): string
+    {
+        $dir = BASE_PATH . '/storage/cache/display';
+        if (!is_dir($dir)) mkdir($dir, 0755, true);
+        return $dir . '/' . md5($slug) . '.html';
+    }
+
+    private function getCache(string $slug): ?string
+    {
+        $path = $this->getCachePath($slug);
+        if (!file_exists($path)) return null;
+        if (time() - filemtime($path) > self::CACHE_TTL) {
+            @unlink($path);
+            return null;
+        }
+        return file_get_contents($path);
+    }
+
+    private function setCache(string $slug, string $content): void
+    {
+        file_put_contents($this->getCachePath($slug), $content);
+    }
+
+    public static function clearCache(string $slug = ''): void
+    {
+        $dir = BASE_PATH . '/storage/cache/display';
+        if (!is_dir($dir)) return;
+        if ($slug) {
+            @unlink($dir . '/' . md5($slug) . '.html');
+        } else {
+            array_map('unlink', glob($dir . '/*.html') ?: []);
+        }
     }
 }

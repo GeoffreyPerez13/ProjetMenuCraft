@@ -506,6 +506,9 @@ function addMenuItemTo(containerId) {
     container.appendChild(row);
 }
 
+// CSRF token pour les requêtes AJAX
+const CSRF_TOKEN = '<?= htmlspecialchars($csrf_token) ?>';
+
 // Drag & drop catégories (réordonner les catégories)
 const catList = document.getElementById('categoriesList');
 if (catList) {
@@ -518,9 +521,11 @@ if (catList) {
                 .map(el => parseInt(el.dataset.id));
             fetch('<?= APP_URL ?>?page=reorder-categories', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: {'Content-Type': 'application/json', 'X-CSRF-Token': CSRF_TOKEN},
                 body: JSON.stringify({ids: ids})
-            });
+            }).then(r => r.json()).then(res => {
+                if (res.error) showToast(res.error, 'error');
+            }).catch(() => showToast('Erreur de connexion', 'error'));
         }
     });
 }
@@ -536,9 +541,11 @@ document.querySelectorAll('.dishes-list').forEach(list => {
                 .map(el => parseInt(el.dataset.id));
             fetch('<?= APP_URL ?>?page=reorder-dishes', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: {'Content-Type': 'application/json', 'X-CSRF-Token': CSRF_TOKEN},
                 body: JSON.stringify({ids: ids})
-            });
+            }).then(r => r.json()).then(res => {
+                if (res.error) showToast(res.error, 'error');
+            }).catch(() => showToast('Erreur de connexion', 'error'));
         }
     });
 });

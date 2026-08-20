@@ -567,6 +567,7 @@ if (!isset($floorData)) $floorData = [];
 
 <script>
 const APP = '<?= APP_URL ?>';
+const CSRF_TOKEN = '<?= htmlspecialchars($csrf_token) ?>';
 let currentFloorId = <?= !empty($floors) ? $floors[0]->id : 0 ?>;
 let floorData = <?= json_encode(array_map(function($d) {
     return [
@@ -617,7 +618,7 @@ function createRoom() {
     if (!name || !name.trim()) return;
     fetch(APP + '?page=floor-plan-create-room', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF_TOKEN },
         body: JSON.stringify({ name: name.trim() })
     })
     .then(r => r.json())
@@ -637,8 +638,12 @@ function createRoom() {
                 </span>`;
             tabs.insertBefore(tab, addBtn);
             selectFloor(res.id);
+            showToast('Salle créée');
+        } else {
+            showToast(res.error || 'Erreur', 'error');
         }
-    });
+    })
+    .catch(() => showToast('Erreur de connexion', 'error'));
 }
 
 function renameRoom(e, id) {
@@ -649,13 +654,19 @@ function renameRoom(e, id) {
     if (!name || !name.trim() || name.trim() === current) return;
     fetch(APP + '?page=floor-plan-rename-room', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF_TOKEN },
         body: JSON.stringify({ id, name: name.trim() })
     })
     .then(r => r.json())
     .then(res => {
-        if (res.success) tab.querySelector('.fp-room-name').textContent = name.trim();
-    });
+        if (res.success) {
+            tab.querySelector('.fp-room-name').textContent = name.trim();
+            showToast('Salle renommée');
+        } else {
+            showToast(res.error || 'Erreur', 'error');
+        }
+    })
+    .catch(() => showToast('Erreur de connexion', 'error'));
 }
 
 function deleteRoom(e, id) {
@@ -663,7 +674,7 @@ function deleteRoom(e, id) {
     if (!confirm('Supprimer cette salle et toutes ses tables ?')) return;
     fetch(APP + '?page=floor-plan-delete-room', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF_TOKEN },
         body: JSON.stringify({ id })
     })
     .then(r => r.json())
@@ -674,10 +685,12 @@ function deleteRoom(e, id) {
             if (tab) tab.remove();
             const first = document.querySelector('.fp-room-tab');
             if (first) selectFloor(parseInt(first.dataset.floorId));
+            showToast('Salle supprimée');
         } else {
-            alert(res.error || 'Erreur');
+            showToast(res.error || 'Erreur', 'error');
         }
-    });
+    })
+    .catch(() => showToast('Erreur de connexion', 'error'));
 }
 
 // ─── State ───
@@ -1052,7 +1065,7 @@ function saveFloorPlan() {
 
     fetch(APP + '?page=floor-plan-save', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF_TOKEN },
         body: JSON.stringify({
             floor_id: currentFloorId,
             tables: tables,
@@ -1061,13 +1074,20 @@ function saveFloorPlan() {
     })
     .then(r => r.json())
     .then(res => {
-        if (res.success) isDirty = false;
-        btn.innerHTML = res.success ? '<i class="fas fa-check"></i> Sauvegardé !' : '<i class="fas fa-times"></i> Erreur';
+        if (res.success) {
+            isDirty = false;
+            btn.innerHTML = '<i class="fas fa-check"></i> Sauvegardé !';
+            showToast('Plan sauvegardé');
+        } else {
+            btn.innerHTML = '<i class="fas fa-times"></i> Erreur';
+            showToast(res.error || 'Erreur lors de la sauvegarde', 'error');
+        }
         setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; }, 1500);
     })
     .catch(() => {
         btn.innerHTML = orig;
         btn.disabled = false;
+        showToast('Erreur de connexion', 'error');
     });
 }
 

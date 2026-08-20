@@ -182,7 +182,7 @@ class BaseController
     }
 
     // ─── Upload sécurisé ──────────────────────────────────
-    protected function handleUpload(array $file, string $subfolder): ?string
+    protected function handleUpload(array $file, string $subfolder, int $maxWidth = 1200): ?string
     {
         if (empty($file['tmp_name']) || $file['error'] !== UPLOAD_ERR_OK) return null;
         if ($file['size'] > 5 * 1024 * 1024) return null;
@@ -204,8 +204,56 @@ class BaseController
 
         $ext = $extMap[$realType];
         $filename = $subfolder . '/' . uniqid() . '_' . time() . '.' . $ext;
-        move_uploaded_file($file['tmp_name'], BASE_PATH . '/public/uploads/' . $filename);
+        $destPath = BASE_PATH . '/public/uploads/' . $filename;
+        move_uploaded_file($file['tmp_name'], $destPath);
+
+        // Resize si nécessaire (GD)
+        if ($maxWidth > 0 && extension_loaded('gd')) {
+            $this->resizeImage($destPath, $realType, $maxWidth);
+        }
+
         return $filename;
+    }
+
+    private function resizeImage(string $path, string $mimeType, int $maxWidth): void
+    {
+        $info = @getimagesize($path);
+        if (!$info || $info[0] <= $maxWidth) return;
+
+        [$origW, $origH] = $info;
+        $ratio = $maxWidth / $origW;
+        $newW = $maxWidth;
+        $newH = (int)round($origH * $ratio);
+
+        $src = match ($mimeType) {
+            'image/jpeg' => @imagecreatefromjpeg($path),
+            'image/png'  => @imagecreatefrompng($path),
+            'image/webp' => @imagecreatefromwebp($path),
+            'image/gif'  => @imagecreatefromgif($path),
+            default      => null,
+        };
+        if (!$src) return;
+
+        $dst = imagecreatetruecolor($newW, $newH);
+
+        // Préserver la transparence pour PNG/WebP/GIF
+        if (in_array($mimeType, ['image/png', 'image/webp', 'image/gif'])) {
+            imagealphablending($dst, false);
+            imagesavealpha($dst, true);
+        }
+
+        imagecopyresampled($dst, $src, 0, 0, 0, 0, $newW, $newH, $origW, $origH);
+
+        match ($mimeType) {
+            'image/jpeg' => imagejpeg($dst, $path, 82),
+            'image/png'  => imagepng($dst, $path, 8),
+            'image/webp' => imagewebp($dst, $path, 82),
+            'image/gif'  => imagegif($dst, $path),
+            default      => null,
+        };
+
+        imagedestroy($src);
+        imagedestroy($dst);
     }
 
     // ─── JSON Response ──────────────────────────────────

@@ -1,8 +1,16 @@
 RewriteEngine On
 RewriteBase /ProjetMenuCraft/public/
 
-# Ne pas réécrire les fichiers existants (CSS, JS, images)
-RewriteCond %{REQUEST_FILENAME} !-f
+# Sécurité : pas de listing de répertoire
+Options -Indexes
 
-# Tout rediriger vers index.php
+# Ne pas réécrire les fichiers/dossiers existants (CSS, JS, images, uploads)
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# URLs propres pour restaurants : /mon-restaurant → ?page=display&slug=mon-restaurant
+RewriteRule ^([a-z0-9][a-z0-9-]*)$ index.php?page=display&slug=$1 [QSA,L]
+
+# Tout le reste vers index.php
 RewriteRule ^(.*)$ index.php [QSA,L]
