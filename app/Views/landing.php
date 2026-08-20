@@ -419,7 +419,31 @@
     </div>
 </footer>
 
+<!-- Scroll navigation arrows -->
+<div class="scroll-arrows">
+    <button class="scroll-arrow scroll-arrow-up" id="scrollUpBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Haut de page">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+    <button class="scroll-arrow scroll-arrow-down" id="scrollDownBtn" onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})" title="Bas de page">
+        <i class="fas fa-chevron-down"></i>
+    </button>
+</div>
+
 <script>
+// Scroll arrows visibility
+(function() {
+    const upBtn = document.getElementById('scrollUpBtn');
+    const downBtn = document.getElementById('scrollDownBtn');
+    function updateArrows() {
+        const scrollY = window.scrollY;
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        upBtn.classList.toggle('visible', scrollY > 200);
+        downBtn.classList.toggle('visible', scrollY < maxScroll - 200);
+    }
+    updateArrows();
+    window.addEventListener('scroll', updateArrows, {passive: true});
+})();
+
 // Dark mode toggle
 function toggleDarkMode() {
     document.documentElement.classList.toggle('dark-mode');

@@ -60,6 +60,12 @@ class CardController extends BaseController
         }
 
         if ($id > 0) {
+            $cat = $categoryModel->findById($id);
+            if (!$cat || $cat->admin_id !== $adminId) {
+                $this->flash('error', 'Catégorie introuvable.');
+                $this->redirect('edit-card');
+                return;
+            }
             $data = ['name' => $name, 'description' => $description];
             if ($image) $data['image'] = $image;
             $categoryModel->update($id, $data);
@@ -114,8 +120,17 @@ class CardController extends BaseController
     {
         $this->requireAuth();
         $this->verifyCsrfToken();
+        $adminId = $this->getAdminId();
 
         $categoryId = (int)($_POST['category_id'] ?? 0);
+        if ($categoryId > 0) {
+            $cat = (new Category($this->pdo))->findById($categoryId);
+            if (!$cat || $cat->admin_id !== $adminId) {
+                $this->flash('error', 'Catégorie introuvable.');
+                $this->redirect('edit-card');
+                return;
+            }
+        }
         $lines = array_filter(array_map('trim', explode("\n", $_POST['dishes'] ?? '')));
 
         if (empty($lines) || $categoryId <= 0) {
@@ -153,8 +168,16 @@ class CardController extends BaseController
     {
         $this->requireAuth();
         $this->verifyCsrfToken();
+        $adminId = $this->getAdminId();
         $id = (int)($_POST['category_id'] ?? 0);
-        (new Category($this->pdo))->delete($id);
+        $categoryModel = new Category($this->pdo);
+        $cat = $categoryModel->findById($id);
+        if (!$cat || $cat->admin_id !== $adminId) {
+            $this->flash('error', 'Catégorie introuvable.');
+            $this->redirect('edit-card');
+            return;
+        }
+        $categoryModel->delete($id);
         $this->flash('success', 'Catégorie supprimée.');
         $this->redirect('edit-card');
     }
@@ -163,8 +186,10 @@ class CardController extends BaseController
     {
         $this->requireAuth();
         $this->verifyCsrfToken();
+        $adminId = $this->getAdminId();
 
         $dishModel = new Dish($this->pdo);
+        $categoryModel = new Category($this->pdo);
         $id = (int)($_POST['dish_id'] ?? 0);
         $categoryId = (int)($_POST['category_id'] ?? 0);
         $name = trim($_POST['name'] ?? '');
@@ -185,6 +210,18 @@ class CardController extends BaseController
         }
 
         if ($id > 0) {
+            $dish = $dishModel->findById($id);
+            if (!$dish) {
+                $this->flash('error', 'Plat introuvable.');
+                $this->redirect('edit-card');
+                return;
+            }
+            $cat = $categoryModel->findById($dish->category_id);
+            if (!$cat || $cat->admin_id !== $adminId) {
+                $this->flash('error', 'Accès non autorisé.');
+                $this->redirect('edit-card');
+                return;
+            }
             $data = ['name' => $name, 'description' => $description, 'price' => $price, 'is_active' => $isActive];
             if ($image) $data['image'] = $image;
             $dishModel->update($id, $data);
@@ -211,7 +248,19 @@ class CardController extends BaseController
     {
         $this->requireAuth();
         $this->verifyCsrfToken();
-        (new Dish($this->pdo))->delete((int)($_POST['dish_id'] ?? 0));
+        $adminId = $this->getAdminId();
+        $dishModel = new Dish($this->pdo);
+        $id = (int)($_POST['dish_id'] ?? 0);
+        $dish = $dishModel->findById($id);
+        if ($dish) {
+            $cat = (new Category($this->pdo))->findById($dish->category_id);
+            if (!$cat || $cat->admin_id !== $adminId) {
+                $this->flash('error', 'Accès non autorisé.');
+                $this->redirect('edit-card');
+                return;
+            }
+        }
+        $dishModel->delete($id);
         $this->flash('success', 'Plat supprimé.');
         $this->redirect('edit-card');
     }
@@ -219,9 +268,19 @@ class CardController extends BaseController
     public function reorderCategories(): void
     {
         $this->requireAuth();
+        $this->verifyCsrfAjax();
+        $adminId = $this->getAdminId();
         $ids = json_decode(file_get_contents('php://input'), true)['ids'] ?? [];
         if (!empty($ids)) {
-            (new Category($this->pdo))->reorder($ids);
+            $categoryModel = new Category($this->pdo);
+            foreach ($ids as $id) {
+                $cat = $categoryModel->findById((int)$id);
+                if (!$cat || $cat->admin_id !== $adminId) {
+                    $this->json(['error' => 'Accès non autorisé'], 403);
+                    return;
+                }
+            }
+            $categoryModel->reorder($ids);
         }
         $this->json(['success' => true]);
     }
@@ -229,6 +288,7 @@ class CardController extends BaseController
     public function reorderDishes(): void
     {
         $this->requireAuth();
+        $this->verifyCsrfAjax();
         $ids = json_decode(file_get_contents('php://input'), true)['ids'] ?? [];
         if (!empty($ids)) {
             (new Dish($this->pdo))->reorder($ids);
@@ -256,10 +316,16 @@ class CardController extends BaseController
     {
         $this->requireAuth();
         $this->verifyCsrfToken();
+        $adminId = $this->getAdminId();
         $id = (int)($_POST['image_id'] ?? 0);
         $cardImageModel = new CardImage($this->pdo);
         $image = $cardImageModel->findById($id);
         if ($image) {
+            if ($image->admin_id !== $adminId) {
+                $this->flash('error', 'Accès non autorisé.');
+                $this->redirect('edit-card');
+                return;
+            }
             $filePath = BASE_PATH . '/public/uploads/' . $image->filename;
             if (file_exists($filePath)) unlink($filePath);
             $cardImageModel->delete($id);
@@ -317,6 +383,12 @@ class CardController extends BaseController
         $menuModel = new DailyMenu($this->pdo);
 
         if ($id > 0) {
+            $menu = $menuModel->findById($id);
+            if (!$menu || $menu->admin_id !== $adminId) {
+                $this->flash('error', 'Menu introuvable.');
+                $this->redirect('edit-card');
+                return;
+            }
             $menuModel->update($id, [
                 'title' => $title, 'description' => $description,
                 'price' => $price, 'items' => json_encode($items),
@@ -338,7 +410,16 @@ class CardController extends BaseController
     {
         $this->requireAuth();
         $this->verifyCsrfToken();
-        (new DailyMenu($this->pdo))->delete((int)($_POST['menu_id'] ?? 0));
+        $adminId = $this->getAdminId();
+        $menuModel = new DailyMenu($this->pdo);
+        $id = (int)($_POST['menu_id'] ?? 0);
+        $menu = $menuModel->findById($id);
+        if (!$menu || $menu->admin_id !== $adminId) {
+            $this->flash('error', 'Menu introuvable.');
+            $this->redirect('edit-card');
+            return;
+        }
+        $menuModel->delete($id);
         $this->flash('success', 'Menu supprimé.');
         $this->redirect('edit-card');
     }
@@ -346,13 +427,23 @@ class CardController extends BaseController
     public function toggleDailyMenu(): void
     {
         $this->requireAuth();
-        (new DailyMenu($this->pdo))->toggle((int)($_POST['menu_id'] ?? $_GET['id'] ?? 0));
+        $this->verifyCsrfAjax();
+        $adminId = $this->getAdminId();
+        $menuModel = new DailyMenu($this->pdo);
+        $id = (int)($_POST['menu_id'] ?? $_GET['id'] ?? 0);
+        $menu = $menuModel->findById($id);
+        if (!$menu || $menu->admin_id !== $adminId) {
+            $this->json(['error' => 'Accès non autorisé'], 403);
+            return;
+        }
+        $menuModel->toggle($id);
         $this->json(['success' => true]);
     }
 
     public function reorderDailyMenus(): void
     {
         $this->requireAuth();
+        $this->verifyCsrfAjax();
         $ids = json_decode(file_get_contents('php://input'), true)['ids'] ?? [];
         if (!empty($ids)) {
             (new DailyMenu($this->pdo))->reorder($ids);
@@ -360,18 +451,4 @@ class CardController extends BaseController
         $this->json(['success' => true]);
     }
 
-    private function handleUpload(array $file, string $subfolder): ?string
-    {
-        $allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-        if (!in_array($file['type'], $allowedTypes)) return null;
-        if ($file['size'] > 5 * 1024 * 1024) return null;
-
-        $uploadDir = BASE_PATH . '/public/uploads/' . $subfolder . '/';
-        if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
-
-        $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
-        $filename = $subfolder . '/' . uniqid() . '_' . time() . '.' . $ext;
-        move_uploaded_file($file['tmp_name'], BASE_PATH . '/public/uploads/' . $filename);
-        return $filename;
-    }
 }

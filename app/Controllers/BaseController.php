@@ -7,12 +7,12 @@ class BaseController
 {
     protected PDO $pdo;
     protected int $pendingReservationsCount = 0;
+    private ?object $currentAdminCache = null;
 
     public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
         $this->setSecurityHeaders();
-        $this->loadPendingReservations();
     }
 
     // ─── CSRF ───────────────────────────────────────────
@@ -35,6 +35,14 @@ class BaseController
         }
     }
 
+    protected function verifyCsrfAjax(): void
+    {
+        $token = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+        if (!hash_equals($_SESSION['csrf_token'] ?? '', $token)) {
+            $this->json(['error' => 'Token de sécurité invalide.'], 403);
+        }
+    }
+
     // ─── Flash Messages ─────────────────────────────────
     protected function flash(string $type, string $message): void
     {
@@ -53,9 +61,20 @@ class BaseController
     {
         $data['csrf_token'] = $this->getCsrfToken();
         $data['flash'] = $this->getFlash();
+        $this->loadPendingReservations();
         $data['pendingReservationsCount'] = $this->pendingReservationsCount;
         $data['isDemo'] = $_SESSION['demo_mode'] ?? false;
         $data['currentAdmin'] = $this->getCurrentAdmin();
+        $data['pdo'] = $this->pdo;
+
+        // Load active announcements for the header banner
+        if (!isset($data['activeAnnouncements'])) {
+            try {
+                $data['activeAnnouncements'] = $this->pdo->query("SELECT * FROM announcements WHERE is_active = 1 ORDER BY created_at DESC")->fetchAll();
+            } catch (PDOException $e) {
+                $data['activeAnnouncements'] = [];
+            }
+        }
 
         // Load hide_tour_button option for footer
         if (!isset($data['_hideTourButton'])) {
@@ -128,9 +147,11 @@ class BaseController
     protected function getCurrentAdmin(): ?object
     {
         if (empty($_SESSION['admin_id'])) return null;
+        if ($this->currentAdminCache !== null) return $this->currentAdminCache;
         $stmt = $this->pdo->prepare('SELECT * FROM admins WHERE id = :id LIMIT 1');
         $stmt->execute([':id' => $_SESSION['admin_id']]);
-        return $stmt->fetch() ?: null;
+        $this->currentAdminCache = $stmt->fetch() ?: null;
+        return $this->currentAdminCache;
     }
 
     protected function getAdminId(): int
@@ -158,6 +179,33 @@ class BaseController
                 $this->pendingReservationsCount = 0;
             }
         }
+    }
+
+    // ─── Upload sécurisé ──────────────────────────────────
+    protected function handleUpload(array $file, string $subfolder): ?string
+    {
+        if (empty($file['tmp_name']) || $file['error'] !== UPLOAD_ERR_OK) return null;
+        if ($file['size'] > 5 * 1024 * 1024) return null;
+
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $realType = $finfo->file($file['tmp_name']);
+
+        $extMap = [
+            'image/jpeg' => 'jpg',
+            'image/png'  => 'png',
+            'image/webp' => 'webp',
+            'image/gif'  => 'gif',
+        ];
+
+        if (!isset($extMap[$realType])) return null;
+
+        $dir = BASE_PATH . '/public/uploads/' . $subfolder . '/';
+        if (!is_dir($dir)) mkdir($dir, 0755, true);
+
+        $ext = $extMap[$realType];
+        $filename = $subfolder . '/' . uniqid() . '_' . time() . '.' . $ext;
+        move_uploaded_file($file['tmp_name'], BASE_PATH . '/public/uploads/' . $filename);
+        return $filename;
     }
 
     // ─── JSON Response ──────────────────────────────────

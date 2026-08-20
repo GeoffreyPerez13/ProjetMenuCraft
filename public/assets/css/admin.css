@@ -297,6 +297,9 @@ img { max-width: 100%; height: auto; }
 .btn-success { background: var(--color-success); color: #fff; }
 .btn-success:hover { background: #15803d; }
 
+.btn-warning { background: #f59e0b; color: #fff; }
+.btn-warning:hover { background: #d97706; }
+
 .btn-outline {
     background: transparent;
     border: 1px solid var(--color-primary);
@@ -346,6 +349,23 @@ img { max-width: 100%; height: auto; }
 
 textarea.form-control { min-height: 120px; resize: vertical; }
 select.form-control { appearance: auto; }
+
+.form-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-family);
+    font-size: 0.9rem;
+    color: var(--color-text);
+    background: var(--color-bg);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+.form-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-bg);
+}
 
 .form-hint {
     font-size: 0.78rem;
@@ -464,6 +484,12 @@ html.dark-mode .toggle-switch:hover .toggle-slider {
     border: 1px solid rgba(245, 158, 11, 0.2);
 }
 
+.flash-message.info {
+    background: rgba(59, 130, 246, 0.08);
+    color: #1d4ed8;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
 @keyframes slideDown {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
@@ -483,6 +509,7 @@ html.dark-mode .toggle-switch:hover .toggle-slider {
 .badge-success { background: var(--color-success-bg); color: var(--color-success); }
 .badge-danger { background: var(--color-error-bg); color: var(--color-error); }
 .badge-warning { background: var(--color-warning-bg); color: #92400e; }
+.badge-info { background: rgba(59,130,246,0.1); color: #2563eb; }
 .badge-count {
     background: var(--color-error);
     color: #fff;
@@ -860,6 +887,272 @@ table.admin-table tr:hover td { background: var(--color-bg-warm); }
 
     .category-card .category-header .btn i,
     .dish-item .btn i { display: inline-block !important; }
+
+    .sa-actions .btn i,
+    .sa-client-card-actions .btn i,
+    .sa-announce-actions .btn i,
+    .sa-announce-icon i,
+    .sa-type-selector label i,
+    .sa-filter-bar i,
+    .sa-modal .btn i { display: inline-block !important; }
+}
+
+/* ─── Super Admin: Filter Bar ────────────────────────── */
+.sa-filter-bar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: stretch;
+    padding: 16px;
+    background: var(--color-bg-alt);
+    border-radius: var(--radius-md);
+    margin-bottom: 20px;
+    border: 1px solid var(--color-border-light);
+}
+.sa-filter-bar .filter-field {
+    flex: 1;
+    min-width: 160px;
+    position: relative;
+}
+.sa-filter-bar .filter-field i.filter-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+    pointer-events: none;
+}
+.sa-filter-bar .filter-field input,
+.sa-filter-bar .filter-field select {
+    width: 100%;
+    padding: 10px 12px 10px 36px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-family);
+    font-size: 0.85rem;
+    color: var(--color-text);
+    background: var(--color-bg);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+.sa-filter-bar .filter-field input:focus,
+.sa-filter-bar .filter-field select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-bg);
+}
+.sa-filter-bar .filter-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+/* ─── Super Admin: Client Cards (mobile) ─────────────── */
+.sa-client-cards { display: none; }
+
+.sa-client-card {
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    background: var(--color-bg);
+    transition: box-shadow var(--transition-fast);
+}
+.sa-client-card:hover { box-shadow: var(--shadow-md); }
+.sa-client-card.is-suspended { opacity: 0.65; border-left: 3px solid var(--color-error); }
+.sa-client-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+.sa-client-card-header h4 { margin: 0; font-size: 0.95rem; }
+.sa-client-card-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 16px;
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    margin-bottom: 12px;
+}
+.sa-client-card-meta span { display: flex; align-items: center; gap: 6px; }
+.sa-client-card-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding-top: 10px;
+    border-top: 1px solid var(--color-border-light);
+}
+
+/* ─── Super Admin: Actions Toolbar ───────────────────── */
+.sa-actions {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+.sa-actions .btn-sm {
+    padding: 5px 10px;
+    font-size: 0.78rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+}
+.sa-actions .btn-sm i { margin: 0; }
+
+/* ─── Super Admin: Announcement Form ─────────────────── */
+.sa-announce-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.sa-announce-form textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-family: var(--font-family);
+    font-size: 0.9rem;
+    color: var(--color-text);
+    background: var(--color-bg);
+    resize: vertical;
+    min-height: 80px;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+.sa-announce-form textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-bg);
+}
+.sa-announce-form-footer {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.sa-type-selector {
+    display: flex;
+    gap: 6px;
+}
+.sa-type-selector input[type="radio"] { display: none; }
+.sa-type-selector label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    background: var(--color-bg);
+    color: var(--color-text-muted);
+}
+.sa-type-selector label:hover { border-color: var(--color-text-muted); }
+.sa-type-selector input[value="info"]:checked + label {
+    background: rgba(59,130,246,0.1);
+    border-color: #3b82f6;
+    color: #2563eb;
+}
+.sa-type-selector input[value="warning"]:checked + label {
+    background: rgba(245,158,11,0.1);
+    border-color: #f59e0b;
+    color: #b45309;
+}
+.sa-type-selector input[value="danger"]:checked + label {
+    background: rgba(220,38,38,0.1);
+    border-color: #dc2626;
+    color: #dc2626;
+}
+
+/* ─── Super Admin: Announcement Card ─────────────────── */
+.sa-announce-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 18px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border-light);
+    transition: box-shadow var(--transition-fast);
+}
+.sa-announce-card:hover { box-shadow: var(--shadow-sm); }
+.sa-announce-card.type-info { border-left: 4px solid #3b82f6; background: rgba(59,130,246,0.04); }
+.sa-announce-card.type-warning { border-left: 4px solid #f59e0b; background: rgba(245,158,11,0.04); }
+.sa-announce-card.type-danger { border-left: 4px solid #dc2626; background: rgba(220,38,38,0.04); }
+.sa-announce-card.is-inactive { opacity: 0.5; }
+.sa-announce-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.9rem;
+}
+.type-info .sa-announce-icon { background: rgba(59,130,246,0.12); color: #3b82f6; }
+.type-warning .sa-announce-icon { background: rgba(245,158,11,0.12); color: #f59e0b; }
+.type-danger .sa-announce-icon { background: rgba(220,38,38,0.12); color: #dc2626; }
+.sa-announce-body { flex: 1; min-width: 0; }
+.sa-announce-body p { margin: 0 0 8px; font-size: 0.9rem; line-height: 1.5; word-break: break-word; }
+.sa-announce-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+}
+.sa-announce-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+    align-self: center;
+}
+
+/* ─── Super Admin: Modal ─────────────────────────────── */
+.sa-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1100;
+    background: rgba(0,0,0,0.5);
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    backdrop-filter: blur(4px);
+}
+.sa-modal {
+    background: var(--color-bg);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    max-width: 460px;
+    width: 100%;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.25);
+    animation: slideDown 0.2s ease;
+}
+.sa-modal h3 { margin: 0 0 6px; font-size: 1.1rem; }
+.sa-modal .sa-modal-desc { font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 18px; }
+.sa-modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; }
+
+/* ─── Super Admin Responsive ─────────────────────────── */
+@media (max-width: 900px) {
+    .sa-desktop-table { display: none; }
+    .sa-client-cards { display: flex; flex-direction: column; gap: 12px; }
+    .sa-announce-card { flex-direction: column; gap: 10px; }
+    .sa-announce-actions { align-self: flex-end; }
+}
+
+@media (max-width: 600px) {
+    .sa-filter-bar { flex-direction: column; gap: 8px; }
+    .sa-filter-bar .filter-field { min-width: 100%; }
+    .sa-filter-bar .filter-actions { width: 100%; }
+    .sa-filter-bar .filter-actions .btn { flex: 1; justify-content: center; }
+    .sa-type-selector { flex-wrap: wrap; }
+    .sa-type-selector label { padding: 6px 10px; font-size: 0.78rem; }
+    .sa-client-card-meta { grid-template-columns: 1fr; }
+    .sa-client-card-actions { justify-content: flex-start; }
+    .sa-announce-form-footer { flex-direction: column; align-items: stretch; }
+    .sa-announce-form-footer .btn { justify-content: center; }
 }
 
 /* ─── Sidebar Overlay (mobile) ───────────────────────── */

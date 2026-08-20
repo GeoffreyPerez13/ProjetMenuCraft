@@ -220,6 +220,18 @@ function escHtml(str) {
     setInterval(checkPending, 15000);
 })();
 </script>
+<script>
+// Scroll sidebar to active nav item
+(function() {
+    const sidebar = document.getElementById('adminSidebar');
+    const active = sidebar && sidebar.querySelector('.sidebar-nav a.active');
+    if (active && sidebar) {
+        setTimeout(function() {
+            active.scrollIntoView({ block: 'center', behavior: 'instant' });
+        }, 50);
+    }
+})();
+</script>
 <script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
 <script src="<?= APP_URL ?>/assets/js/tour.js"></script>
 </body>

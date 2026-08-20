@@ -60,10 +60,36 @@ class StripeController extends BaseController
             return;
         }
 
-        // Activer l'abonnement
+        // Vérifier le paiement auprès de Stripe
+        $session = $this->stripeRequest('checkout/sessions/' . urlencode($sessionId), [], 'GET');
+
+        if (empty($session['id']) || ($session['payment_status'] ?? '') !== 'paid') {
+            $this->flash('error', 'Le paiement n\'a pas pu être vérifié. Contactez le support si le problème persiste.');
+            $this->redirect('settings', ['section' => 'premium']);
+            return;
+        }
+
+        // Vérifier que la session appartient bien à cet admin
+        $metaAdminId = (int)($session['metadata']['admin_id'] ?? 0);
+        if ($metaAdminId !== $adminId) {
+            $this->flash('error', 'Session de paiement invalide.');
+            $this->redirect('dashboard');
+            return;
+        }
+
+        // Vérifier que cette session n'a pas déjà été utilisée
         $subModel = new ClientSubscription($this->pdo);
+        $existing = $subModel->findByAdmin($adminId);
+        if ($existing && $existing->stripe_session_id === $sessionId) {
+            $this->flash('info', 'Votre abonnement est déjà actif.');
+            $this->redirect('dashboard');
+            return;
+        }
+
+        // Activer l'abonnement
+        $planType = $session['metadata']['type'] ?? 'premium';
         $subModel->activate($adminId, [
-            'plan_type' => 'premium',
+            'plan_type' => $planType,
             'price_per_month' => 11.99,
             'stripe_session_id' => $sessionId,
         ]);
@@ -79,8 +105,66 @@ class StripeController extends BaseController
     {
         $payload = file_get_contents('php://input');
         $sigHeader = $_SERVER['HTTP_STRIPE_SIGNATURE'] ?? '';
+
+        // Vérifier la signature Stripe
+        if (empty($sigHeader) || !$this->verifyWebhookSignature($payload, $sigHeader)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Signature invalide']);
+            return;
+        }
+
+        $event = json_decode($payload, true);
+        if (!$event || empty($event['type'])) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Payload invalide']);
+            return;
+        }
+
+        // Traiter les événements pertinents
+        switch ($event['type']) {
+            case 'checkout.session.completed':
+                $session = $event['data']['object'] ?? [];
+                $adminId = (int)($session['metadata']['admin_id'] ?? 0);
+                if ($adminId && ($session['payment_status'] ?? '') === 'paid') {
+                    $subModel = new ClientSubscription($this->pdo);
+                    $subModel->activate($adminId, [
+                        'plan_type' => $session['metadata']['type'] ?? 'premium',
+                        'price_per_month' => 11.99,
+                        'stripe_session_id' => $session['id'] ?? '',
+                    ]);
+                    (new PremiumFeature($this->pdo))->activateAll($adminId);
+                }
+                break;
+        }
+
         http_response_code(200);
         echo json_encode(['received' => true]);
+    }
+
+    private function verifyWebhookSignature(string $payload, string $sigHeader): bool
+    {
+        $secret = defined('STRIPE_WEBHOOK_SECRET') ? STRIPE_WEBHOOK_SECRET : '';
+        if (empty($secret) || str_starts_with($secret, 'whsec_...')) {
+            return false;
+        }
+
+        $parts = [];
+        foreach (explode(',', $sigHeader) as $part) {
+            [$key, $value] = explode('=', trim($part), 2);
+            $parts[$key] = $value;
+        }
+
+        $timestamp = $parts['t'] ?? '';
+        $signature = $parts['v1'] ?? '';
+        if (empty($timestamp) || empty($signature)) return false;
+
+        // Tolérance de 5 minutes
+        if (abs(time() - (int)$timestamp) > 300) return false;
+
+        $signedPayload = $timestamp . '.' . $payload;
+        $expected = hash_hmac('sha256', $signedPayload, $secret);
+
+        return hash_equals($expected, $signature);
     }
 
     public function cancelSubscription(): void
@@ -133,16 +217,22 @@ class StripeController extends BaseController
         return ['items' => $items, 'total' => array_sum(array_column($items, 'price'))];
     }
 
-    private function stripeRequest(string $endpoint, array $data): array
+    private function stripeRequest(string $endpoint, array $data = [], string $method = 'POST'): array
     {
-        $ch = curl_init('https://api.stripe.com/v1/' . $endpoint);
-        curl_setopt_array($ch, [
+        $url = 'https://api.stripe.com/v1/' . $endpoint;
+        $ch = curl_init($url);
+        $opts = [
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => http_build_query($data),
             CURLOPT_USERPWD => STRIPE_SECRET_KEY . ':',
             CURLOPT_HTTPHEADER => ['Content-Type: application/x-www-form-urlencoded'],
-        ]);
+        ];
+        if ($method === 'POST') {
+            $opts[CURLOPT_POST] = true;
+            $opts[CURLOPT_POSTFIELDS] = http_build_query($data);
+        } else {
+            $opts[CURLOPT_HTTPGET] = true;
+        }
+        curl_setopt_array($ch, $opts);
         $response = curl_exec($ch);
         curl_close($ch);
         return json_decode($response, true) ?: [];

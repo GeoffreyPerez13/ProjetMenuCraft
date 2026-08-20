@@ -119,6 +119,14 @@ class ReservationController extends BaseController
         }
 
         $optModel = new OptionModel($this->pdo);
+
+        // Block closure dates
+        $closureDates = json_decode($optModel->get($adminId, 'closure_dates', '[]'), true) ?: [];
+        if (in_array($date, $closureDates)) {
+            $this->json(['error' => 'Le restaurant est fermé à cette date. Veuillez choisir une autre date.'], 400);
+            return;
+        }
+
         $autoConfirm = ($optModel->get($adminId, 'booking_auto_confirm', '0') === '1');
 
         $resModel = new Reservation($this->pdo);

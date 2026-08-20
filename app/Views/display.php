@@ -59,6 +59,8 @@ if (!isset($bookingEnabled)) $bookingEnabled = false;
 </div>
 <?php endif; ?>
 
+<?php $todayClosed = in_array(date('Y-m-d'), $closureDates ?? []); ?>
+
 <!-- Header -->
 <header class="display-header">
     <div class="header-inner">
@@ -91,6 +93,28 @@ if (!isset($bookingEnabled)) $bookingEnabled = false;
         </div>
     </div>
 </header>
+
+<?php if ($todayClosed): ?>
+<div class="closure-bar" id="closureBar">
+    <div class="closure-bar-inner">
+        <i class="fas fa-door-closed"></i>
+        <span>Le restaurant est fermé aujourd'hui.</span>
+    </div>
+    <button class="closure-bar-close" onclick="document.getElementById('closureBar').style.display='none'" title="Fermer">
+        <i class="fas fa-times"></i>
+    </button>
+</div>
+<?php endif; ?>
+
+<!-- Scroll navigation arrows -->
+<div class="scroll-arrows">
+    <button class="scroll-arrow scroll-arrow-up" id="scrollUpBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Haut de page">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+    <button class="scroll-arrow scroll-arrow-down" id="scrollDownBtn" onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})" title="Bas de page">
+        <i class="fas fa-chevron-down"></i>
+    </button>
+</div>
 
 <!-- Banner -->
 <?php if ($banner): ?>
@@ -470,6 +494,25 @@ if (!isset($bookingEnabled)) $bookingEnabled = false;
 </div>
 
 <script>
+// Scroll arrows visibility
+(function() {
+    const upBtn = document.getElementById('scrollUpBtn');
+    const downBtn = document.getElementById('scrollDownBtn');
+    function updateArrows() {
+        const scrollY = window.scrollY;
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        upBtn.classList.toggle('visible', scrollY > 200);
+        downBtn.classList.toggle('visible', scrollY < maxScroll - 200);
+    }
+    updateArrows();
+    window.addEventListener('scroll', updateArrows, {passive: true});
+})();
+
+// Closure dates - block booking
+<?php if ($bookingEnabled ?? false): ?>
+const closureDates = <?= json_encode($closureDates ?? []) ?>;
+<?php endif; ?>
+
 // Dark mode
 function toggleDisplayDarkMode() {
     document.documentElement.classList.toggle('dark-mode');
@@ -559,6 +602,13 @@ function submitBooking() {
         msg.style.display = 'block';
         msg.style.color = 'var(--color-error)';
         msg.innerHTML = 'Veuillez remplir les champs obligatoires.';
+        return;
+    }
+
+    if (closureDates.includes(date)) {
+        msg.style.display = 'block';
+        msg.style.color = 'var(--color-error)';
+        msg.innerHTML = '<i class="fas fa-door-closed"></i> Le restaurant est fermé à cette date. Veuillez choisir une autre date.';
         return;
     }
 

@@ -62,6 +62,7 @@ $feedbackCtrl = new FeedbackController($pdo);
 $clientMgmtCtrl = new ClientManagementController($pdo);
 $sitemapCtrl = new SitemapController($pdo);
 $notifCtrl = new NotificationStreamController($pdo);
+$superAdminCtrl = new SuperAdminController($pdo);
 
 switch ($page) {
 
@@ -490,6 +491,38 @@ switch ($page) {
 
     case 'deactivate-subscription':
         $clientMgmtCtrl->deactivateSubscription();
+        break;
+
+    case 'login-journal':
+        $superAdminCtrl->loginJournal();
+        break;
+
+    case 'super-dashboard':
+        $superAdminCtrl->globalDashboard();
+        break;
+
+    case 'announcements':
+        $superAdminCtrl->announcements();
+        break;
+
+    case 'suspend-client':
+        $superAdminCtrl->suspendClient();
+        break;
+
+    case 'unsuspend-client':
+        $superAdminCtrl->unsuspendClient();
+        break;
+
+    case 'delete-client':
+        $superAdminCtrl->deleteClient();
+        break;
+
+    case 'impersonate-client':
+        $superAdminCtrl->impersonate();
+        break;
+
+    case 'stop-impersonate':
+        $superAdminCtrl->stopImpersonate();
         break;
 
     case 'notification-stream':

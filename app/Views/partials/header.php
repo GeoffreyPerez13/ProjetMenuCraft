@@ -83,11 +83,20 @@ $adminRole = $currentAdmin->role ?? 'ADMIN';
                 <div class="nav-divider"></div>
                 <div class="nav-label">Administration</div>
 
+                <li><a href="<?= APP_URL ?>?page=super-dashboard" class="<?= $currentPage === 'super-dashboard' ? 'active' : '' ?>">
+                    <i class="fas fa-tachometer-alt"></i> Vue globale
+                </a></li>
                 <li><a href="<?= APP_URL ?>?page=manage-clients" class="<?= $currentPage === 'manage-clients' ? 'active' : '' ?>">
                     <i class="fas fa-users-cog"></i> Clients
                 </a></li>
                 <li><a href="<?= APP_URL ?>?page=send-invitation" class="<?= $currentPage === 'send-invitation' ? 'active' : '' ?>">
                     <i class="fas fa-envelope-open-text"></i> Invitations
+                </a></li>
+                <li><a href="<?= APP_URL ?>?page=login-journal" class="<?= $currentPage === 'login-journal' ? 'active' : '' ?>">
+                    <i class="fas fa-shield-alt"></i> Journal connexions
+                </a></li>
+                <li><a href="<?= APP_URL ?>?page=announcements" class="<?= $currentPage === 'announcements' ? 'active' : '' ?>">
+                    <i class="fas fa-bullhorn"></i> Annonces
                 </a></li>
                 <li><a href="<?= APP_URL ?>?page=feedback-dashboard" class="<?= $currentPage === 'feedback-dashboard' ? 'active' : '' ?>">
                     <i class="fas fa-comments"></i> Feedbacks
@@ -130,9 +139,49 @@ $adminRole = $currentAdmin->role ?? 'ADMIN';
             </div>
         </div>
 
+        <?php // Impersonation banner ?>
+        <?php if (!empty($_SESSION['impersonating_from'])): ?>
+        <div style="background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;padding:10px 20px;border-radius:8px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:0.85rem;">
+            <span><i class="fas fa-user-secret"></i> Connecté en tant que <strong><?= htmlspecialchars($_SESSION['username'] ?? '') ?></strong></span>
+            <a href="<?= APP_URL ?>?page=stop-impersonate" class="btn btn-sm" style="background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3);"><i class="fas fa-sign-out-alt"></i> Revenir à mon compte</a>
+        </div>
+        <?php endif; ?>
+
+        <?php // Active announcements banner ?>
+        <?php
+        if (!isset($activeAnnouncements)) {
+            try {
+                $activeAnnouncements = (isset($pdo) ? $pdo : (isset($this) && isset($this->pdo) ? $this->pdo : null));
+                if ($activeAnnouncements instanceof PDO) {
+                    $activeAnnouncements = $activeAnnouncements->query("SELECT * FROM announcements WHERE is_active = 1 ORDER BY created_at DESC")->fetchAll();
+                } else {
+                    $activeAnnouncements = [];
+                }
+            } catch (Exception $e) {
+                $activeAnnouncements = [];
+            }
+        }
+        ?>
+        <?php foreach ($activeAnnouncements as $ann): ?>
+        <?php
+            $annColors = ['info' => ['#3b82f6','rgba(59,130,246,0.08)'], 'warning' => ['#f59e0b','rgba(245,158,11,0.08)'], 'danger' => ['#dc2626','rgba(220,38,38,0.08)']];
+            $ac = $annColors[$ann->type] ?? $annColors['info'];
+            $annIcon = ['info' => 'info-circle', 'warning' => 'exclamation-triangle', 'danger' => 'exclamation-circle'][$ann->type] ?? 'info-circle';
+        ?>
+        <div class="announcement-bar" style="background:<?= $ac[1] ?>;border-left:4px solid <?= $ac[0] ?>;padding:10px 16px;border-radius:8px;margin-bottom:8px;display:flex;align-items:center;gap:10px;font-size:0.85rem;">
+            <i class="fas fa-<?= $annIcon ?>" style="color:<?= $ac[0] ?>;"></i>
+            <span style="flex:1;"><?= htmlspecialchars($ann->message) ?></span>
+            <span style="font-size:0.7rem;color:var(--color-text-muted);"><?= date('d/m', strtotime($ann->created_at)) ?></span>
+        </div>
+        <?php endforeach; ?>
+
         <?php if (!empty($flash)): ?>
+            <?php
+                $flashIcons = ['success' => 'check-circle', 'warning' => 'exclamation-triangle', 'error' => 'exclamation-circle', 'info' => 'info-circle'];
+                $flashIcon = $flashIcons[$flash['type']] ?? 'info-circle';
+            ?>
             <div class="flash-message <?= $flash['type'] ?>">
-                <i class="fas fa-<?= $flash['type'] === 'success' ? 'check-circle' : ($flash['type'] === 'warning' ? 'exclamation-triangle' : 'exclamation-circle') ?>"></i>
+                <i class="fas fa-<?= $flashIcon ?>"></i>
                 <span><?= $flash['message'] ?></span>
             </div>
         <?php endif; ?>

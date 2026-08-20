@@ -6,21 +6,50 @@ class AdminController extends BaseController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $this->verifyCsrfToken();
 
-            $rateLimiter = new RateLimiter();
-            if ($rateLimiter->isLimited('login', 5, 900)) {
-                $this->flash('error', 'Trop de tentatives. Réessayez dans 15 minutes.');
+            $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+            $username = trim($_POST['username'] ?? '');
+            $password = $_POST['password'] ?? '';
+
+            $loginAttempt = new LoginAttempt($this->pdo);
+
+            // Check IP block
+            if ($loginAttempt->isIpBlocked($ip)) {
+                $remaining = $loginAttempt->getRemainingLockoutMinutes($ip);
+                $this->flash('error', 'Trop de tentatives depuis cette adresse. Réessayez dans ' . $remaining . ' minute' . ($remaining > 1 ? 's' : '') . '.');
                 $this->redirect('login');
                 return;
             }
 
-            $username = trim($_POST['username'] ?? '');
-            $password = $_POST['password'] ?? '';
+            // Check account lock
+            if (!empty($username) && $loginAttempt->isAccountLocked($username)) {
+                $remaining = $loginAttempt->getAccountRemainingMinutes($username);
+                $this->flash('error', 'Ce compte est temporairement verrouillé suite à de nombreuses tentatives. Réessayez dans ' . $remaining . ' minute' . ($remaining > 1 ? 's' : '') . '.');
+                $this->redirect('login');
+                return;
+            }
 
             $adminModel = new Admin($this->pdo);
             $admin = $adminModel->findByUsername($username);
 
             if (!$admin || !password_verify($password, $admin->password)) {
-                $rateLimiter->hit('login');
+                $loginAttempt->record($ip, $username, false);
+
+                // Check if account just got locked → send alert email
+                if (!empty($username) && $loginAttempt->isAccountLocked($username)) {
+                    $targetAdmin = $adminModel->findByUsername($username);
+                    if ($targetAdmin && !empty($targetAdmin->email)) {
+                        $mailer = new Mailer();
+                        $mailer->send($targetAdmin->email, 'Alerte sécurité — Compte verrouillé — MenuCraft',
+                            '<h2 style="color:#dc2626;">⚠️ Alerte de sécurité</h2>
+                            <p>Votre compte <strong>' . htmlspecialchars($username) . '</strong> a été temporairement verrouillé suite à de multiples tentatives de connexion échouées.</p>
+                            <p><strong>Adresse IP :</strong> ' . htmlspecialchars($ip) . '</p>
+                            <p><strong>Date :</strong> ' . date('d/m/Y à H:i') . '</p>
+                            <p>Le compte sera automatiquement déverrouillé dans 30 minutes.</p>
+                            <p style="color:#a8a29e;font-size:13px;">Si vous êtes à l\'origine de ces tentatives, ignorez ce message. Sinon, nous vous recommandons de changer votre mot de passe dès que possible.</p>'
+                        );
+                    }
+                }
+
                 $this->flash('error', 'Identifiants incorrects.');
                 $this->redirect('login');
                 return;
@@ -32,13 +61,28 @@ class AdminController extends BaseController
                 return;
             }
 
+            // Check if account is suspended
+            if (!empty($admin->suspended)) {
+                $reason = $admin->suspended_reason ? ' Raison : ' . htmlspecialchars($admin->suspended_reason) : '';
+                $this->flash('error', 'Votre compte a été suspendu par l\'administrateur.' . $reason);
+                $this->redirect('login');
+                return;
+            }
+
+            // Successful login — clear attempts
+            $loginAttempt->record($ip, $username, true);
+            $loginAttempt->clearForIp($ip);
+            $loginAttempt->clearForAccount($username);
+
+            // Update last login timestamp
+            $this->pdo->prepare('UPDATE admins SET last_login_at = NOW() WHERE id = :id')->execute([':id' => $admin->id]);
+
             session_regenerate_id(true);
             $_SESSION['admin_logged'] = true;
             $_SESSION['admin_id'] = $admin->id;
             $_SESSION['admin_name'] = $admin->restaurant_name;
             $_SESSION['username'] = $admin->username;
 
-            $rateLimiter->clear('login');
             $this->redirect('dashboard');
             return;
         }

@@ -79,6 +79,10 @@ class Admin
 
     public function updateProfile(int $id, array $data): bool
     {
+        $allowed = ['username', 'email', 'restaurant_name', 'carte_mode'];
+        $data = array_intersect_key($data, array_flip($allowed));
+        if (empty($data)) return false;
+
         $sets = [];
         $params = [':id' => $id];
         foreach ($data as $key => $value) {

@@ -31,9 +31,23 @@ CREATE TABLE IF NOT EXISTS `admins` (
     `reset_token_expiry` DATETIME DEFAULT NULL,
     `email_verified` TINYINT(1) DEFAULT 0,
     `verification_token` VARCHAR(255) DEFAULT NULL,
+    `suspended` TINYINT(1) DEFAULT 0,
+    `suspended_reason` VARCHAR(500) DEFAULT NULL,
+    `last_login_at` DATETIME DEFAULT NULL,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (`restaurant_id`) REFERENCES `restaurants`(`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================
+-- Table : announcements
+-- ============================================
+CREATE TABLE IF NOT EXISTS `announcements` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `message` TEXT NOT NULL,
+    `type` ENUM('info', 'warning', 'danger') DEFAULT 'info',
+    `is_active` TINYINT(1) DEFAULT 1,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================
@@ -372,6 +386,19 @@ CREATE TABLE IF NOT EXISTS `password_resets` (
     `used` TINYINT(1) DEFAULT 0,
     INDEX `idx_token` (`token`),
     INDEX `idx_email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================
+-- Table : login_attempts
+-- ============================================
+CREATE TABLE IF NOT EXISTS `login_attempts` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `ip_address` VARCHAR(45) NOT NULL,
+    `username` VARCHAR(100) DEFAULT NULL,
+    `success` TINYINT(1) DEFAULT 0,
+    `attempted_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX `idx_ip` (`ip_address`, `attempted_at`),
+    INDEX `idx_username` (`username`, `attempted_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;

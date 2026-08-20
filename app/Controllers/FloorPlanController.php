@@ -37,6 +37,8 @@ class FloorPlanController extends BaseController
     public function save(): void
     {
         $this->requireAuth();
+        $this->verifyCsrfAjax();
+        $adminId = $this->getAdminId();
         $data = json_decode(file_get_contents('php://input'), true);
         if (!$data) {
             $this->json(['error' => 'Données invalides'], 400);
@@ -44,6 +46,12 @@ class FloorPlanController extends BaseController
         }
 
         $floorId = (int)($data['floor_id'] ?? 0);
+        $floor = (new Floor($this->pdo))->findById($floorId);
+        if (!$floor || $floor->admin_id !== $adminId) {
+            $this->json(['error' => 'Accès non autorisé'], 403);
+            return;
+        }
+
         $tables = $data['tables'] ?? [];
         $elements = $data['elements'] ?? [];
 
@@ -56,6 +64,7 @@ class FloorPlanController extends BaseController
     public function createFloor(): void
     {
         $this->requireAuth();
+        $this->verifyCsrfAjax();
         $adminId = $this->getAdminId();
         $data = json_decode(file_get_contents('php://input'), true);
         $name = trim($data['name'] ?? 'Nouvelle salle');
@@ -70,6 +79,8 @@ class FloorPlanController extends BaseController
     public function renameFloor(): void
     {
         $this->requireAuth();
+        $this->verifyCsrfAjax();
+        $adminId = $this->getAdminId();
         $data = json_decode(file_get_contents('php://input'), true);
         $id = (int)($data['id'] ?? 0);
         $name = trim($data['name'] ?? '');
@@ -78,13 +89,21 @@ class FloorPlanController extends BaseController
             return;
         }
 
-        (new Floor($this->pdo))->rename($id, $name);
+        $floorModel = new Floor($this->pdo);
+        $floor = $floorModel->findById($id);
+        if (!$floor || $floor->admin_id !== $adminId) {
+            $this->json(['error' => 'Accès non autorisé'], 403);
+            return;
+        }
+
+        $floorModel->rename($id, $name);
         $this->json(['success' => true]);
     }
 
     public function deleteFloor(): void
     {
         $this->requireAuth();
+        $this->verifyCsrfAjax();
         $adminId = $this->getAdminId();
         $data = json_decode(file_get_contents('php://input'), true);
         $id = (int)($data['id'] ?? 0);
@@ -94,6 +113,12 @@ class FloorPlanController extends BaseController
         }
 
         $floorModel = new Floor($this->pdo);
+        $floor = $floorModel->findById($id);
+        if (!$floor || $floor->admin_id !== $adminId) {
+            $this->json(['error' => 'Accès non autorisé'], 403);
+            return;
+        }
+
         $floors = $floorModel->getByAdmin($adminId);
         if (count($floors) <= 1) {
             $this->json(['error' => 'Impossible de supprimer la dernière salle'], 400);
