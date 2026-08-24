@@ -53,6 +53,11 @@ if (!isset($flash)) $flash = null;
                 </div>
             </div>
 
+            <div class="form-group" style="display:flex;align-items:center;gap:8px;margin-bottom:var(--spacing-md);">
+                <input type="checkbox" id="remember_me" name="remember_me" value="1" style="width:16px;height:16px;accent-color:var(--color-primary);">
+                <label for="remember_me" style="margin:0;font-size:0.85rem;color:var(--color-text-muted);cursor:pointer;">Se souvenir de moi (30 jours)</label>
+            </div>
+
             <button type="submit" class="btn btn-primary btn-block btn-lg">
                 <i class="fas fa-sign-in-alt"></i> Se connecter
             </button>

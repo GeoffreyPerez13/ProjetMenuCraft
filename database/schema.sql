@@ -401,4 +401,18 @@ CREATE TABLE IF NOT EXISTS `login_attempts` (
     INDEX `idx_username` (`username`, `attempted_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ============================================
+-- Table : remember_tokens
+-- ============================================
+CREATE TABLE IF NOT EXISTS `remember_tokens` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `admin_id` INT NOT NULL,
+    `token` VARCHAR(64) NOT NULL,
+    `expires_at` DATETIME NOT NULL,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX `idx_token` (`token`),
+    INDEX `idx_admin` (`admin_id`),
+    FOREIGN KEY (`admin_id`) REFERENCES `admins`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 SET FOREIGN_KEY_CHECKS = 1;

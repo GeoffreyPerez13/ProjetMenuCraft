@@ -7,7 +7,7 @@
 </button>
 <?php endif; ?>
 
-<?php if (empty($options['hide_reservation_fab']) || ($options['hide_reservation_fab'] ?? '0') !== '1'): ?>
+<?php if (!isset($options) || empty($options['hide_reservation_fab']) || ($options['hide_reservation_fab'] ?? '0') !== '1'): ?>
 <!-- Floating reservation panel button -->
 <button class="reservation-fab" id="reservationFab" onclick="toggleReservationPanel()" title="Réservations en attente">
     <i class="fas fa-concierge-bell"></i>

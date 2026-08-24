@@ -82,6 +82,29 @@ class AdminController extends BaseController
             $_SESSION['admin_id'] = $admin->id;
             $_SESSION['admin_name'] = $admin->restaurant_name;
             $_SESSION['username'] = $admin->username;
+            $_SESSION['last_activity'] = time();
+
+            // Remember me
+            if (!empty($_POST['remember_me'])) {
+                $rawToken = bin2hex(random_bytes(32));
+                $hashedToken = hash('sha256', $rawToken);
+                $expiresAt = date('Y-m-d H:i:s', time() + 30 * 86400); // 30 jours
+
+                // Supprimer anciens tokens de cet admin
+                $this->pdo->prepare('DELETE FROM remember_tokens WHERE admin_id = :id')->execute([':id' => $admin->id]);
+
+                $stmt = $this->pdo->prepare(
+                    'INSERT INTO remember_tokens (admin_id, token, expires_at) VALUES (:id, :token, :expires)'
+                );
+                $stmt->execute([':id' => $admin->id, ':token' => $hashedToken, ':expires' => $expiresAt]);
+
+                setcookie('remember_token', $rawToken, [
+                    'expires'  => time() + 30 * 86400,
+                    'path'     => '/',
+                    'httponly'  => true,
+                    'samesite' => 'Lax',
+                ]);
+            }
 
             $this->redirect('dashboard');
             return;
@@ -98,6 +121,18 @@ class AdminController extends BaseController
             $this->redirect('demo-logout');
             return;
         }
+
+        // Supprimer le token remember_me
+        if (!empty($_SESSION['admin_id'])) {
+            try {
+                $this->pdo->prepare('DELETE FROM remember_tokens WHERE admin_id = :id')
+                    ->execute([':id' => $_SESSION['admin_id']]);
+            } catch (PDOException $e) {}
+        }
+        if (!empty($_COOKIE['remember_token'])) {
+            setcookie('remember_token', '', time() - 3600, '/', '', false, true);
+        }
+
         session_destroy();
         session_start();
         $this->flash('success', 'Vous avez été déconnecté avec succès.');

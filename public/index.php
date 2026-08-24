@@ -9,14 +9,63 @@ error_reporting(E_ALL);
 ini_set('display_errors', '0');
 ini_set('log_errors', '1');
 
-// Session sécurisée
+// Session sécurisée (12h sliding)
 ini_set('session.cookie_httponly', 1);
 ini_set('session.use_strict_mode', 1);
 ini_set('session.cookie_samesite', 'Lax');
+ini_set('session.gc_maxlifetime', 43200); // 12h
 session_start();
 
 // Configuration
 require_once __DIR__ . '/../config.php';
+
+// ─── Sliding session expiration (12h) ───────────────────
+$sessionMaxLifetime = 43200; // 12 heures
+if (!empty($_SESSION['admin_logged'])) {
+    $lastActivity = $_SESSION['last_activity'] ?? 0;
+    if ($lastActivity && (time() - $lastActivity) > $sessionMaxLifetime) {
+        session_destroy();
+        session_start();
+        $_SESSION['flash'] = ['type' => 'info', 'message' => 'Votre session a expiré. Veuillez vous reconnecter.'];
+    } else {
+        $_SESSION['last_activity'] = time();
+    }
+}
+
+// ─── Remember me : auto-login par cookie ────────────────
+if (empty($_SESSION['admin_logged']) && !empty($_COOKIE['remember_token'])) {
+    $token = $_COOKIE['remember_token'];
+    $pdo_temp = $pdo ?? null;
+    if (!$pdo_temp) {
+        require_once __DIR__ . '/../config.php';
+        $pdo_temp = $pdo;
+    }
+    try {
+        $stmt = $pdo_temp->prepare(
+            'SELECT * FROM remember_tokens WHERE token = :token AND expires_at > NOW() LIMIT 1'
+        );
+        $stmt->execute([':token' => hash('sha256', $token)]);
+        $rememberRow = $stmt->fetch();
+        if ($rememberRow) {
+            $stmt2 = $pdo_temp->prepare('SELECT * FROM admins WHERE id = :id LIMIT 1');
+            $stmt2->execute([':id' => $rememberRow->admin_id]);
+            $admin = $stmt2->fetch();
+            if ($admin && !$admin->suspended) {
+                session_regenerate_id(true);
+                $_SESSION['admin_logged'] = true;
+                $_SESSION['admin_id'] = $admin->id;
+                $_SESSION['admin_name'] = $admin->restaurant_name;
+                $_SESSION['username'] = $admin->username;
+                $_SESSION['last_activity'] = time();
+            } else {
+                // Token invalide ou compte suspendu — supprimer le cookie
+                setcookie('remember_token', '', time() - 3600, '/', '', false, true);
+            }
+        }
+    } catch (PDOException $e) {
+        // Silently fail — table might not exist yet
+    }
+}
 
 // Normaliser SITE_URL avec trailing slash
 $siteUrl = rtrim(SITE_URL, '/') . '/';

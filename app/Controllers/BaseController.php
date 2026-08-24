@@ -76,15 +76,20 @@ class BaseController
             }
         }
 
-        // Load hide_tour_button option for footer
-        if (!isset($data['_hideTourButton'])) {
+        // Load admin options for header/footer elements
+        if (!isset($data['options'])) {
             $adminId = $_SESSION['admin_id'] ?? null;
             if ($adminId) {
                 $optModel = new OptionModel($this->pdo);
-                $data['_hideTourButton'] = ($optModel->get($adminId, 'hide_tour_button') ?? '0') === '1';
+                $data['options'] = $optModel->getAll((int)$adminId);
             } else {
-                $data['_hideTourButton'] = true;
+                $data['options'] = [];
             }
+        }
+
+        // Alias for footer
+        if (!isset($data['_hideTourButton'])) {
+            $data['_hideTourButton'] = ($data['options']['hide_tour_button'] ?? '0') === '1';
         }
 
         extract($data);
