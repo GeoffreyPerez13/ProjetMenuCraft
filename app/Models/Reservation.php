@@ -73,6 +73,28 @@ class Reservation
         return $stmt->execute([':tid' => $tableId, ':id' => $id]);
     }
 
+    public function update(int $id, array $data): bool
+    {
+        $allowed = ['customer_name', 'customer_phone', 'customer_email', 'reservation_date', 'reservation_time', 'party_size', 'table_id', 'admin_notes'];
+        $sets = [];
+        $params = [':id' => $id];
+        foreach ($data as $key => $value) {
+            if (in_array($key, $allowed)) {
+                $sets[] = "`$key` = :$key";
+                $params[":$key"] = $value;
+            }
+        }
+        if (empty($sets)) return false;
+        $sql = 'UPDATE reservations SET ' . implode(', ', $sets) . ' WHERE id = :id';
+        return $this->pdo->prepare($sql)->execute($params);
+    }
+
+    public function updateNotes(int $id, ?string $notes): bool
+    {
+        $stmt = $this->pdo->prepare('UPDATE reservations SET admin_notes = :notes WHERE id = :id');
+        return $stmt->execute([':notes' => $notes, ':id' => $id]);
+    }
+
     public function getPendingCount(int $adminId): int
     {
         $stmt = $this->pdo->prepare(

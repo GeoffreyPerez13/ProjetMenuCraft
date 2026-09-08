@@ -114,6 +114,9 @@ class DisplayController extends BaseController
         $bookingEnabled = ($options['booking_enabled'] ?? '0') === '1'
             && PremiumFeature::isEnabled($this->pdo, $adminId, 'online_booking');
 
+        // Livraison
+        $deliveryEnabled = ($options['delivery_enabled'] ?? '0') === '1';
+
         $palette = $options['site_palette'] ?? 'classic';
         $layout = $options['site_layout'] ?? 'standard';
 
@@ -150,6 +153,7 @@ class DisplayController extends BaseController
             'isPreview' => $isPreview,
             'googleReviewsData' => $googleReviewsData,
             'bookingEnabled' => $bookingEnabled,
+            'deliveryEnabled' => $deliveryEnabled,
             'closureDates' => $closureDates,
         ];
 

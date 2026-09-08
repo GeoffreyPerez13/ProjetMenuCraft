@@ -372,11 +372,13 @@ class CardController extends BaseController
         $price = !empty($_POST['price']) ? (float)$_POST['price'] : null;
 
         $items = [];
-        $labels = $_POST['item_label'] ?? [];
-        $values = $_POST['item_value'] ?? [];
-        for ($i = 0; $i < count($labels); $i++) {
-            if (!empty(trim($labels[$i]))) {
-                $items[] = ['label' => trim($labels[$i]), 'value' => trim($values[$i] ?? '')];
+        $categories = $_POST['categories'] ?? [];
+        foreach ($categories as $cat) {
+            $label = trim($cat['label'] ?? '');
+            if (empty($label)) continue;
+            $choices = array_values(array_filter(array_map('trim', $cat['choices'] ?? []), fn($c) => $c !== ''));
+            if (!empty($choices)) {
+                $items[] = ['label' => $label, 'choices' => $choices];
             }
         }
 

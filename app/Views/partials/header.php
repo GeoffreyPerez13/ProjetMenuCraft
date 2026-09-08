@@ -75,6 +75,10 @@ $adminRole = $currentAdmin->role ?? 'ADMIN';
             <li><a href="<?= APP_URL ?>?page=stats" class="<?= $currentPage === 'stats' ? 'active' : '' ?>">
                 <i class="fas fa-chart-line"></i> Statistiques
             </a></li>
+            <li><a href="<?= APP_URL ?>?page=delivery-orders" class="<?= $currentPage === 'delivery-orders' ? 'active' : '' ?>">
+                <i class="fas fa-motorcycle"></i> Livraisons
+                <span class="badge-count" id="deliveryBadge" style="display:none;">0</span>
+            </a></li>
             <li><a href="<?= APP_URL ?>?page=floor-plan" class="<?= $currentPage === 'floor-plan' ? 'active' : '' ?>">
                 <i class="fas fa-map"></i> Plan de salle
             </a></li>
@@ -105,8 +109,21 @@ $adminRole = $currentAdmin->role ?? 'ADMIN';
 
             <div class="nav-divider"></div>
 
-            <li><a href="<?= APP_URL ?>?page=settings" class="<?= $currentPage === 'settings' ? 'active' : '' ?>">
+            <?php
+            $settingsNeedsAttention = false;
+            if (isset($options)) {
+                $settingsNeedsAttention = empty(trim($currentAdmin->restaurant_name ?? ''))
+                    || (($adminRole ?? '') !== 'SUPER_ADMIN' && (
+                        ((($options['booking_enabled'] ?? '0') === '1') && empty(trim($options['booking_time_slots'] ?? '')))
+                        || ((($options['delivery_enabled'] ?? '0') === '1') && empty(trim($options['delivery_time_slots'] ?? '')))
+                    ));
+            }
+            ?>
+            <li><a href="<?= APP_URL ?>?page=settings" class="<?= $currentPage === 'settings' ? 'active' : '' ?>" style="position:relative;">
                 <i class="fas fa-cog"></i> Paramètres
+                <?php if ($settingsNeedsAttention): ?>
+                <span style="position:absolute;top:8px;right:8px;width:8px;height:8px;background:#f59e0b;border-radius:50%;" title="Configuration requise"></span>
+                <?php endif; ?>
             </a></li>
             <li><a href="<?= APP_URL ?>?page=feedback" class="<?= $currentPage === 'feedback' ? 'active' : '' ?>">
                 <i class="fas fa-comment-dots"></i> Feedback

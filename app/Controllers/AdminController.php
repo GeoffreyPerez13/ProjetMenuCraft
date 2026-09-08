@@ -3,6 +3,12 @@ class AdminController extends BaseController
 {
     public function login(): void
     {
+        // Already authenticated (session or remember_me cookie) → redirect to dashboard
+        if (!empty($_SESSION['admin_logged'])) {
+            $this->redirect('dashboard');
+            return;
+        }
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $this->verifyCsrfToken();
 
@@ -212,11 +218,11 @@ class AdminController extends BaseController
 
             // Email de vérification
             $mailer = new Mailer();
-            $verifyUrl = SITE_URL . '?page=verify-email&token=' . $verificationToken;
+            $verifyUrl = APP_URL . '?page=verify-email&token=' . $verificationToken;
             $mailer->send($email, 'Vérifiez votre email — MenuCraft',
                 '<h2>Bienvenue sur MenuCraft !</h2>
                 <p>Cliquez sur le bouton ci-dessous pour vérifier votre adresse email :</p>
-                <p><a href="' . $verifyUrl . '" style="background:#b45309;color:#fff;padding:14px 28px;text-decoration:none;border-radius:8px;display:inline-block;font-weight:600;">Vérifier mon email</a></p>
+                <p><a href="' . htmlspecialchars($verifyUrl, ENT_QUOTES, 'UTF-8') . '" style="background:#b45309;color:#fff;padding:14px 28px;text-decoration:none;border-radius:8px;display:inline-block;font-weight:600;">Vérifier mon email</a></p>
                 <p style="color:#a8a29e;font-size:13px;">Ce lien expire dans 24 heures.</p>'
             );
 
@@ -391,19 +397,18 @@ class AdminController extends BaseController
             }
 
             $token = bin2hex(random_bytes(32));
-            $expiry = date('Y-m-d H:i:s', strtotime('+7 days'));
 
             $stmt = $this->pdo->prepare(
-                'INSERT INTO invitations (email, restaurant_name, token, expiry) VALUES (:e, :rn, :t, :exp)'
+                'INSERT INTO invitations (email, restaurant_name, token, expiry) VALUES (:e, :rn, :t, NOW() + INTERVAL 7 DAY)'
             );
-            $stmt->execute([':e' => $email, ':rn' => $restaurantName, ':t' => $token, ':exp' => $expiry]);
+            $stmt->execute([':e' => $email, ':rn' => $restaurantName, ':t' => $token]);
 
-            $registerUrl = SITE_URL . '?page=register&token=' . $token;
+            $registerUrl = APP_URL . '?page=register&token=' . $token;
             $mailer = new Mailer();
             $mailer->send($email, 'Invitation MenuCraft — ' . $restaurantName,
                 '<h2>Vous êtes invité sur MenuCraft !</h2>
                 <p>Vous avez été invité à créer le site vitrine de <strong>' . htmlspecialchars($restaurantName) . '</strong>.</p>
-                <p><a href="' . $registerUrl . '" style="background:#b45309;color:#fff;padding:14px 28px;text-decoration:none;border-radius:8px;display:inline-block;font-weight:600;">Créer mon compte</a></p>
+                <p><a href="' . htmlspecialchars($registerUrl, ENT_QUOTES, 'UTF-8') . '" style="background:#b45309;color:#fff;padding:14px 28px;text-decoration:none;border-radius:8px;display:inline-block;font-weight:600;">Créer mon compte</a></p>
                 <p style="color:#a8a29e;font-size:13px;">Ce lien expire dans 7 jours.</p>'
             );
 

@@ -368,14 +368,26 @@ if (!isset($admin)) $admin = null;
             </div>
             <div class="form-group">
                 <label>Contenu du menu</label>
-                <div id="menuItems">
-                    <div style="display:flex;gap:8px;margin-bottom:8px;">
-                        <input type="text" name="item_label[]" class="form-control" placeholder="Entrée" style="flex:1;">
-                        <input type="text" name="item_value[]" class="form-control" placeholder="Salade César" style="flex:2;">
+                <div id="menuCategories" class="menu-categories-editor">
+                    <div class="menu-category-block" data-index="0">
+                        <div class="menu-cat-header">
+                            <input type="text" name="categories[0][label]" class="form-control" placeholder="Ex: Entrée, Plat, Dessert..." style="flex:1;font-weight:600;">
+                            <button type="button" class="btn btn-danger btn-sm" onclick="removeMenuCategory(this)" style="padding:4px 8px;" title="Supprimer la catégorie"><i class="fas fa-times"></i></button>
+                        </div>
+                        <div class="menu-choices-list">
+                            <div class="menu-choice-row">
+                                <span class="choice-bullet">•</span>
+                                <input type="text" name="categories[0][choices][]" class="form-control" placeholder="Ex: Salade César" style="flex:1;">
+                                <button type="button" class="btn btn-danger btn-sm" onclick="removeMenuChoice(this)" style="padding:2px 6px;font-size:0.75rem;"><i class="fas fa-minus"></i></button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline btn-sm" onclick="addMenuChoice(this)" style="margin-top:4px;font-size:0.75rem;">
+                            <i class="fas fa-plus"></i> Ajouter un choix
+                        </button>
                     </div>
                 </div>
-                <button type="button" class="btn btn-secondary btn-sm" onclick="addMenuItem()">
-                    <i class="fas fa-plus"></i> Ajouter une ligne
+                <button type="button" class="btn btn-secondary btn-sm" onclick="addMenuCategory('menuCategories')" style="margin-top:8px;">
+                    <i class="fas fa-plus"></i> Ajouter une catégorie
                 </button>
             </div>
             <div style="display:flex;gap:8px;">
@@ -433,24 +445,50 @@ if (!isset($admin)) $admin = null;
                 </div>
                 <div class="form-group">
                     <label>Contenu du menu</label>
-                    <div id="menuItems-<?= $menu->id ?>">
-                        <?php if (!empty($menuItems)): ?>
-                            <?php foreach ($menuItems as $item): ?>
-                            <div style="display:flex;gap:8px;margin-bottom:8px;">
-                                <input type="text" name="item_label[]" class="form-control" value="<?= htmlspecialchars($item['label'] ?? '') ?>" style="flex:1;">
-                                <input type="text" name="item_value[]" class="form-control" value="<?= htmlspecialchars($item['value'] ?? '') ?>" style="flex:2;">
-                                <button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.remove()" style="padding:4px 8px;"><i class="fas fa-times"></i></button>
+                    <div id="menuCategories-<?= $menu->id ?>" class="menu-categories-editor">
+                        <?php if (!empty($menuItems)):
+                            foreach ($menuItems as $ci => $item):
+                                $choices = $item['choices'] ?? (!empty($item['value']) ? [$item['value']] : ['']);
+                        ?>
+                        <div class="menu-category-block" data-index="<?= $ci ?>">
+                            <div class="menu-cat-header">
+                                <input type="text" name="categories[<?= $ci ?>][label]" class="form-control" value="<?= htmlspecialchars($item['label'] ?? '') ?>" style="flex:1;font-weight:600;">
+                                <button type="button" class="btn btn-danger btn-sm" onclick="removeMenuCategory(this)" style="padding:4px 8px;" title="Supprimer la catégorie"><i class="fas fa-times"></i></button>
                             </div>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <div style="display:flex;gap:8px;margin-bottom:8px;">
-                                <input type="text" name="item_label[]" class="form-control" placeholder="Label" style="flex:1;">
-                                <input type="text" name="item_value[]" class="form-control" placeholder="Valeur" style="flex:2;">
+                            <div class="menu-choices-list">
+                                <?php foreach ($choices as $choice): ?>
+                                <div class="menu-choice-row">
+                                    <span class="choice-bullet">•</span>
+                                    <input type="text" name="categories[<?= $ci ?>][choices][]" class="form-control" value="<?= htmlspecialchars($choice) ?>" style="flex:1;">
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="removeMenuChoice(this)" style="padding:2px 6px;font-size:0.75rem;"><i class="fas fa-minus"></i></button>
+                                </div>
+                                <?php endforeach; ?>
                             </div>
+                            <button type="button" class="btn btn-outline btn-sm" onclick="addMenuChoice(this)" style="margin-top:4px;font-size:0.75rem;">
+                                <i class="fas fa-plus"></i> Ajouter un choix
+                            </button>
+                        </div>
+                        <?php endforeach; else: ?>
+                        <div class="menu-category-block" data-index="0">
+                            <div class="menu-cat-header">
+                                <input type="text" name="categories[0][label]" class="form-control" placeholder="Ex: Entrée, Plat, Dessert..." style="flex:1;font-weight:600;">
+                                <button type="button" class="btn btn-danger btn-sm" onclick="removeMenuCategory(this)" style="padding:4px 8px;"><i class="fas fa-times"></i></button>
+                            </div>
+                            <div class="menu-choices-list">
+                                <div class="menu-choice-row">
+                                    <span class="choice-bullet">•</span>
+                                    <input type="text" name="categories[0][choices][]" class="form-control" placeholder="Ex: Salade César" style="flex:1;">
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="removeMenuChoice(this)" style="padding:2px 6px;font-size:0.75rem;"><i class="fas fa-minus"></i></button>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-outline btn-sm" onclick="addMenuChoice(this)" style="margin-top:4px;font-size:0.75rem;">
+                                <i class="fas fa-plus"></i> Ajouter un choix
+                            </button>
+                        </div>
                         <?php endif; ?>
                     </div>
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="addMenuItemTo('menuItems-<?= $menu->id ?>')">
-                        <i class="fas fa-plus"></i> Ajouter une ligne
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="addMenuCategory('menuCategories-<?= $menu->id ?>')" style="margin-top:8px;">
+                        <i class="fas fa-plus"></i> Ajouter une catégorie
                     </button>
                 </div>
                 <div style="display:flex;gap:8px;">
@@ -490,20 +528,60 @@ function toggleEditMenu(menuId) {
     form.style.display = form.style.display === 'none' ? 'block' : 'none';
 }
 
-function addMenuItem() {
-    addMenuItemTo('menuItems');
+function addMenuCategory(containerId) {
+    const container = document.getElementById(containerId);
+    const blocks = container.querySelectorAll('.menu-category-block');
+    const newIndex = blocks.length > 0 ? Math.max(...Array.from(blocks).map(b => parseInt(b.dataset.index || 0))) + 1 : 0;
+    const block = document.createElement('div');
+    block.className = 'menu-category-block';
+    block.dataset.index = newIndex;
+    block.innerHTML = `
+        <div class="menu-cat-header">
+            <input type="text" name="categories[${newIndex}][label]" class="form-control" placeholder="Ex: Entrée, Plat, Dessert..." style="flex:1;font-weight:600;">
+            <button type="button" class="btn btn-danger btn-sm" onclick="removeMenuCategory(this)" style="padding:4px 8px;" title="Supprimer la catégorie"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="menu-choices-list">
+            <div class="menu-choice-row">
+                <span class="choice-bullet">•</span>
+                <input type="text" name="categories[${newIndex}][choices][]" class="form-control" placeholder="Ex: Salade César" style="flex:1;">
+                <button type="button" class="btn btn-danger btn-sm" onclick="removeMenuChoice(this)" style="padding:2px 6px;font-size:0.75rem;"><i class="fas fa-minus"></i></button>
+            </div>
+        </div>
+        <button type="button" class="btn btn-outline btn-sm" onclick="addMenuChoice(this)" style="margin-top:4px;font-size:0.75rem;">
+            <i class="fas fa-plus"></i> Ajouter un choix
+        </button>
+    `;
+    container.appendChild(block);
 }
 
-function addMenuItemTo(containerId) {
-    const container = document.getElementById(containerId);
+function addMenuChoice(btn) {
+    const block = btn.closest('.menu-category-block');
+    const index = block.dataset.index;
+    const list = block.querySelector('.menu-choices-list');
     const row = document.createElement('div');
-    row.style.cssText = 'display:flex;gap:8px;margin-bottom:8px;';
+    row.className = 'menu-choice-row';
     row.innerHTML = `
-        <input type="text" name="item_label[]" class="form-control" placeholder="Label" style="flex:1;">
-        <input type="text" name="item_value[]" class="form-control" placeholder="Valeur" style="flex:2;">
-        <button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.remove()" style="padding:4px 8px;"><i class="fas fa-times"></i></button>
+        <span class="choice-bullet">•</span>
+        <input type="text" name="categories[${index}][choices][]" class="form-control" placeholder="Ex: Soupe à l'oignon" style="flex:1;">
+        <button type="button" class="btn btn-danger btn-sm" onclick="removeMenuChoice(this)" style="padding:2px 6px;font-size:0.75rem;"><i class="fas fa-minus"></i></button>
     `;
-    container.appendChild(row);
+    list.appendChild(row);
+}
+
+function removeMenuChoice(btn) {
+    const row = btn.closest('.menu-choice-row');
+    const list = row.parentElement;
+    if (list.querySelectorAll('.menu-choice-row').length > 1) {
+        row.remove();
+    }
+}
+
+function removeMenuCategory(btn) {
+    const block = btn.closest('.menu-category-block');
+    const editor = block.parentElement;
+    if (editor.querySelectorAll('.menu-category-block').length > 1) {
+        block.remove();
+    }
 }
 
 // CSRF token pour les requêtes AJAX

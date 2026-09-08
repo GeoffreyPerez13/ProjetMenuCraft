@@ -105,7 +105,7 @@
                 <span class="feature-badge free">Gratuit</span>
                 <div class="feature-icon"><i class="fas fa-palette"></i></div>
                 <h3>Templates personnalisables</h3>
-                <p>7 palettes de couleurs et 3 layouts différents pour un site qui correspond à votre identité.</p>
+                <p>7 palettes de couleurs + personnalisation complète et 5 dispositions différentes pour un site unique à votre image.</p>
             </div>
             <div class="feature-card">
                 <span class="feature-badge free">Gratuit</span>
@@ -148,6 +148,18 @@
                 <div class="feature-icon"><i class="fas fa-calendar-check"></i></div>
                 <h3>Réservations en ligne</h3>
                 <p>Recevez des réservations directement sur votre site avec confirmation automatique par email.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-badge premium">Premium</span>
+                <div class="feature-icon"><i class="fas fa-map-marked-alt"></i></div>
+                <h3>Plan de salle</h3>
+                <p>Organisez vos salles et tables visuellement. Assignez les réservations à une table en un clic.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-badge premium">Premium</span>
+                <div class="feature-icon"><i class="fas fa-motorcycle"></i></div>
+                <h3>Livraison en ligne</h3>
+                <p>Proposez la commande en livraison directement depuis votre site. Panier, frais et suivi intégrés.</p>
             </div>
         </div>
     </div>
@@ -197,10 +209,11 @@
                 <ul class="beta-features">
                     <li><i class="fas fa-check-circle"></i> Site vitrine complet</li>
                     <li><i class="fas fa-check-circle"></i> Carte en ligne illimitée</li>
-                    <li><i class="fas fa-check-circle"></i> 7 templates personnalisables</li>
+                    <li><i class="fas fa-check-circle"></i> Templates personnalisables (palettes + dispositions)</li>
                     <li><i class="fas fa-check-circle"></i> Avis Google intégrés</li>
                     <li><i class="fas fa-check-circle"></i> Statistiques avancées</li>
                     <li><i class="fas fa-check-circle"></i> Réservations en ligne</li>
+                    <li><i class="fas fa-check-circle"></i> Livraison en ligne</li>
                     <li><i class="fas fa-check-circle"></i> Support prioritaire</li>
                 </ul>
                 <a href="mailto:contact.menucraft@gmail.com?subject=Inscription Beta MenuCraft" class="btn-hero btn-hero-primary">
@@ -219,7 +232,7 @@
                     <ul class="beta-features" style="margin-bottom: 24px;">
                         <li><i class="fas fa-check-circle"></i> Site vitrine complet</li>
                         <li><i class="fas fa-check-circle"></i> Carte en ligne</li>
-                        <li><i class="fas fa-check-circle"></i> 7 templates</li>
+                        <li><i class="fas fa-check-circle"></i> Templates personnalisables</li>
                         <li><i class="fas fa-check-circle"></i> SEO optimisé</li>
                     </ul>
                     <a href="<?= APP_URL ?>?page=auto-register" class="btn-hero btn-hero-primary" style="width: 100%; justify-content: center;">Commencer</a>
@@ -282,7 +295,7 @@
                     <i class="fas fa-chevron-down"></i>
                 </button>
                 <div class="faq-answer">
-                    <p>Oui ! Vous pouvez choisir parmi 7 palettes de couleurs et 3 layouts différents. Ajoutez votre logo, bannière et personnalisez chaque section.</p>
+                    <p>Oui ! Vous pouvez choisir parmi 7 palettes de couleurs (ou créer la vôtre) et 5 dispositions différentes. Ajoutez votre logo, bannière et personnalisez chaque section.</p>
                 </div>
             </div>
             <div class="faq-item">

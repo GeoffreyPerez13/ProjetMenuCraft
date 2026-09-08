@@ -270,13 +270,34 @@ $adminRole = ($admin->role ?? 'ADMIN');
                     $sections['premium'] = ['Premium', 'fa-crown'];
                     $sections['google-reviews'] = ['Avis Google', 'fa-star'];
                     $sections['online-booking'] = ['Réservations', 'fa-calendar-check'];
+                    $sections['delivery'] = ['Livraisons', 'fa-motorcycle'];
                     $sections['subscriptions'] = ['Abonnement', 'fa-credit-card'];
+                }
+                $sectionAlerts = [];
+                // Profil : nom du restaurant manquant
+                if (empty(trim($admin->restaurant_name ?? ''))) $sectionAlerts['profile'] = 'Nom du restaurant non défini';
+                // Avis Google : activés mais Place ID ou clé API manquante
+                if (($options['google_reviews_enabled'] ?? '0') === '1') {
+                    if (empty(trim($options['google_place_id'] ?? '')) || empty(trim($options['google_api_key'] ?? ''))) {
+                        $sectionAlerts['google-reviews'] = 'Configuration Google incomplète';
+                    }
+                }
+                // Réservations : activées mais pas de créneaux
+                if ((($options['booking_enabled'] ?? '0') === '1') && empty(trim($options['booking_time_slots'] ?? ''))) {
+                    $sectionAlerts['online-booking'] = 'Créneaux horaires manquants';
+                }
+                // Livraison : activée mais pas de créneaux
+                if ((($options['delivery_enabled'] ?? '0') === '1') && empty(trim($options['delivery_time_slots'] ?? ''))) {
+                    $sectionAlerts['delivery'] = 'Créneaux horaires manquants';
                 }
                 foreach ($sections as $key => [$label, $icon]):
                 ?>
                 <a href="<?= APP_URL ?>?page=settings&section=<?= $key ?>"
                    style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:var(--radius-sm);font-size:0.85rem;font-weight:500;color:<?= $section === $key ? 'var(--color-primary)' : 'var(--color-text-light)' ?>;background:<?= $section === $key ? 'var(--color-primary-bg)' : 'transparent' ?>;transition:all 0.15s;">
                     <i class="fas <?= $icon ?>" style="width:16px;text-align:center;"></i> <?= $label ?>
+                    <?php if (isset($sectionAlerts[$key])): ?>
+                    <span style="margin-left:auto;width:8px;height:8px;background:#f59e0b;border-radius:50%;flex-shrink:0;" title="Configuration requise"></span>
+                    <?php endif; ?>
                 </a>
                 <?php endforeach; ?>
             </nav>
@@ -322,21 +343,37 @@ $adminRole = ($admin->role ?? 'ADMIN');
                     <div class="form-group">
                         <label>Nouveau mot de passe</label>
                         <div style="position:relative;">
-                            <input type="password" name="new_password" class="form-control" required minlength="8" style="padding-right:40px;">
+                            <input type="password" id="settingsNewPwd" name="new_password" class="form-control" required minlength="8" style="padding-right:40px;">
                             <button type="button" class="pwd-toggle" onclick="togglePwdVisibility(this)" title="Afficher/Masquer"><i class="fas fa-eye"></i></button>
                         </div>
                     </div>
                     <div class="form-group">
                         <label>Confirmer</label>
                         <div style="position:relative;">
-                            <input type="password" name="new_password_confirmation" class="form-control" required style="padding-right:40px;">
+                            <input type="password" id="settingsConfirmPwd" name="new_password_confirmation" class="form-control" required style="padding-right:40px;">
                             <button type="button" class="pwd-toggle" onclick="togglePwdVisibility(this)" title="Afficher/Masquer"><i class="fas fa-eye"></i></button>
                         </div>
                     </div>
                 </div>
-                <p class="form-hint" style="margin-bottom:16px;">Min. 8 caractères, 1 majuscule, 1 chiffre, 1 caractère spécial.</p>
-                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Changer le mot de passe</button>
+                <div class="settings-pwd-rules" id="settingsPwdRules">
+                    <div class="s-pwd-rule" id="sRuleLength"><i class="fas fa-circle"></i> Min. 8 caractères</div>
+                    <div class="s-pwd-rule" id="sRuleUpper"><i class="fas fa-circle"></i> 1 majuscule</div>
+                    <div class="s-pwd-rule" id="sRuleDigit"><i class="fas fa-circle"></i> 1 chiffre</div>
+                    <div class="s-pwd-rule" id="sRuleSpecial"><i class="fas fa-circle"></i> 1 caractère spécial</div>
+                    <div class="s-pwd-rule" id="sRuleMatch"><i class="fas fa-circle"></i> Mots de passe identiques</div>
+                </div>
+                <button type="submit" class="btn btn-primary" id="settingsPwdBtn" disabled><i class="fas fa-save"></i> Changer le mot de passe</button>
             </form>
+            <style>
+            .settings-pwd-rules { display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;margin-bottom:16px;font-size:0.82rem; }
+            .s-pwd-rule { display:flex;align-items:center;gap:6px;color:var(--color-text-muted);transition:color 0.2s; }
+            .s-pwd-rule i { font-size:0.5rem;transition:color 0.2s; }
+            .s-pwd-rule.valid { color:#16a34a; }
+            .s-pwd-rule.valid i { color:#16a34a; }
+            .s-pwd-rule.invalid { color:#dc2626; }
+            .s-pwd-rule.invalid i { color:#dc2626; }
+            @media(max-width:600px){ .settings-pwd-rules { grid-template-columns:1fr;gap:3px; } }
+            </style>
             <script>
             function togglePwdVisibility(btn) {
                 const input = btn.parentElement.querySelector('input');
@@ -349,6 +386,33 @@ $adminRole = ($admin->role ?? 'ADMIN');
                     icon.className = 'fas fa-eye';
                 }
             }
+            (function(){
+                const np = document.getElementById('settingsNewPwd');
+                const cp = document.getElementById('settingsConfirmPwd');
+                const btn = document.getElementById('settingsPwdBtn');
+                const rules = {
+                    sRuleLength:  v => v.length >= 8,
+                    sRuleUpper:   v => /[A-Z]/.test(v),
+                    sRuleDigit:   v => /[0-9]/.test(v),
+                    sRuleSpecial: v => /[^A-Za-z0-9]/.test(v),
+                    sRuleMatch:   (v,c) => v.length > 0 && v === c
+                };
+                function check() {
+                    const v = np.value, c = cp.value;
+                    let ok = true;
+                    for (const [id, fn] of Object.entries(rules)) {
+                        const el = document.getElementById(id);
+                        const pass = fn(v, c);
+                        el.classList.toggle('valid', pass);
+                        el.classList.toggle('invalid', !pass && v.length > 0);
+                        el.querySelector('i').className = pass ? 'fas fa-check-circle' : (v.length > 0 ? 'fas fa-times-circle' : 'fas fa-circle');
+                        if (!pass) ok = false;
+                    }
+                    btn.disabled = !ok;
+                }
+                np.addEventListener('input', check);
+                cp.addEventListener('input', check);
+            })();
             </script>
         </div>
 
@@ -572,7 +636,120 @@ $adminRole = ($admin->role ?? 'ADMIN');
                     <label><i class="fas fa-clock"></i> Créneaux horaires disponibles</label>
                     <p class="form-hint" style="margin-bottom:8px;">Définissez les heures auxquelles les clients peuvent réserver. Un créneau par ligne (format HH:MM).</p>
                     <textarea name="booking_time_slots" class="form-control" rows="6" placeholder="12:00&#10;12:30&#10;13:00&#10;19:00&#10;19:30&#10;20:00&#10;20:30&#10;21:00"><?= htmlspecialchars($options['booking_time_slots'] ?? '') ?></textarea>
-                    <p class="form-hint" style="margin-top:6px;">Laissez vide pour permettre au client de choisir n'importe quelle heure.</p>
+                    <?php if (($options['booking_enabled'] ?? '0') === '1' && empty(trim($options['booking_time_slots'] ?? ''))): ?>
+                    <div style="margin-top:8px;padding:10px 14px;background:#fef3cd;border:1px solid #ffc107;border-radius:var(--radius-sm);font-size:0.82rem;color:#856404;">
+                        <i class="fas fa-exclamation-triangle"></i> <strong>Attention :</strong> Les réservations sont activées mais aucun créneau n'est défini. Les clients ne pourront pas réserver tant que des créneaux ne sont pas configurés.
+                    </div>
+                    <?php else: ?>
+                    <p class="form-hint" style="margin-top:6px;">Sans créneaux définis, les réservations en ligne seront bloquées.</p>
+                    <?php endif; ?>
+                </div>
+
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Enregistrer</button>
+            </form>
+        </div>
+
+        <?php elseif ($section === 'delivery'): ?>
+        <div class="card">
+            <div class="card-header"><h2><i class="fas fa-motorcycle"></i> Configuration de la livraison</h2></div>
+            <form method="POST" action="<?= APP_URL ?>?page=update-options">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+                <input type="hidden" name="section" value="delivery">
+
+                <div class="form-group">
+                    <label class="toggle-switch">
+                        <input type="hidden" name="delivery_enabled" value="0">
+                        <input type="checkbox" name="delivery_enabled" value="1" <?= ($options['delivery_enabled'] ?? '0') === '1' ? 'checked' : '' ?>>
+                        <span class="toggle-slider"></span>
+                        <span>Activer la livraison</span>
+                    </label>
+                    <p class="form-hint">Permet aux clients de commander des plats en livraison depuis votre site.</p>
+                </div>
+
+                <hr style="margin:24px 0;border:none;border-top:1px solid var(--color-border);">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Frais de livraison (€)</label>
+                        <input type="number" name="delivery_fee" class="form-control" value="<?= htmlspecialchars($options['delivery_fee'] ?? '3.50') ?>" min="0" step="0.50" style="max-width:200px;">
+                        <p class="form-hint">0 = livraison gratuite.</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Commande minimum (€)</label>
+                        <input type="number" name="delivery_min_order" class="form-control" value="<?= htmlspecialchars($options['delivery_min_order'] ?? '15') ?>" min="0" step="1" style="max-width:200px;">
+                        <p class="form-hint">0 = pas de minimum.</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Rayon de livraison (km)</label>
+                    <input type="number" name="delivery_radius_km" class="form-control" value="<?= htmlspecialchars($options['delivery_radius_km'] ?? '10') ?>" min="1" max="100" style="max-width:200px;">
+                    <p class="form-hint">Indication affichée aux clients. La vérification est manuelle.</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Temps de livraison estimé</label>
+                    <input type="text" name="delivery_estimated_time" class="form-control" value="<?= htmlspecialchars($options['delivery_estimated_time'] ?? '30-45 min') ?>" placeholder="30-45 min" style="max-width:250px;">
+                </div>
+
+                <div class="form-group">
+                    <label>Horaires de livraison (texte informatif)</label>
+                    <textarea name="delivery_hours" class="form-control" rows="3" placeholder="Lundi-Vendredi: 11h30-14h00, 18h30-22h00&#10;Samedi-Dimanche: 18h30-22h30"><?= htmlspecialchars($options['delivery_hours'] ?? '') ?></textarea>
+                    <p class="form-hint">Texte informatif affiché aux clients. Laissez vide si identiques aux horaires d'ouverture.</p>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-clock"></i> Créneaux horaires de livraison</label>
+                    <p class="form-hint" style="margin-bottom:8px;">Définissez les créneaux auxquels les clients peuvent se faire livrer. Un créneau par ligne (format HH:MM). Le client devra choisir parmi ces créneaux.</p>
+                    <textarea name="delivery_time_slots" class="form-control" rows="6" placeholder="11:00&#10;11:15&#10;11:30&#10;..."><?= htmlspecialchars($options['delivery_time_slots'] ?? '') ?></textarea>
+                    <?php if (($options['delivery_enabled'] ?? '0') === '1' && empty(trim($options['delivery_time_slots'] ?? ''))): ?>
+                    <div style="margin-top:8px;padding:10px 14px;background:#fef3cd;border:1px solid #ffc107;border-radius:var(--radius-sm);font-size:0.82rem;color:#856404;">
+                        <i class="fas fa-exclamation-triangle"></i> <strong>Attention :</strong> La livraison est activée mais aucun créneau n'est défini. Les clients ne pourront pas commander tant que des créneaux ne sont pas configurés.
+                    </div>
+                    <?php else: ?>
+                    <p class="form-hint" style="margin-top:6px;">Sans créneaux définis, les commandes en livraison seront bloquées.</p>
+                    <?php endif; ?>
+                </div>
+
+                <div class="form-group">
+                    <label>Zones de livraison</label>
+                    <textarea name="delivery_zones" class="form-control" rows="3" placeholder="Quartier centre, Quartier nord, Commune voisine..."><?= htmlspecialchars($options['delivery_zones'] ?? '') ?></textarea>
+                    <p class="form-hint">Liste des zones couvertes (affichée aux clients). Laissez vide pour ne rien afficher.</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Message personnalisé</label>
+                    <textarea name="delivery_message" class="form-control" rows="2" placeholder="Information pour les clients..."><?= htmlspecialchars($options['delivery_message'] ?? '') ?></textarea>
+                </div>
+
+                <hr style="margin:24px 0;border:none;border-top:1px solid var(--color-border);">
+
+                <h3 id="platforms" style="margin-bottom:var(--spacing-md);font-size:1rem;"><i class="fas fa-link"></i> Plateformes de livraison</h3>
+                <p class="form-hint" style="margin-bottom:var(--spacing-md);">Ajoutez les liens vers votre restaurant sur les plateformes de livraison. Ils seront affichés sur votre site public pour que les clients puissent commander via leur plateforme préférée.</p>
+
+                <div class="form-group">
+                    <label><img src="https://cdn.simpleicons.org/ubereats/06C167" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;">Uber Eats</label>
+                    <input type="url" name="delivery_platform_ubereats" class="form-control" value="<?= htmlspecialchars($options['delivery_platform_ubereats'] ?? '') ?>" placeholder="https://www.ubereats.com/store/votre-restaurant/...">
+                </div>
+
+                <div class="form-group">
+                    <label><img src="https://cdn.simpleicons.org/deliveroo/00CCBC" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;">Deliveroo</label>
+                    <input type="url" name="delivery_platform_deliveroo" class="form-control" value="<?= htmlspecialchars($options['delivery_platform_deliveroo'] ?? '') ?>" placeholder="https://deliveroo.fr/fr/menu/votre-restaurant/...">
+                </div>
+
+                <div class="form-group">
+                    <label><img src="https://cdn.simpleicons.org/justeat/F36D00" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;">Just Eat</label>
+                    <input type="url" name="delivery_platform_justeat" class="form-control" value="<?= htmlspecialchars($options['delivery_platform_justeat'] ?? '') ?>" placeholder="https://www.just-eat.fr/menu/votre-restaurant/...">
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-utensils" style="color:#E23744;margin-right:6px;"></i>Resto-in / Autre plateforme</label>
+                    <input type="url" name="delivery_platform_other" class="form-control" value="<?= htmlspecialchars($options['delivery_platform_other'] ?? '') ?>" placeholder="https://...">
+                </div>
+
+                <div class="form-group">
+                    <label>Nom de la plateforme "Autre"</label>
+                    <input type="text" name="delivery_platform_other_name" class="form-control" value="<?= htmlspecialchars($options['delivery_platform_other_name'] ?? '') ?>" placeholder="Ex: Resto-in, EAT, etc." style="max-width:250px;">
                 </div>
 
                 <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Enregistrer</button>
@@ -611,6 +788,17 @@ $adminRole = ($admin->role ?? 'ADMIN');
             <form method="POST" action="<?= APP_URL ?>?page=update-options">
                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
                 <input type="hidden" name="section" value="google-reviews">
+
+                <div class="form-group">
+                    <label class="toggle-switch">
+                        <input type="hidden" name="google_reviews_enabled" value="0">
+                        <input type="checkbox" name="google_reviews_enabled" value="1" <?= ($options['google_reviews_enabled'] ?? '0') === '1' ? 'checked' : '' ?>>
+                        <span class="toggle-slider"></span>
+                        <span>Activer les avis Google</span>
+                    </label>
+                    <p class="form-hint">Affiche les avis Google de votre établissement sur votre site vitrine.</p>
+                </div>
+
                 <div class="form-group">
                     <label>Google Place ID</label>
                     <input type="text" name="google_place_id" class="form-control" value="<?= htmlspecialchars($options['google_place_id'] ?? '') ?>" placeholder="ChIJ...">

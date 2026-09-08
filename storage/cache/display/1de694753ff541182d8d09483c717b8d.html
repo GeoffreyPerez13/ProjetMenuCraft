@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Petit Bistro Parisien — MenuCraft</title>
+    <meta name="description" content="Découvrez Le Petit Bistro Parisien — Consultez notre carte, horaires et réservez en ligne.">
+    <meta property="og:title" content="Le Petit Bistro Parisien">
+    <meta property="og:type" content="restaurant">
+    <meta property="og:url" content="http://localhost/ProjetMenuCraft/public/?page=display&slug=demo-restaurant">
+        <meta property="og:image" content="http://localhost/ProjetMenuCraft/public//uploads/demo_banner.svg">
+    
+    <!-- Schema.org -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Restaurant",
+        "name": "Le Petit Bistro Parisien",
+        "url": "http://localhost/ProjetMenuCraft/public/?page=display&slug=demo-restaurant"
+                ,"telephone": "01 42 36 78 90"
+        ,"address": "24 Rue de Rivoli, 75004 Paris"
+            }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="http://localhost/ProjetMenuCraft/public//assets/css/display/base.css">
+    <link rel="stylesheet" href="http://localhost/ProjetMenuCraft/public//assets/css/display/templates.css">
+    <script>if(localStorage.getItem('displayDarkMode')==='true')document.documentElement.classList.add('dark-mode');</script>
+</head>
+<body class="display-page template-classic layout-standard">
+
+
+
+<!-- Header -->
+<header class="display-header">
+    <div class="header-inner">
+        <div class="restaurant-brand">
+                        <img src="http://localhost/ProjetMenuCraft/public//uploads/demo_logo.svg" alt="Logo" class="restaurant-logo">
+                        <span class="restaurant-name">Le Petit Bistro Parisien</span>
+        </div>
+
+        <ul class="display-nav" id="displayNav">
+            <li><a href="#carte">Carte</a></li>
+                        <li><a href="#menus">Menus</a></li>
+                        <li><a href="#services">Services</a></li>
+                                    <li><a href="#contact">Contact</a></li>
+        </ul>
+
+        <div class="header-actions">
+                        <button class="dark-mode-toggle" onclick="toggleDisplayDarkMode()" title="Mode sombre">
+                <i class="fas fa-moon" id="displayDarkIcon"></i>
+            </button>
+            <button class="display-mobile-toggle" onclick="document.getElementById('displayNav').classList.toggle('open')">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </div>
+</header>
+
+
+<!-- Scroll navigation arrows -->
+<div class="scroll-arrows">
+    <button class="scroll-arrow scroll-arrow-up" id="scrollUpBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Haut de page">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+    <button class="scroll-arrow scroll-arrow-down" id="scrollDownBtn" onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})" title="Bas de page">
+        <i class="fas fa-chevron-down"></i>
+    </button>
+</div>
+
+<!-- Banner -->
+<section class="display-banner">
+    <img src="http://localhost/ProjetMenuCraft/public//uploads/demo_banner.svg" alt="Bannière" class="banner-image">
+    <div class="banner-overlay"></div>
+    <div class="banner-content">
+        <h1>Le Petit Bistro Parisien</h1>
+                <p>Cuisine française authentique au cœur de Paris</p>
+            </div>
+</section>
+
+<!-- Carte -->
+<section class="display-section" id="carte">
+    <div class="display-container">
+        <div class="display-section-title">
+            <h2>Notre Carte</h2>
+            <div class="title-decoration"></div>
+        </div>
+
+                                                                                                                    <div class="carte-category">
+                        <h3>Entrées</h3>
+                                                <p class="category-description">Nos entrées fraîches et de saison</p>
+                                                <div class="dish-grid">
+                                                        <div class="dish-card">
+                                                                <div class="dish-details">
+                                    <div class="dish-header">
+                                        <span class="dish-name">Velouté de butternut</span>
+                                        <div class="dish-header-right">
+                                            <span class="dish-price">9,50 €</span>
+                                                                                    </div>
+                                    </div>
+                                                                        <p class="dish-desc">Velouté onctueux à la butternut rôtie, éclats de noisettes et crème fouettée</p>
+                                                                                                                                            </div>
+                            </div>
+                                                        <div class="dish-card">
+                                                                <div class="dish-details">
+                                    <div class="dish-header">
+                                        <span class="dish-name">Salade de chèvre chaud</span>
+                                        <div class="dish-header-right">
+                                            <span class="dish-price">11,00 €</span>
+                                                                                    </div>
+                                    </div>
+                                                                        <p class="dish-desc">Mesclun, toast de chèvre gratiné, miel, noix et vinaigrette balsamique</p>
+                                                                                                                                            </div>
+                            </div>
+                                                        <div class="dish-card">
+                                                                <div class="dish-details">
+                                    <div class="dish-header">
+                                        <span class="dish-name">Tartare de saumon</span>
+                                        <div class="dish-header-right">
+                                            <span class="dish-price">13,50 €</span>
+                                                                                    </div>
+                                    </div>
+                                                                        <p class="dish-desc">Saumon frais mariné citron-aneth, avocat et toast grillé</p>
+                                                                                                                                            </div>
+                            </div>
+                                                        <div class="dish-card">
+                                                                <div class="dish-details">
+                                    <div class="dish-header">
+                                        <span class="dish-name">Œuf parfait</span>
+                                        <div class="dish-header-right">
+                                            <span class="dish-price">10,50 €</span>
+                                                                                    </div>
+                                    </div>
+                                                                        <p class="dish-desc">Œuf cuit 64°, espuma de parmesan, chips de lard et salade frisée</p>
+                                                                                                                                            </div>
+                            </div>
+                                                        <div class="dish-card">
+                                                                <div class="dish-details">
+                                    <div class="dish-header">
+                                        <span class="dish-name">Burrata crémeuse</span>
+                                        <div class="dish-header-right">
+                                            <span class="dish-price">12,00 €</span>
+                                                                                    </div>
+                                    </div>
+                                                                        <p class="dish-desc">Burrata di Puglia, tomates confites, pesto frais et roquette</p>
+                                                                                                                                            </div>
+                            </div>
+                                                    </div>
+                    </div>
+                                                                                                                    <div class="carte-category">
+                        <h3>Plats</h3>
+                                                <p class="category-description">Nos plats signatures préparés avec soin</p>
+                                                <div class="dish-grid">
+                                                        <div class="dish-card">
+                                                                <div class="dish-details">
+                                    <div class="dish-header">
+                                        <span class="dish-name">Filet de bœuf rossini</span>
+                                        <div class="dish-header-right">
+                                            <span class="dish-price">32,00 €</span>
+                                                                                    </div>
+                                    </div>
+                                                                        <p class="dish-desc">Filet de bœuf, escalope de foie gras poêlée, jus truffé et pommes dauphines</p>
+                                                                                                                                            </div>
+                            </div>
+                                                        <div class="dish-card">
+                                                                <div class="dish-details">
+                                    <div class="dish-header">
+                                        <span class="dish-name">Pavé de saumon grillé</span>
+                                        <div class="dish-header-right">
+                                            <span class="dish-price">24,50 €</span>
+                                                                                    </div>
+                                    </div>
+                                                                        <p class="dish-desc">Saumon label rouge, risotto aux asperges vertes et beurre citronné</p>
+                                                                                                                                            </div>
+                            </div>
+                                                        <div class="dish-card">
+                                                                <div class="dish-details">
+                                    <div class="dish-header">
+                                        <span class="dish-name">Magret de canard</span>
+                                        <div class="dish-header-right">
+                                            <span class="dish-price">26,00 €</span>
+                                                                                    </div>
+                                    </div>
+                                                                        <p class="dish-desc">Magret rosé, purée de patate douce, figues rôties et sauce au porto</p>
+                                                                                                                                            </div>
+                            </div>
+                                                        <div class="dish-card">
+                                                                <div class="dish-details">
+                                    <div class="dish-header">
+                                        <span class="dish-name">Risotto aux cèpes</span>
+                                        <div class="dish-header-right">
+                                            <span class="dish-price">21,00 €</span>
+                                                                                    </div>
+                                    </div>
+                                                                        <p class="dish-desc">Risotto crémeux aux cèpes frais, parmesan 24 mois et huile de truffe</p>
+                                                                                                                                            </div>
+                            </div>
+                                                        <div class="dish-card">
+                                                                <div class="dish-details">
+                                    <div class="dish-header">
+                                        <span class="dish-name">Burger Le Bistro</span>
+                                        <div class="dish-header-right">
+                                            <span class="dish-price">18,50 €</span>
+                                                                                    </div>
+                                    </div>
+                                                                        <p class="dish-desc">Bœuf Aubrac, cheddar affiné, bacon fumé, oignons confits, frites maison</p>
+                                                                                                                                            </div>
+                            </div>
+                                                        <div class="dish-card">
+                                                                <div class="dish-details">
+                                    <div class="dish-header">
+                                        <span class="dish-name">Souris d&#039;agneau confite</span>
+                                        <div class="dish-header-right">
+                                            <span class="dish-price">27,00 €</span>
+                                                                                    </div>
+                                    </div>
+                                                                        <p class="dish-desc">Agneau confit 7h, polenta crémeuse, jus corsé aux herbes de Provence</p>
+                                                                                                                                            </div>
+                            </div>
+                                                    </div>
+                    </div>
+                                                                                                                    <div class="carte-category">
+                        <h3>Desserts</h3>
+                                                <p class="category-description">Douceurs sucrées pour terminer en beauté</p>
+                                                <div class="dish-grid">
+                                                        <div class="dish-card">
+                                                                <div class="dish-details">
+                                    <div class="dish-header">
+                                        <span class="dish-name">Fondant au chocolat</span>
+                                        <div class="dish-header-right">
+                                            <span class="dish-price">10,50 €</span>
+                                                                                    </div>
+                                    </div>
+                                                                        <p class="dish-desc">Cœur coulant au chocolat noir 70%, glace vanille de Madagascar</p>
+                                                                                                                                            </div>
+                            </div>
+                                                        <div class="dish-card">
+                                                                <div class="dish-details">
+                                    <div class="dish-header">
+                                        <span class="dish-name">Tarte tatin</span>
+                                        <div class="dish-header-right">
+                                            <span class="dish-price">9,50 €</span>
+                                                                                    </div>
+                                    </div>
+                                                                        <p class="dish-desc">Pommes caramélisées, pâte feuilletée croustillante et crème fraîche</p>
+                                                                                                                                            </div>
+                            </div>
+                                                        <div class="dish-card">
+                                                                <div class="dish-details">
+                                    <div class="dish-header">
+                                        <span class="dish-name">Crème brûlée</span>
+                                        <div class="dish-header-right">
+                                            <span class="dish-price">8,50 €</span>
+                                                                                    </div>
+                                    </div>
+                                                                        <p class="dish-desc">Crème vanille Bourbon, caramel craquant</p>
+                                                                                                                                            </div>
+                            </div>
+                                                        <div class="dish-card">
+                                                                <div class="dish-details">
+                                    <div class="dish-header">
+                                        <span class="dish-name">Tiramisu maison</span>
+                                        <div class="dish-header-right">
+                                            <span class="dish-price">9,00 €</span>
+                                                                                    </div>
+                                    </div>
+                                                                        <p class="dish-desc">Mascarpone léger, café expresso et cacao amer</p>
+                                                                                                                                            </div>
+                            </div>
+                                                        <div class="dish-card">
+                                                                <div class="dish-details">
+                                    <div class="dish-header">
+                                        <span class="dish-name">Assiette de fromages</span>
+                                        <div class="dish-header-right">
+                                            <span class="dish-price">12,00 €</span>
+                                                                                    </div>
+                                    </div>
+                                                                        <p class="dish-desc">Sélection de 5 fromages affinés, confiture de figues et pain aux noix</p>
+                                                                                                                                            </div>
+                            </div>
+                                                    </div>
+                    </div>
+                                                                                                                    <div class="carte-category">
+                        <h3>Boissons</h3>
+                                                <p class="category-description">Vins, cocktails et boissons sans alcool</p>
+                                                <div class="dish-grid">
+                                                        <div class="dish-card">
+                                                                <div class="dish-details">
+                                    <div class="dish-header">
+                                        <span class="dish-name">Côtes du Rhône rouge</span>
+                                        <div class="dish-header-right">
+                                            <span class="dish-price">7,50 €</span>
+                                                                                    </div>
+                                    </div>
+                                                                        <p class="dish-desc">Domaine de la Janasse, 2021 — Fruité et épicé</p>
+                                                                                                                                            </div>
+                            </div>
+                                                        <div class="dish-card">
+                                                                <div class="dish-details">
+                                    <div class="dish-header">
+                                        <span class="dish-name">Sancerre blanc</span>
+                                        <div class="dish-header-right">
+                                            <span class="dish-price">9,00 €</span>
+                                                                                    </div>
+                                    </div>
+                                                                        <p class="dish-desc">Domaine Vacheron, 2022 — Frais et minéral</p>
+                                                                                                                                            </div>
+                            </div>
+                                                        <div class="dish-card">
+                                                                <div class="dish-details">
+                                    <div class="dish-header">
+                                        <span class="dish-name">Cocktail Spritz</span>
+                                        <div class="dish-header-right">
+                                            <span class="dish-price">10,00 €</span>
+                                                                                    </div>
+                                    </div>
+                                                                        <p class="dish-desc">Aperol, prosecco, eau gazeuse et tranche d&#039;orange</p>
+                                                                                                                                            </div>
+                            </div>
+                                                        <div class="dish-card">
+                                                                <div class="dish-details">
+                                    <div class="dish-header">
+                                        <span class="dish-name">Limonade maison</span>
+                                        <div class="dish-header-right">
+                                            <span class="dish-price">5,50 €</span>
+                                                                                    </div>
+                                    </div>
+                                                                        <p class="dish-desc">Citron pressé, menthe fraîche et miel</p>
+                                                                                                                                            </div>
+                            </div>
+                                                        <div class="dish-card">
+                                                                <div class="dish-details">
+                                    <div class="dish-header">
+                                        <span class="dish-name">Café gourmand</span>
+                                        <div class="dish-header-right">
+                                            <span class="dish-price">8,00 €</span>
+                                                                                    </div>
+                                    </div>
+                                                                        <p class="dish-desc">Expresso et trio de mignardises du chef</p>
+                                                                                                                                            </div>
+                            </div>
+                                                    </div>
+                    </div>
+                                                            </div>
+</section>
+
+<!-- Menus du jour -->
+<section class="display-section" id="menus">
+    <div class="display-container">
+        <div class="display-section-title">
+            <h2>Menus & Formules</h2>
+            <div class="title-decoration"></div>
+        </div>
+        <div class="daily-menu-grid">
+                        <div class="daily-menu-card">
+                <div class="menu-header">
+                    <h4>Menu Déjeuner</h4>
+                                        <span class="menu-price">24,90 €</span>
+                                    </div>
+                <div class="menu-body">
+                                        <p style="font-size:0.85rem;color:var(--color-text-muted);margin-bottom:12px;font-style:italic;">Entrée + Plat + Dessert</p>
+                                                            <div class="menu-item">
+                        <span class="item-label">Entrée au choix</span>
+                        <span class="item-value">Velouté de butternut aux noisettes OU Salade de chèvre chaud au miel</span>
+                    </div>
+                                        <div class="menu-item">
+                        <span class="item-label">Plat au choix</span>
+                        <span class="item-value">Pavé de saumon grillé, risotto aux asperges OU Magret de canard, purée de patate douce</span>
+                    </div>
+                                        <div class="menu-item">
+                        <span class="item-label">Fromage ou Dessert</span>
+                        <span class="item-value">Assiette de fromages affinés OU Fondant au chocolat, glace vanille</span>
+                    </div>
+                                        <div class="menu-item">
+                        <span class="item-label">Boisson incluse</span>
+                        <span class="item-value">Verre de vin (rouge, blanc ou rosé) OU Eau minérale</span>
+                    </div>
+                                    </div>
+            </div>
+                        <div class="daily-menu-card">
+                <div class="menu-header">
+                    <h4>Formule Express</h4>
+                                        <span class="menu-price">18,50 €</span>
+                                    </div>
+                <div class="menu-body">
+                                        <p style="font-size:0.85rem;color:var(--color-text-muted);margin-bottom:12px;font-style:italic;">Plat + Dessert</p>
+                                                            <div class="menu-item">
+                        <span class="item-label">Plat du jour</span>
+                        <span class="item-value">Burger Le Bistro, frites maison OU Risotto crémeux aux cèpes et parmesan</span>
+                    </div>
+                                        <div class="menu-item">
+                        <span class="item-label">Dessert au choix</span>
+                        <span class="item-value">Tiramisu maison OU Tarte tatin, crème fraîche OU Café gourmand</span>
+                    </div>
+                                    </div>
+            </div>
+                        <div class="daily-menu-card">
+                <div class="menu-header">
+                    <h4>Menu Dégustation</h4>
+                                        <span class="menu-price">42,00 €</span>
+                                    </div>
+                <div class="menu-body">
+                                        <p style="font-size:0.85rem;color:var(--color-text-muted);margin-bottom:12px;font-style:italic;">L&#039;expérience complète en 5 temps</p>
+                                                            <div class="menu-item">
+                        <span class="item-label">Amuse-bouche</span>
+                        <span class="item-value">Mise en bouche du chef selon l&#039;arrivage</span>
+                    </div>
+                                        <div class="menu-item">
+                        <span class="item-label">Entrée</span>
+                        <span class="item-value">Tartare de saumon, avocat et agrumes OU Burrata crémeuse, tomates confites au basilic</span>
+                    </div>
+                                        <div class="menu-item">
+                        <span class="item-label">Plat</span>
+                        <span class="item-value">Filet de bœuf rossini, jus truffé, pommes dauphines OU Souris d&#039;agneau confite 7h, polenta et herbes</span>
+                    </div>
+                                        <div class="menu-item">
+                        <span class="item-label">Pré-dessert</span>
+                        <span class="item-value">Sorbet citron-basilic</span>
+                    </div>
+                                        <div class="menu-item">
+                        <span class="item-label">Dessert</span>
+                        <span class="item-value">Sphère chocolat, cœur fruits rouges et éclats de praliné</span>
+                    </div>
+                                    </div>
+            </div>
+                    </div>
+    </div>
+</section>
+
+<!-- Services -->
+<section class="display-section" id="services">
+    <div class="display-container">
+        <div class="display-section-title">
+            <h2>Nos Services</h2>
+            <div class="title-decoration"></div>
+        </div>
+
+                        <div class="services-grid">
+                        <div class="service-item">
+                <i class="fas fa-chair"></i>
+                <span>Sur place</span>
+            </div>
+                        <div class="service-item">
+                <i class="fas fa-bag-shopping"></i>
+                <span>À emporter</span>
+            </div>
+                        <div class="service-item">
+                <i class="fas fa-motorcycle"></i>
+                <span>Livraison</span>
+            </div>
+                        <div class="service-item">
+                <i class="fas fa-wifi"></i>
+                <span>WiFi gratuit</span>
+            </div>
+                        <div class="service-item">
+                <i class="fas fa-snowflake"></i>
+                <span>Climatisation</span>
+            </div>
+                        <div class="service-item">
+                <i class="fas fa-wheelchair"></i>
+                <span>Accès PMR</span>
+            </div>
+                        <div class="service-item">
+                <i class="fas fa-paw"></i>
+                <span>Animaux acceptés</span>
+            </div>
+                    </div>
+        
+        <!-- Moyens de paiement -->
+                        <div style="text-align:center;margin-top:var(--spacing-xl);">
+            <h3 style="font-size:1rem;color:var(--color-text-light);margin-bottom:var(--spacing-md);">Moyens de paiement acceptés</h3>
+            <div class="payment-methods">
+                                <span class="payment-badge"><i class="fas fa-credit-card"></i> Visa</span>
+                                <span class="payment-badge"><i class="fas fa-credit-card"></i> Mastercard</span>
+                                <span class="payment-badge"><i class="fas fa-credit-card"></i> CB</span>
+                                <span class="payment-badge"><i class="fas fa-credit-card"></i> Espèces</span>
+                                <span class="payment-badge"><i class="fas fa-credit-card"></i> Chèques</span>
+                                <span class="payment-badge"><i class="fas fa-credit-card"></i> Tickets resto</span>
+                            </div>
+        </div>
+        
+        <!-- Réseaux sociaux -->
+                        <div class="social-links">
+                        <a href="https://instagram.com/petitbistroparisien" target="_blank" class="social-link" rel="noopener">
+                <i class="fab fa-instagram"></i>
+            </a>
+                        <a href="https://facebook.com/petitbistroparisien" target="_blank" class="social-link" rel="noopener">
+                <i class="fab fa-facebook"></i>
+            </a>
+                        <a href="https://x.com/petitbistro" target="_blank" class="social-link" rel="noopener">
+                <i class="fab fa-x-twitter"></i>
+            </a>
+                        <a href="https://tiktok.com/@petitbistro" target="_blank" class="social-link" rel="noopener">
+                <i class="fab fa-tiktok"></i>
+            </a>
+                    </div>
+            </div>
+</section>
+
+<!-- Réservation -->
+
+<!-- Livraison -->
+
+<!-- Footer / Contact -->
+<footer class="display-footer" id="contact">
+    <div class="footer-content">
+        <div class="footer-info">
+            <h3>Le Petit Bistro Parisien</h3>
+                                            <p><i class="fas fa-phone"></i> 01 42 36 78 90</p>
+                                                <p><i class="fas fa-envelope"></i> contact@petitbistro.fr</p>
+                                                <p><i class="fas fa-map-marker-alt"></i> 24 Rue de Rivoli, 75004 Paris</p>
+                                    </div>
+
+                <div class="footer-hours">
+            <h4><i class="fas fa-clock" style="color:var(--color-primary-light);margin-right:6px;"></i> Horaires</h4>
+                        <p>Lundi : Fermé</p>
+                        <p>Mardi - Vendredi : 12h00 - 14h30 / 19h00 - 22h30</p>
+                        <p>Samedi : 12h00 - 15h00 / 19h00 - 23h00</p>
+                        <p>Dimanche : 12h00 - 15h00</p>
+                    </div>
+        
+                <div class="footer-map">
+            <iframe src="https://maps.google.com/maps?q=24+Rue+de+Rivoli%2C+75004+Paris&output=embed" allowfullscreen loading="lazy"></iframe>
+        </div>
+            </div>
+
+    <div class="footer-bottom-display">
+        <span>© 2026 Le Petit Bistro Parisien — Propulsé par <a href="http://localhost/ProjetMenuCraft/public/" style="color:var(--color-primary-light);">MenuCraft</a></span>
+        <div class="footer-legal-links">
+            <a href="http://localhost/ProjetMenuCraft/public/?page=legal&section=cgu">CGU</a>
+            <a href="http://localhost/ProjetMenuCraft/public/?page=legal&section=privacy">Confidentialité</a>
+            <a href="http://localhost/ProjetMenuCraft/public/?page=legal&section=cookies">Cookies</a>
+        </div>
+    </div>
+</footer>
+
+<!-- Cookie Banner -->
+<div class="cookie-banner" id="cookieBanner">
+    <div class="cookie-banner-inner">
+        <p>🍪 Ce site utilise des cookies pour améliorer votre expérience. En continuant, vous acceptez notre <a href="http://localhost/ProjetMenuCraft/public/?page=legal&section=cookies" style="color:var(--color-primary-light);">politique de cookies</a>.</p>
+        <div class="cookie-actions">
+            <button class="cookie-accept" onclick="acceptCookies()">Accepter</button>
+            <button class="cookie-customize" onclick="toggleCookiePrefs()">Personnaliser</button>
+            <button class="cookie-refuse" onclick="refuseCookies()">Refuser</button>
+        </div>
+    </div>
+    <div class="cookie-prefs" id="cookiePrefs">
+        <div class="cookie-pref-item">
+            <div>
+                <strong>Cookies essentiels</strong>
+                <p>Nécessaires au fonctionnement du site.</p>
+            </div>
+            <label class="cookie-toggle">
+                <input type="checkbox" checked disabled>
+                <span class="cookie-toggle-slider"></span>
+            </label>
+        </div>
+        <div class="cookie-pref-item">
+            <div>
+                <strong>Cookies analytiques</strong>
+                <p>Nous aident à comprendre comment vous utilisez le site.</p>
+            </div>
+            <label class="cookie-toggle">
+                <input type="checkbox" id="cookieAnalytics">
+                <span class="cookie-toggle-slider"></span>
+            </label>
+        </div>
+        <div class="cookie-pref-item">
+            <div>
+                <strong>Cookies marketing</strong>
+                <p>Utilisés pour vous proposer du contenu pertinent.</p>
+            </div>
+            <label class="cookie-toggle">
+                <input type="checkbox" id="cookieMarketing">
+                <span class="cookie-toggle-slider"></span>
+            </label>
+        </div>
+        <div style="display:flex;justify-content:flex-end;padding-top:12px;">
+            <button class="cookie-save-prefs" onclick="saveCustomCookies()"><i class="fas fa-check"></i> Enregistrer mes choix</button>
+        </div>
+    </div>
+</div>
+
+<!-- Cookie Settings Shortcut -->
+<button class="cookie-reopen-btn" id="cookieReopenBtn" onclick="reopenCookieBanner()" title="Paramètres des cookies">
+    <i class="fas fa-cookie-bite"></i>
+</button>
+
+<!-- Lightbox -->
+<div class="lightbox-overlay" id="lightbox" onclick="closeLightbox()">
+    <button class="lightbox-close" onclick="closeLightbox()"><i class="fas fa-times"></i></button>
+    <img src="" alt="Image agrandie" id="lightboxImg">
+</div>
+
+<script>
+// Scroll arrows visibility
+(function() {
+    const upBtn = document.getElementById('scrollUpBtn');
+    const downBtn = document.getElementById('scrollDownBtn');
+    function updateArrows() {
+        const scrollY = window.scrollY;
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        upBtn.classList.toggle('visible', scrollY > 200);
+        downBtn.classList.toggle('visible', scrollY < maxScroll - 200);
+    }
+    updateArrows();
+    window.addEventListener('scroll', updateArrows, {passive: true});
+})();
+
+// Closure dates - block booking
+
+// Dark mode
+function toggleDisplayDarkMode() {
+    document.documentElement.classList.toggle('dark-mode');
+    const isDark = document.documentElement.classList.contains('dark-mode');
+    localStorage.setItem('displayDarkMode', isDark);
+    const icon = document.getElementById('displayDarkIcon');
+    if (icon) icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+}
+if (document.documentElement.classList.contains('dark-mode')) {
+    const icon = document.getElementById('displayDarkIcon');
+    if (icon) icon.className = 'fas fa-sun';
+}
+
+// Smooth scroll
+document.querySelectorAll('.display-nav a[href^="#"]').forEach(a => {
+    a.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            document.getElementById('displayNav').classList.remove('open');
+        }
+    });
+});
+
+// Lightbox
+function openLightbox(src) {
+    document.getElementById('lightboxImg').src = src;
+    document.getElementById('lightbox').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+// Cookies
+const cookieReopenBtn = document.getElementById('cookieReopenBtn');
+function showReopenBtn() {
+    if (cookieReopenBtn) cookieReopenBtn.classList.add('visible');
+}
+function hideReopenBtn() {
+    if (cookieReopenBtn) cookieReopenBtn.classList.remove('visible');
+}
+if (!localStorage.getItem('display_cookie_consent')) {
+    document.getElementById('cookieBanner').classList.add('show');
+} else {
+    showReopenBtn();
+}
+function acceptCookies() {
+    localStorage.setItem('display_cookie_consent', 'accepted');
+    document.getElementById('cookieBanner').classList.remove('show');
+    showReopenBtn();
+}
+function refuseCookies() {
+    localStorage.setItem('display_cookie_consent', 'refused');
+    document.getElementById('cookieBanner').classList.remove('show');
+    showReopenBtn();
+}
+function toggleCookiePrefs() {
+    const prefs = document.getElementById('cookiePrefs');
+    prefs.style.display = prefs.style.display === 'block' ? 'none' : 'block';
+}
+function saveCustomCookies() {
+    const analytics = document.getElementById('cookieAnalytics')?.checked ? '1' : '0';
+    const marketing = document.getElementById('cookieMarketing')?.checked ? '1' : '0';
+    localStorage.setItem('display_cookie_consent', 'custom');
+    localStorage.setItem('cookie_analytics', analytics);
+    localStorage.setItem('cookie_marketing', marketing);
+    document.getElementById('cookieBanner').classList.remove('show');
+    showReopenBtn();
+}
+function reopenCookieBanner() {
+    hideReopenBtn();
+    document.getElementById('cookieBanner').classList.add('show');
+}
+
+// Booking
+
+// Delivery cart
+</script>
+</body>
+</html>

@@ -1450,3 +1450,55 @@ table.admin-table tr:hover td { background: var(--color-bg-warm); }
 @media (max-width: 420px) {
     .reservation-fab { bottom: 60px; right: 12px; width: 38px; height: 38px; font-size: 0.9rem; }
 }
+
+/* ─── Menu Category Editor ──────────────────────────── */
+.menu-categories-editor { display:flex;flex-direction:column;gap:14px; }
+.menu-category-block {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-primary);
+    border-radius: var(--radius-sm);
+    padding: 14px 14px 10px;
+    position: relative;
+}
+.menu-cat-header {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--color-border-light);
+}
+.menu-cat-header input {
+    font-size: 0.9rem;
+}
+.menu-choices-list {
+    padding-left: 12px;
+    border-left: 2px solid var(--color-border-light);
+    margin-left: 4px;
+}
+.menu-choice-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 6px;
+}
+.menu-choice-row input { font-size: 0.85rem; }
+.choice-bullet {
+    color: var(--color-primary);
+    font-weight: 700;
+    font-size: 0.7rem;
+    flex-shrink: 0;
+    width: 14px;
+    text-align: center;
+}
+.menu-category-block > .btn-outline {
+    margin-top: 6px;
+    margin-left: 16px;
+}
+@media (max-width: 600px) {
+    .menu-category-block { padding: 10px; }
+    .menu-cat-header { flex-wrap: wrap; }
+    .menu-choice-row { gap: 4px; }
+    .menu-choices-list { padding-left: 8px; margin-left: 0; }
+}

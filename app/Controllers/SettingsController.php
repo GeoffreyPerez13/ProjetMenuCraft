@@ -18,6 +18,18 @@ class SettingsController extends BaseController
         $optModel = new OptionModel($this->pdo);
         $options = $optModel->getAll($adminId);
 
+        // Auto-save default time slots only on first visit (key never saved in DB)
+        if ($section === 'delivery' && !array_key_exists('delivery_time_slots', $options)) {
+            $defaultSlots = "11:00\n11:15\n11:30\n11:45\n12:00\n12:15\n12:30\n12:45\n13:00\n13:15\n13:30\n13:45\n14:00\n18:30\n18:45\n19:00\n19:15\n19:30\n19:45\n20:00\n20:15\n20:30\n20:45\n21:00\n21:15\n21:30\n21:45\n22:00\n22:15\n22:30\n22:45\n23:00";
+            $optModel->set($adminId, 'delivery_time_slots', $defaultSlots);
+            $options['delivery_time_slots'] = $defaultSlots;
+        }
+        if ($section === 'online-booking' && !array_key_exists('booking_time_slots', $options)) {
+            $defaultSlots = "11:30\n11:45\n12:00\n12:15\n12:30\n12:45\n13:00\n13:15\n13:30\n13:45\n14:00\n18:30\n18:45\n19:00\n19:15\n19:30\n19:45\n20:00\n20:15\n20:30\n20:45\n21:00\n21:15\n21:30\n21:45\n22:00\n22:15\n22:30\n22:45\n23:00";
+            $optModel->set($adminId, 'booking_time_slots', $defaultSlots);
+            $options['booking_time_slots'] = $defaultSlots;
+        }
+
         $subscription = (new ClientSubscription($this->pdo))->findByAdmin($adminId);
         $premiumFeatures = (new PremiumFeature($this->pdo))->getByAdmin($adminId);
 
@@ -128,7 +140,7 @@ class SettingsController extends BaseController
         $booleanOptions = ['site_online', 'email_notifications', 'mail_reminder', 'hide_tour_button',
             'hide_reservation_fab', 'booking_enabled', 'booking_auto_complete', 'booking_daily_limit_enabled',
             'booking_require_phone', 'booking_require_email', 'booking_confirmation_email',
-            'booking_auto_confirm'];
+            'booking_auto_confirm', 'delivery_enabled', 'google_reviews_enabled'];
         foreach ($booleanOptions as $key) {
             if (isset($_POST[$key])) {
                 $optModel->set($adminId, $key, $_POST[$key]);
@@ -137,7 +149,11 @@ class SettingsController extends BaseController
 
         $textOptions = ['google_place_id', 'google_api_key', 'booking_message',
             'booking_min_party', 'booking_max_party', 'booking_advance_days',
-            'booking_daily_limit', 'booking_min_hours_before', 'booking_time_slots'];
+            'booking_daily_limit', 'booking_min_hours_before', 'booking_time_slots',
+            'delivery_fee', 'delivery_min_order', 'delivery_radius_km',
+            'delivery_estimated_time', 'delivery_hours', 'delivery_time_slots', 'delivery_zones', 'delivery_message',
+            'delivery_platform_ubereats', 'delivery_platform_deliveroo', 'delivery_platform_justeat',
+            'delivery_platform_other', 'delivery_platform_other_name'];
         foreach ($textOptions as $key) {
             if (isset($_POST[$key])) {
                 $optModel->set($adminId, $key, trim($_POST[$key]));

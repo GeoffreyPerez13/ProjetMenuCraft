@@ -274,6 +274,7 @@ CREATE TABLE IF NOT EXISTS `reservations` (
     `reservation_time` TIME NOT NULL,
     `party_size` INT DEFAULT 2,
     `special_requests` TEXT,
+    `admin_notes` TEXT DEFAULT NULL,
     `status` ENUM('pending', 'confirmed', 'rejected', 'completed', 'cancelled', 'no_show') DEFAULT 'pending',
     `table_id` INT DEFAULT NULL,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -413,6 +414,42 @@ CREATE TABLE IF NOT EXISTS `remember_tokens` (
     INDEX `idx_token` (`token`),
     INDEX `idx_admin` (`admin_id`),
     FOREIGN KEY (`admin_id`) REFERENCES `admins`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================
+-- Table : delivery_orders
+-- ============================================
+CREATE TABLE IF NOT EXISTS `delivery_orders` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `admin_id` INT NOT NULL,
+    `customer_name` VARCHAR(255) NOT NULL,
+    `customer_phone` VARCHAR(50) NOT NULL,
+    `customer_email` VARCHAR(255) DEFAULT NULL,
+    `delivery_address` TEXT NOT NULL,
+    `delivery_time_slot` VARCHAR(20) DEFAULT NULL,
+    `delivery_notes` TEXT DEFAULT NULL,
+    `status` ENUM('new', 'preparing', 'delivering', 'delivered', 'cancelled') DEFAULT 'new',
+    `total_amount` DECIMAL(10,2) NOT NULL DEFAULT 0,
+    `delivery_fee` DECIMAL(10,2) NOT NULL DEFAULT 0,
+    `admin_notes` TEXT DEFAULT NULL,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX `idx_admin_status` (`admin_id`, `status`),
+    FOREIGN KEY (`admin_id`) REFERENCES `admins`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================
+-- Table : delivery_items
+-- ============================================
+CREATE TABLE IF NOT EXISTS `delivery_items` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `order_id` INT NOT NULL,
+    `dish_id` INT DEFAULT NULL,
+    `dish_name` VARCHAR(255) NOT NULL,
+    `quantity` INT NOT NULL DEFAULT 1,
+    `unit_price` DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (`order_id`) REFERENCES `delivery_orders`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`dish_id`) REFERENCES `plats`(`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -294,6 +294,54 @@ const tourSteps = {
         }
     ],
 
+    'delivery-orders': [
+        {
+            element: '.card:has(.badge-success), .card:has(.badge-danger)',
+            popover: {
+                title: 'Statut de la livraison',
+                description: 'Indique si le système de livraison est activé ou non. Accédez rapidement aux paramètres ou aux plateformes externes.',
+                side: isMobile ? 'bottom' : 'bottom',
+                align: isMobile ? 'center' : 'center'
+            }
+        },
+        {
+            element: '.delivery-stats',
+            popover: {
+                title: 'Statistiques',
+                description: 'Nouvelles commandes, nombre de commandes du jour et chiffre d\'affaires en un coup d\'œil.',
+                side: isMobile ? 'bottom' : 'bottom',
+                align: isMobile ? 'start' : 'center'
+            }
+        },
+        {
+            element: '.card:has(select[name="status"])',
+            popover: {
+                title: 'Filtres',
+                description: 'Filtrez les commandes par statut : nouvelle, en préparation, en livraison, livrée ou annulée.',
+                side: isMobile ? 'bottom' : 'bottom',
+                align: isMobile ? 'start' : 'start'
+            }
+        },
+        {
+            element: '.card:has(.card-header)',
+            popover: {
+                title: 'Liste des commandes',
+                description: 'Toutes vos commandes de livraison. Changez leur statut au fur et à mesure de la préparation et de la livraison.',
+                side: isMobile ? 'bottom' : 'top',
+                align: isMobile ? 'start' : 'center'
+            }
+        },
+        {
+            element: '.delivery-order-card',
+            popover: {
+                title: 'Détail d\'une commande',
+                description: 'Coordonnées du client, adresse, articles commandés et total. Utilisez les boutons pour faire progresser le statut.',
+                side: isMobile ? 'bottom' : 'top',
+                align: isMobile ? 'start' : 'center'
+            }
+        }
+    ],
+
     'floor-plan': [
         {
             element: '#roomTabs',

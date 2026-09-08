@@ -112,6 +112,7 @@ $clientMgmtCtrl = new ClientManagementController($pdo);
 $sitemapCtrl = new SitemapController($pdo);
 $notifCtrl = new NotificationStreamController($pdo);
 $superAdminCtrl = new SuperAdminController($pdo);
+$deliveryCtrl = new DeliveryController($pdo);
 
 switch ($page) {
 
@@ -150,18 +151,17 @@ switch ($page) {
             $email = trim($_POST['email'] ?? '');
             if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $token = bin2hex(random_bytes(32));
-                $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
                 $stmt = $pdo->prepare(
-                    'INSERT INTO password_resets (email, token, expires_at) VALUES (:e, :t, :exp)'
+                    'INSERT INTO password_resets (email, token, expires_at) VALUES (:e, :t, NOW() + INTERVAL 1 HOUR)'
                 );
-                $stmt->execute([':e' => $email, ':t' => $token, ':exp' => $expires]);
+                $stmt->execute([':e' => $email, ':t' => $token]);
 
-                $resetUrl = SITE_URL . '?page=reset-password-admin&token=' . $token;
+                $resetUrl = $siteUrl . '?page=reset-password-admin&token=' . $token;
                 $mailer = new Mailer();
                 $mailer->send($email, 'Réinitialisation de mot de passe — MenuCraft',
                     '<h2>Réinitialisation de mot de passe</h2>
                     <p>Cliquez sur le bouton ci-dessous pour réinitialiser votre mot de passe :</p>
-                    <p><a href="' . $resetUrl . '" style="background:#b45309;color:#fff;padding:14px 28px;text-decoration:none;border-radius:8px;display:inline-block;font-weight:600;">Réinitialiser mon mot de passe</a></p>
+                    <p><a href="' . htmlspecialchars($resetUrl, ENT_QUOTES, 'UTF-8') . '" style="background:#b45309;color:#fff;padding:14px 28px;text-decoration:none;border-radius:8px;display:inline-block;font-weight:600;">Réinitialiser mon mot de passe</a></p>
                     <p style="color:#a8a29e;font-size:13px;">Ce lien expire dans 1 heure.</p>'
                 );
             }
@@ -473,12 +473,44 @@ switch ($page) {
         $reservationCtrl->updateStatus();
         break;
 
+    case 'reservation-edit':
+        $reservationCtrl->editReservation();
+        break;
+
+    case 'reservation-update-notes':
+        $reservationCtrl->updateNotes();
+        break;
+
+    case 'reservation-export-csv':
+        $reservationCtrl->exportCsv();
+        break;
+
     case 'reservation-pending-count':
         $reservationCtrl->pendingCount();
         break;
 
     case 'reservation-pending-list':
         $reservationCtrl->pendingList();
+        break;
+
+    case 'delivery-orders':
+        $deliveryCtrl->list();
+        break;
+
+    case 'delivery-update-status':
+        $deliveryCtrl->updateStatus();
+        break;
+
+    case 'delivery-update-notes':
+        $deliveryCtrl->updateNotes();
+        break;
+
+    case 'delivery-order-detail':
+        $deliveryCtrl->orderDetail();
+        break;
+
+    case 'delivery-public-order':
+        $deliveryCtrl->publicOrder();
         break;
 
     case 'feedback':

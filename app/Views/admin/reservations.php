@@ -285,8 +285,11 @@ if (!isset($floorTables)) $floorTables = [];
 <div class="card">
     <div class="card-header">
         <h2><i class="fas fa-calendar-check"></i> Réservations</h2>
-        <div style="display:flex;align-items:center;gap:10px;">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
             <span class="badge badge-primary"><?= count($reservations) ?></span>
+            <a href="<?= APP_URL ?>?page=reservation-export-csv<?= $filterStatus ? '&status=' . urlencode($filterStatus) : '' ?><?= $filterDate ? '&date=' . urlencode($filterDate) : '' ?>" class="btn btn-outline btn-sm" title="Exporter en CSV">
+                <i class="fas fa-file-csv"></i> Export CSV
+            </a>
             <a href="<?= APP_URL ?>?page=settings&section=online-booking" class="btn btn-secondary btn-sm" title="Paramètres de réservation">
                 <i class="fas fa-cog"></i> Paramètres
             </a>
@@ -341,10 +344,10 @@ if (!isset($floorTables)) $floorTables = [];
                         <td>
                             <strong><?= htmlspecialchars($res->customer_name) ?></strong>
                             <?php if ($res->customer_phone): ?>
-                            <br><span style="font-size:0.78rem;color:var(--color-text-muted);"><i class="fas fa-phone"></i> <?= htmlspecialchars($res->customer_phone) ?></span>
+                            <br><a href="tel:<?= htmlspecialchars($res->customer_phone) ?>" style="font-size:0.78rem;color:var(--color-text-muted);text-decoration:none;" title="Appeler"><i class="fas fa-phone"></i> <?= htmlspecialchars($res->customer_phone) ?></a>
                             <?php endif; ?>
                             <?php if ($res->customer_email): ?>
-                            <br><span style="font-size:0.78rem;color:var(--color-text-muted);"><i class="fas fa-envelope"></i> <?= htmlspecialchars($res->customer_email) ?></span>
+                            <br><a href="mailto:<?= htmlspecialchars($res->customer_email) ?>" style="font-size:0.78rem;color:var(--color-text-muted);text-decoration:none;" title="Envoyer un email"><i class="fas fa-envelope"></i> <?= htmlspecialchars($res->customer_email) ?></a>
                             <?php endif; ?>
                         </td>
                         <td>
@@ -354,8 +357,8 @@ if (!isset($floorTables)) $floorTables = [];
                         <td><?= $res->party_size ?> <i class="fas fa-user" style="color:var(--color-text-muted);font-size:0.75rem;"></i></td>
                         <td><span class="badge <?= $st['badge'] ?>"><?= $st['label'] ?></span></td>
                         <td>
-                            <?php if ($res->status === 'pending'): ?>
                             <div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;">
+                            <?php if ($res->status === 'pending'): ?>
                                 <form method="POST" action="<?= APP_URL ?>?page=reservation-update-status" style="display:inline-flex;gap:4px;align-items:center;">
                                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
                                     <input type="hidden" name="reservation_id" value="<?= $res->id ?>">
@@ -376,9 +379,7 @@ if (!isset($floorTables)) $floorTables = [];
                                     <input type="hidden" name="status" value="rejected">
                                     <button type="submit" class="btn btn-danger btn-sm" title="Refuser"><i class="fas fa-times"></i></button>
                                 </form>
-                            </div>
                             <?php elseif ($res->status === 'confirmed'): ?>
-                            <div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;">
                                 <?php if (!empty($res->table_id) && isset($tableLabels[$res->table_id])): ?>
                                 <span class="resa-table-badge">
                                     <i class="fas fa-chair"></i> <?= htmlspecialchars($tableLabels[$res->table_id]) ?>
@@ -396,14 +397,28 @@ if (!isset($floorTables)) $floorTables = [];
                                     <input type="hidden" name="status" value="no_show">
                                     <button type="submit" class="btn btn-danger btn-sm" title="Absent"><i class="fas fa-user-slash"></i></button>
                                 </form>
-                            </div>
+                                <form method="POST" action="<?= APP_URL ?>?page=reservation-update-status" style="display:inline;" onsubmit="return confirm('Annuler cette réservation ?')">
+                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+                                    <input type="hidden" name="reservation_id" value="<?= $res->id ?>">
+                                    <input type="hidden" name="status" value="cancelled">
+                                    <button type="submit" class="btn btn-outline btn-sm" title="Annuler la réservation" style="color:var(--color-danger);border-color:var(--color-danger);"><i class="fas fa-ban"></i></button>
+                                </form>
                             <?php endif; ?>
+                            <?php if (in_array($res->status, ['pending', 'confirmed'])): ?>
+                                <button type="button" class="btn btn-outline btn-sm" title="Modifier" onclick="openEditModal(<?= htmlspecialchars(json_encode($res)) ?>)"><i class="fas fa-pen"></i></button>
+                            <?php endif; ?>
+                            </div>
                         </td>
                     </tr>
-                    <?php if ($res->special_requests): ?>
+                    <?php if ($res->special_requests || $res->admin_notes): ?>
                     <tr>
-                        <td colspan="5" style="padding:4px 16px 12px;font-size:0.8rem;color:var(--color-text-muted);font-style:italic;">
-                            <i class="fas fa-comment"></i> <?= htmlspecialchars($res->special_requests) ?>
+                        <td colspan="5" style="padding:4px 16px 12px;font-size:0.8rem;">
+                            <?php if ($res->special_requests): ?>
+                            <span style="color:var(--color-text-muted);font-style:italic;"><i class="fas fa-comment"></i> <?= htmlspecialchars($res->special_requests) ?></span>
+                            <?php endif; ?>
+                            <?php if ($res->admin_notes): ?>
+                            <span style="color:var(--color-primary);margin-left:<?= $res->special_requests ? '12px' : '0' ?>;"><i class="fas fa-sticky-note"></i> <?= htmlspecialchars($res->admin_notes) ?></span>
+                            <?php endif; ?>
                         </td>
                     </tr>
                     <?php endif; ?>
@@ -438,14 +453,16 @@ if (!isset($floorTables)) $floorTables = [];
                 </div>
                 <?php if ($res->customer_phone): ?>
                 <div class="resa-card-meta-item">
-                    <i class="fas fa-phone"></i>
-                    <span><?= htmlspecialchars($res->customer_phone) ?></span>
+                    <a href="tel:<?= htmlspecialchars($res->customer_phone) ?>" style="color:inherit;text-decoration:none;">
+                        <i class="fas fa-phone"></i> <?= htmlspecialchars($res->customer_phone) ?>
+                    </a>
                 </div>
                 <?php endif; ?>
                 <?php if ($res->customer_email): ?>
                 <div class="resa-card-meta-item">
-                    <i class="fas fa-envelope"></i>
-                    <span><?= htmlspecialchars($res->customer_email) ?></span>
+                    <a href="mailto:<?= htmlspecialchars($res->customer_email) ?>" style="color:inherit;text-decoration:none;">
+                        <i class="fas fa-envelope"></i> <?= htmlspecialchars($res->customer_email) ?>
+                    </a>
                 </div>
                 <?php endif; ?>
             </div>
@@ -453,6 +470,11 @@ if (!isset($floorTables)) $floorTables = [];
             <?php if ($res->special_requests): ?>
             <div class="resa-card-note">
                 <i class="fas fa-comment"></i> <?= htmlspecialchars($res->special_requests) ?>
+            </div>
+            <?php endif; ?>
+            <?php if ($res->admin_notes): ?>
+            <div class="resa-card-note" style="color:var(--color-primary);">
+                <i class="fas fa-sticky-note"></i> <?= htmlspecialchars($res->admin_notes) ?>
             </div>
             <?php endif; ?>
 
@@ -500,7 +522,14 @@ if (!isset($floorTables)) $floorTables = [];
                             <button type="submit" class="btn btn-danger btn-sm" style="width:100%;"><i class="fas fa-user-slash"></i> Absent</button>
                         </form>
                     </div>
+                    <form method="POST" action="<?= APP_URL ?>?page=reservation-update-status" onsubmit="return confirm('Annuler cette réservation ?')">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+                        <input type="hidden" name="reservation_id" value="<?= $res->id ?>">
+                        <input type="hidden" name="status" value="cancelled">
+                        <button type="submit" class="btn btn-outline btn-sm" style="width:100%;color:var(--color-danger);border-color:var(--color-danger);"><i class="fas fa-ban"></i> Annuler</button>
+                    </form>
                     <?php endif; ?>
+                    <button type="button" class="btn btn-outline btn-sm" style="width:100%;" onclick="openEditModal(<?= htmlspecialchars(json_encode($res)) ?>)"><i class="fas fa-pen"></i> Modifier</button>
                 </div>
             </div>
             <?php endif; ?>
@@ -510,5 +539,85 @@ if (!isset($floorTables)) $floorTables = [];
 
     <?php endif; ?>
 </div>
+
+<!-- Modal Modifier Réservation -->
+<div id="editResaModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;">
+    <div style="background:var(--color-bg);border-radius:var(--radius-lg);max-width:500px;width:90%;max-height:90vh;overflow-y:auto;padding:var(--spacing-xl);position:relative;">
+        <button type="button" onclick="closeEditModal()" style="position:absolute;top:12px;right:12px;background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--color-text-muted);"><i class="fas fa-times"></i></button>
+        <h3 style="margin-bottom:var(--spacing-lg);"><i class="fas fa-pen"></i> Modifier la réservation</h3>
+        <form method="POST" action="<?= APP_URL ?>?page=reservation-edit" id="editResaForm">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+            <input type="hidden" name="reservation_id" id="editResaId">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--spacing-md);">
+                <div class="form-group">
+                    <label>Nom</label>
+                    <input type="text" name="customer_name" id="editResaName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Téléphone</label>
+                    <input type="tel" name="customer_phone" id="editResaPhone" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="customer_email" id="editResaEmail" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Personnes</label>
+                    <input type="number" name="party_size" id="editResaSize" class="form-control" min="1" max="50">
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" name="reservation_date" id="editResaDate" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Heure</label>
+                    <input type="time" name="reservation_time" id="editResaTime" class="form-control" required>
+                </div>
+            </div>
+            <?php if (!empty($floorTables)): ?>
+            <div class="form-group">
+                <label>Table</label>
+                <select name="table_id" id="editResaTable" class="form-control">
+                    <option value="">— Aucune table —</option>
+                    <?php foreach ($floorTables as $ft): ?>
+                    <option value="<?= $ft->id ?>"><?= htmlspecialchars($ft->table_number . ($ft->name ? ' - ' . $ft->name : '')) ?> (<?= $ft->seats ?>p)</option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <?php endif; ?>
+            <div class="form-group">
+                <label><i class="fas fa-sticky-note"></i> Notes internes <span style="font-weight:400;color:var(--color-text-muted);">(non visibles par le client)</span></label>
+                <textarea name="admin_notes" id="editResaNotes" class="form-control" rows="2" placeholder="Ex: client VIP, allergie noix..."></textarea>
+            </div>
+            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:var(--spacing-md);">
+                <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Annuler</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openEditModal(res) {
+    document.getElementById('editResaId').value = res.id;
+    document.getElementById('editResaName').value = res.customer_name || '';
+    document.getElementById('editResaPhone').value = res.customer_phone || '';
+    document.getElementById('editResaEmail').value = res.customer_email || '';
+    document.getElementById('editResaSize').value = res.party_size || 2;
+    document.getElementById('editResaDate').value = res.reservation_date || '';
+    document.getElementById('editResaTime').value = res.reservation_time || '';
+    const tableSelect = document.getElementById('editResaTable');
+    if (tableSelect) tableSelect.value = res.table_id || '';
+    document.getElementById('editResaNotes').value = res.admin_notes || '';
+    const modal = document.getElementById('editResaModal');
+    modal.style.display = 'flex';
+}
+function closeEditModal() {
+    document.getElementById('editResaModal').style.display = 'none';
+}
+document.getElementById('editResaModal').addEventListener('click', function(e) {
+    if (e.target === this) closeEditModal();
+});
+</script>
 
 <?php require BASE_PATH . '/app/Views/partials/footer.php'; ?>

@@ -39,10 +39,21 @@ if (!isset($admin)) $admin = null;
                     <p style="font-size:0.85rem;color:var(--color-text-muted);margin-bottom:12px;font-style:italic;"><?= htmlspecialchars($menu->description) ?></p>
                     <?php endif; ?>
                     <?php $items = json_decode($menu->items ?? '[]', true) ?: []; ?>
-                    <?php foreach ($items as $item): ?>
-                    <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:0.88rem;border-bottom:1px dashed var(--color-border-light);">
-                        <span style="font-weight:600;color:var(--color-text-light);"><?= htmlspecialchars($item['label'] ?? '') ?></span>
-                        <span><?= htmlspecialchars($item['value'] ?? '') ?></span>
+                    <?php foreach ($items as $item):
+                        $choices = $item['choices'] ?? (!empty($item['value']) ? [$item['value']] : []);
+                    ?>
+                    <div style="padding:4px 0;font-size:0.88rem;border-bottom:1px dashed var(--color-border-light);">
+                        <span style="font-weight:600;color:var(--color-text-light);text-transform:uppercase;font-size:0.78rem;"><?= htmlspecialchars($item['label'] ?? '') ?></span>
+                        <?php if (count($choices) > 1): ?>
+                            <span style="font-size:0.75rem;color:var(--color-text-muted);font-style:italic;"> — Au choix :</span>
+                            <ul style="margin:2px 0 0 14px;padding:0;list-style:disc;">
+                                <?php foreach ($choices as $c): ?>
+                                <li style="font-size:0.85rem;"><?= htmlspecialchars($c) ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        <?php elseif (count($choices) === 1): ?>
+                            <div><?= htmlspecialchars($choices[0]) ?></div>
+                        <?php endif; ?>
                     </div>
                     <?php endforeach; ?>
                 </div>
