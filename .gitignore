@@ -1,4 +1,5 @@
 config.php
+config.production.php
 vendor/
 storage/rate_limits/
 cron/logs/*.log
