@@ -1037,9 +1037,11 @@ function deleteSelected() {
     } else {
         return;
     }
+    const label = selectedType === 'table' ? 'Table supprimée' : 'Élément supprimé';
     markDirty();
     deselectAll();
     renderFloor();
+    showToast(label);
 }
 
 function deleteAllTables() {
@@ -1054,6 +1056,7 @@ function deleteAllTables() {
     markDirty();
     deselectAll();
     renderFloor();
+    showToast(total + ' objet' + (total > 1 ? 's' : '') + ' supprimé' + (total > 1 ? 's' : ''));
 }
 
 // ─── Save ───

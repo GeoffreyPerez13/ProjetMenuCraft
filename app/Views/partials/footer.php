@@ -50,7 +50,7 @@ function showToast(message, type = 'success', duration = 3000) {
     const toast = document.createElement('div');
     const icons = {success:'fa-check-circle', error:'fa-exclamation-circle', info:'fa-info-circle'};
     const colors = {success:'#28a745', error:'#dc3545', info:'#17a2b8'};
-    toast.style.cssText = `pointer-events:auto;display:flex;align-items:center;gap:8px;padding:12px 18px;background:#fff;border-left:4px solid ${colors[type]||colors.info};border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.15);font-size:.875rem;opacity:0;transform:translateX(30px);transition:all .3s ease;`;
+    toast.style.cssText = `pointer-events:auto;display:flex;align-items:center;gap:8px;padding:12px 18px;background:var(--color-bg, #fff);color:var(--color-text, #1f2937);border-left:4px solid ${colors[type]||colors.info};border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.15);font-size:.875rem;opacity:0;transform:translateX(30px);transition:all .3s ease;`;
     toast.innerHTML = `<i class="fas ${icons[type]||icons.info}" style="color:${colors[type]||colors.info}"></i><span>${message}</span>`;
     container.appendChild(toast);
     requestAnimationFrame(() => { toast.style.opacity = '1'; toast.style.transform = 'translateX(0)'; });

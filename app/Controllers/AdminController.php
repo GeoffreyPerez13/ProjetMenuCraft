@@ -241,15 +241,23 @@ class AdminController extends BaseController
     {
         $token = $_GET['token'] ?? '';
 
-        // Vérifier l'invitation
-        $stmt = $this->pdo->prepare(
-            'SELECT * FROM invitations WHERE token = :t AND used = 0 AND expiry > NOW() LIMIT 1'
-        );
+        // Vérifier l'invitation avec messages spécifiques
+        $stmt = $this->pdo->prepare('SELECT * FROM invitations WHERE token = :t LIMIT 1');
         $stmt->execute([':t' => $token]);
         $invitation = $stmt->fetch();
 
         if (!$invitation) {
-            $this->flash('error', 'Lien d\'invitation invalide ou expiré.');
+            $this->flash('error', 'Lien d\'invitation introuvable. Vérifiez votre lien ou demandez une nouvelle invitation.');
+            $this->redirect('login');
+            return;
+        }
+        if ($invitation->used) {
+            $this->flash('error', 'Cette invitation a déjà été utilisée. Demandez une nouvelle invitation si nécessaire.');
+            $this->redirect('login');
+            return;
+        }
+        if (strtotime($invitation->expiry) < time()) {
+            $this->flash('error', 'Cette invitation a expiré. Demandez une nouvelle invitation.');
             $this->redirect('login');
             return;
         }
@@ -279,40 +287,51 @@ class AdminController extends BaseController
                 return;
             }
 
-            $restaurantModel = new Restaurant($this->pdo);
-            $slug = Restaurant::slugify($invitation->restaurant_name);
-            $restaurantId = $restaurantModel->create($invitation->restaurant_name, $slug);
+            try {
+                $restaurantModel = new Restaurant($this->pdo);
+                $slug = Restaurant::slugify($invitation->restaurant_name);
+                $restaurantId = $restaurantModel->create($invitation->restaurant_name, $slug);
 
-            $adminId = $adminModel->createAccount([
-                'username' => $username,
-                'email' => $invitation->email,
-                'password' => $password,
-                'restaurant_name' => $invitation->restaurant_name,
-                'restaurant_id' => $restaurantId,
-            ]);
+                $adminId = $adminModel->createAccount([
+                    'username' => $username,
+                    'email' => $invitation->email,
+                    'password' => $password,
+                    'restaurant_name' => $invitation->restaurant_name,
+                    'restaurant_id' => $restaurantId,
+                ]);
 
-            // Marquer l'invitation comme utilisée
-            $this->pdo->prepare('UPDATE invitations SET used = 1 WHERE id = :id')
-                ->execute([':id' => $invitation->id]);
+                // Marquer l'invitation comme utilisée
+                $this->pdo->prepare('UPDATE invitations SET used = 1 WHERE id = :id')
+                    ->execute([':id' => $invitation->id]);
 
-            // Créer abonnement
-            $subModel = new ClientSubscription($this->pdo);
-            if (defined('BETA_MODE') && BETA_MODE) {
-                $subModel->create($adminId, 'premium', 'active');
-                (new PremiumFeature($this->pdo))->activateAll($adminId);
-            } else {
-                $subModel->create($adminId);
+                // Créer abonnement
+                $subModel = new ClientSubscription($this->pdo);
+                if (defined('BETA_MODE') && BETA_MODE) {
+                    $subModel->create($adminId, 'premium', 'active');
+                    (new PremiumFeature($this->pdo))->activateAll($adminId);
+                } else {
+                    $subModel->create($adminId);
+                }
+
+                // Options par défaut
+                $optModel = new OptionModel($this->pdo);
+                $optModel->set($adminId, 'site_online', '0');
+                $optModel->set($adminId, 'site_palette', 'classic');
+                $optModel->set($adminId, 'site_layout', 'standard');
+
+                $this->flash('success', 'Compte créé avec succès ! Connectez-vous.');
+                $this->redirect('login');
+                return;
+            } catch (\Exception $e) {
+                error_log('Register error: ' . $e->getMessage());
+                $this->flash('error', 'Une erreur est survenue lors de la création du compte. Veuillez réessayer.');
+                $this->render('admin/register', [
+                    'pageTitle' => 'Inscription — MenuCraft',
+                    'invitation' => $invitation,
+                    'token' => $token,
+                ]);
+                return;
             }
-
-            // Options par défaut
-            $optModel = new OptionModel($this->pdo);
-            $optModel->set($adminId, 'site_online', '0');
-            $optModel->set($adminId, 'site_palette', 'classic');
-            $optModel->set($adminId, 'site_layout', 'standard');
-
-            $this->flash('success', 'Compte créé avec succès ! Connectez-vous.');
-            $this->redirect('login');
-            return;
         }
 
         $this->render('admin/register', [
