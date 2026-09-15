@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MenuCraft — Carte QR Code</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #fefce8 0%, #f5f5f4 50%, #fff7ed 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .controls {
+            background: #fff;
+            border-radius: 16px;
+            padding: 28px 36px;
+            margin-bottom: 36px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+            text-align: center;
+            max-width: 520px;
+            width: 100%;
+            border: 1px solid #f5f5f4;
+        }
+
+        .controls h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: #292524;
+            margin-bottom: 4px;
+        }
+
+        .controls .subtitle {
+            color: #a8a29e;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+
+        .controls .form-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .controls button {
+            background: linear-gradient(135deg, #b45309, #d97706);
+            color: #fff;
+            border: none;
+            padding: 11px 24px;
+            border-radius: 10px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+            flex-shrink: 0;
+        }
+
+        .controls button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(180, 83, 9, 0.3);
+        }
+
+        .controls button.secondary {
+            background: #292524;
+        }
+
+        .controls button.secondary:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .controls .url-input {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1.5px solid #e7e5e4;
+            border-radius: 10px;
+            font-size: 0.92rem;
+            text-align: center;
+            color: #292524;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.2s;
+        }
+
+        .controls .url-input:focus {
+            outline: none;
+            border-color: #d97706;
+        }
+
+        .controls select {
+            padding: 11px 14px;
+            border: 1.5px solid #e7e5e4;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            color: #292524;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        /* ─── Card Design ─── */
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 36px;
+            justify-content: center;
+        }
+
+        .card {
+            width: 360px;
+            background: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+            position: relative;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #92400e 0%, #b45309 40%, #d97706 100%);
+            padding: 32px 28px 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-header::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 120px;
+            height: 120px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 50%;
+        }
+
+        .card-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: #fff;
+            clip-path: ellipse(55% 100% at 50% 100%);
+        }
+
+        .card-header h2 {
+            font-family: 'Playfair Display', serif;
+            color: #fff;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            position: relative;
+        }
+
+        .card-header .emoji {
+            font-size: 2.2rem;
+            display: block;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
+        .card-header .tagline {
+            color: rgba(255,255,255,0.9);
+            font-size: 0.82rem;
+            margin-top: 8px;
+            font-style: italic;
+            position: relative;
+            letter-spacing: 0.2px;
+        }
+
+        .card-body {
+            padding: 24px 28px 24px;
+            text-align: center;
+        }
+
+        .card-body .intro {
+            color: #57534e;
+            font-size: 0.88rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .qr-wrapper {
+            display: inline-block;
+            padding: 14px;
+            background: #fff;
+            border: 2.5px solid #fef3c7;
+            border-radius: 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 4px 16px rgba(180, 83, 9, 0.08);
+            position: relative;
+        }
+
+        .qr-wrapper::after {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 20px;
+            border: 1.5px dashed #e7e5e4;
+            pointer-events: none;
+        }
+
+        .qr-wrapper img {
+            display: block;
+            border-radius: 4px;
+        }
+
+        .card-body .url-display {
+            font-size: 0.9rem;
+            color: #b45309;
+            font-weight: 700;
+            margin-bottom: 4px;
+            letter-spacing: 0.3px;
+        }
+
+        .card-body .url-sub {
+            font-size: 0.75rem;
+            color: #a8a29e;
+            margin-bottom: 12px;
+        }
+
+        .card-body .cta {
+            font-size: 0.88rem;
+            color: #78350f;
+            font-weight: 700;
+            margin-top: 8px;
+            padding: 10px 24px;
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-radius: 50px;
+            display: inline-block;
+            letter-spacing: 0.3px;
+            box-shadow: 0 2px 8px rgba(253, 230, 138, 0.5);
+        }
+
+        .card-footer {
+            background: linear-gradient(180deg, #fafaf9, #f5f5f4);
+            padding: 16px 28px;
+            text-align: center;
+            border-top: 1px solid #f5f5f4;
+        }
+
+        .card-footer .features {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .card-footer .feature {
+            font-size: 0.72rem;
+            color: #78716c;
+            padding: 4px 10px;
+            background: #fff;
+            border-radius: 50px;
+            border: 1px solid #e7e5e4;
+        }
+
+        .card-footer .feature span {
+            color: #b45309;
+            font-weight: 700;
+        }
+
+        /* ─── Card Verso ─── */
+        .card.verso .card-body {
+            padding: 20px 28px 24px;
+        }
+
+        .card.verso .benefits {
+            text-align: left;
+            list-style: none;
+            padding: 0;
+        }
+
+        .card.verso .benefits li {
+            padding: 9px 0;
+            font-size: 0.85rem;
+            color: #44403c;
+            border-bottom: 1px solid #f5f5f4;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            line-height: 1.3;
+        }
+
+        .card.verso .benefits li:last-child {
+            border-bottom: none;
+        }
+
+        .card.verso .benefits .icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+            box-shadow: 0 2px 6px rgba(253, 230, 138, 0.4);
+        }
+
+        .card.verso .card-footer {
+            padding: 18px 28px;
+        }
+
+        .card.verso .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .card.verso .contact-info .email {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #b45309;
+        }
+
+        .card.verso .contact-info .website {
+            font-size: 0.75rem;
+            color: #a8a29e;
+        }
+
+        /* ─── Print Styles ─── */
+        @media print {
+            body {
+                background: #fff;
+                padding: 10px;
+            }
+
+            .controls {
+                display: none !important;
+            }
+
+            .card-container {
+                gap: 20px;
+            }
+
+            .card {
+                box-shadow: none;
+                border: 1.5px solid #e7e5e4;
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="controls">
+    <h1>MenuCraft</h1>
+    <p class="subtitle">Generateur de carte QR code imprimable</p>
+    <input type="text" class="url-input" id="urlInput" value="https://menucraft.fr/" placeholder="URL de destination">
+    <div class="form-row" style="margin-top: 12px;">
+        <select id="cardCount">
+            <option value="1">1 carte (recto)</option>
+            <option value="2" selected>2 cartes (recto + verso)</option>
+            <option value="4">4 cartes (2x recto + verso)</option>
+        </select>
+        <button onclick="generateCards()">Generer</button>
+        <button class="secondary" onclick="window.print()">Imprimer</button>
+    </div>
+</div>
+
+<div class="card-container" id="cardContainer"></div>
+
+<script>
+function generateQR(text, size) {
+    var qr = qrcode(0, 'H');
+    qr.addData(text);
+    qr.make();
+    return qr.createDataURL(size, 0);
+}
+
+function createRectoCard(url) {
+    return `
+    <div class="card recto">
+        <div class="card-header">
+            <span class="emoji">🍽️</span>
+            <h2>MenuCraft</h2>
+            <div class="tagline">Votre restaurant, en ligne en quelques clics</div>
+        </div>
+        <div class="card-body">
+            <p class="intro">Scannez ce QR code pour decouvrir la plateforme qui simplifie la gestion de votre restaurant</p>
+            <div class="qr-wrapper">
+                <img src="${generateQR(url, 6)}" alt="QR Code MenuCraft" width="180" height="180">
+            </div>
+            <div class="url-display">${url.replace('https://', '').replace('http://', '').replace(/\/$/, '')}</div>
+            <div class="url-sub">Carte digitale &bull; Reservations &bull; Livraison</div>
+            <div class="cta">Scannez-moi</div>
+        </div>
+        <div class="card-footer">
+            <div class="features">
+                <div class="feature"><span>&#10003;</span> Gratuit</div>
+                <div class="feature"><span>&#10003;</span> Sans engagement</div>
+                <div class="feature"><span>&#10003;</span> Pret en 5 min</div>
+            </div>
+        </div>
+    </div>`;
+}
+
+function createVersoCard() {
+    return `
+    <div class="card verso">
+        <div class="card-header">
+            <span class="emoji">&#9889;</span>
+            <h2>Tout pour votre restaurant</h2>
+            <div class="tagline">Une solution complete et intuitive</div>
+        </div>
+        <div class="card-body">
+            <ul class="benefits">
+                <li><div class="icon">&#x1F4CB;</div><div><strong>Carte digitale</strong><br><span style="color:#78716c;font-size:0.78rem;">Creez et personnalisez votre menu en ligne</span></div></li>
+                <li><div class="icon">&#x1F4F1;</div><div><strong>QR Codes</strong><br><span style="color:#78716c;font-size:0.78rem;">QR codes uniques pour chaque table</span></div></li>
+                <li><div class="icon">&#x1F4C5;</div><div><strong>Reservations</strong><br><span style="color:#78716c;font-size:0.78rem;">Systeme de reservation integre</span></div></li>
+                <li><div class="icon">&#x1F6F5;</div><div><strong>Livraison</strong><br><span style="color:#78716c;font-size:0.78rem;">Commandes a emporter et livraison</span></div></li>
+                <li><div class="icon">&#x1F5FA;</div><div><strong>Plan de salle</strong><br><span style="color:#78716c;font-size:0.78rem;">Gerez vos tables visuellement</span></div></li>
+                <li><div class="icon">&#x1F4CA;</div><div><strong>Statistiques</strong><br><span style="color:#78716c;font-size:0.78rem;">Suivez la frequentation en temps reel</span></div></li>
+            </ul>
+        </div>
+        <div class="card-footer">
+            <div class="contact-info">
+                <div class="email">contact@menucraft.fr</div>
+                <div class="website">www.menucraft.fr</div>
+            </div>
+        </div>
+    </div>`;
+}
+
+function generateCards() {
+    const url = document.getElementById('urlInput').value || 'https://menucraft.fr/';
+    const count = parseInt(document.getElementById('cardCount').value);
+    const container = document.getElementById('cardContainer');
+
+    let html = '';
+    if (count === 1) {
+        html = createRectoCard(url);
+    } else if (count === 2) {
+        html = createRectoCard(url) + createVersoCard();
+    } else if (count === 4) {
+        html = createRectoCard(url) + createVersoCard() + createRectoCard(url) + createVersoCard();
+    }
+
+    container.innerHTML = html;
+}
+
+generateCards();
+</script>
+
+</body>
+</html>

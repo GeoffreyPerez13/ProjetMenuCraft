@@ -72,8 +72,13 @@ if (empty($_SESSION['admin_logged']) && !empty($_COOKIE['remember_token'])) {
 
 // Normaliser SITE_URL avec trailing slash
 $siteUrl = rtrim(SITE_URL, '/') . '/';
+
+// APP_URL dynamique basé sur la requête actuelle (fonctionne avec tous les domaines)
 if (!defined('APP_URL')) {
-    define('APP_URL', $siteUrl);
+    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'] ?? parse_url(SITE_URL, PHP_URL_HOST);
+    $scriptDir = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
+    define('APP_URL', $scheme . '://' . $host . $scriptDir);
 }
 
 // Autoload des classes
