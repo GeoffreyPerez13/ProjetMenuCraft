@@ -31,6 +31,11 @@ define('STRIPE_SECRET_KEY', 'sk_live_...');
 define('STRIPE_PUBLISHABLE_KEY', 'pk_live_...');
 define('STRIPE_WEBHOOK_SECRET', 'whsec_...');
 
+// ─── Emails ───
+define('MAIL_FROM', 'no-reply@VOTRE_DOMAINE.com');
+define('MAIL_FROM_NAME', 'MenuCraft');
+define('MAIL_REPLY_TO', 'contact@VOTRE_DOMAINE.com');
+
 // ─── Mode Beta ───
 define('BETA_MODE', true);
 define('BETA_EXPIRES', '2026-09-30');
