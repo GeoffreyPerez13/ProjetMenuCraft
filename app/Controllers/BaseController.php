@@ -29,7 +29,7 @@ class BaseController
         $token = $_POST['csrf_token'] ?? '';
         if (!hash_equals($_SESSION['csrf_token'] ?? '', $token)) {
             $this->flash('error', 'Token de sécurité invalide. Veuillez réessayer.');
-            $referer = $_SERVER['HTTP_REFERER'] ?? (rtrim(SITE_URL, '/') . '/');
+            $referer = $_SERVER['HTTP_REFERER'] ?? (rtrim(APP_URL, '/') . '/');
             header('Location: ' . $referer);
             exit;
         }
@@ -119,7 +119,7 @@ class BaseController
     {
         if (!empty($_SESSION['demo_mode'])) {
             $this->flash('error', 'Cette action est désactivée en mode démonstration.');
-            header('Location: ' . rtrim(SITE_URL, '/') . '/?page=dashboard');
+            header('Location: ' . rtrim(APP_URL, '/') . '/?page=dashboard');
             exit;
         }
     }
@@ -128,7 +128,7 @@ class BaseController
     protected function requireAuth(): void
     {
         if (empty($_SESSION['admin_logged'])) {
-            header('Location: ' . rtrim(SITE_URL, '/') . '/?page=login');
+            header('Location: ' . rtrim(APP_URL, '/') . '/?page=login');
             exit;
         }
     }
@@ -139,7 +139,7 @@ class BaseController
         $admin = $this->getCurrentAdmin();
         if (!$admin || $admin->role !== $role) {
             $this->flash('error', 'Accès non autorisé.');
-            header('Location: ' . rtrim(SITE_URL, '/') . '/?page=dashboard');
+            header('Location: ' . rtrim(APP_URL, '/') . '/?page=dashboard');
             exit;
         }
     }
@@ -273,7 +273,7 @@ class BaseController
     // ─── Redirect ───────────────────────────────────────
     protected function redirect(string $page, array $params = []): void
     {
-        $base = rtrim(SITE_URL, '/') . '/';
+        $base = rtrim(APP_URL, '/') . '/';
         $url = $base . '?page=' . $page;
         if (!empty($params)) {
             $url .= '&' . http_build_query($params);
