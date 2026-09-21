@@ -21,8 +21,8 @@
 </head>
 <body>
 <div class="legal-page">
-    <a href="<?= APP_URL ?>" style="display:inline-flex;align-items:center;gap:8px;color:var(--color-primary);font-size:0.85rem;margin-bottom:24px;">
-        <i class="fas fa-arrow-left"></i> Retour à l'accueil
+    <a href="<?= APP_URL ?>" onclick="if(document.referrer){history.back();return false;}" style="display:inline-flex;align-items:center;gap:8px;color:var(--color-primary);font-size:0.85rem;margin-bottom:24px;text-decoration:none;">
+        <i class="fas fa-arrow-left"></i> Retour
     </a>
 
     <div class="legal-nav">

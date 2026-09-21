@@ -46,6 +46,7 @@ $isSuperAdmin = ($admin->role ?? '') === 'SUPER_ADMIN';
                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
                 <input type="hidden" name="site_online" value="<?= $isOnline ? '0' : '1' ?>">
                 <input type="hidden" name="section" value="general">
+                <input type="hidden" name="redirect" value="dashboard">
                 <button type="submit" class="btn <?= $isOnline ? 'btn-danger' : 'btn-success' ?> btn-sm">
                     <i class="fas fa-<?= $isOnline ? 'eye-slash' : 'eye' ?>"></i>
                     <?= $isOnline ? 'Mettre hors ligne' : 'Mettre en ligne' ?>

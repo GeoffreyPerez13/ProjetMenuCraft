@@ -54,15 +54,15 @@ $bookingOrderingAvailable = $bookingEnabled && !empty(array_filter(array_map('tr
     <link rel="stylesheet" href="<?= APP_URL ?>/assets/css/display/templates.css">
     <script>if(localStorage.getItem('displayDarkMode')==='true')document.documentElement.classList.add('dark-mode');</script>
 </head>
-<body class="display-page template-<?= htmlspecialchars($palette) ?> layout-<?= htmlspecialchars($layout) ?>"<?php if ($palette === 'custom'): ?> style="--custom-primary:<?= htmlspecialchars($options['custom_primary'] ?? '#b45309') ?>;--custom-bg:<?= htmlspecialchars($options['custom_bg'] ?? '#ffffff') ?>;--font-family:'<?= htmlspecialchars($options['custom_font'] ?? 'Inter') ?>', system-ui, sans-serif;--font-display:'<?= htmlspecialchars($options['custom_font'] ?? 'Inter') ?>', system-ui, sans-serif;"<?php endif; ?>>
+<body class="display-page template-<?= htmlspecialchars($palette) ?> layout-<?= htmlspecialchars($layout) ?><?= ($isPreview ?? false) ? ' has-preview' : '' ?>"<?php if ($palette === 'custom'): ?> style="--custom-primary:<?= htmlspecialchars($options['custom_primary'] ?? '#b45309') ?>;--custom-bg:<?= htmlspecialchars($options['custom_bg'] ?? '#ffffff') ?>;--font-family:'<?= htmlspecialchars($options['custom_font'] ?? 'Inter') ?>', system-ui, sans-serif;--font-display:'<?= htmlspecialchars($options['custom_font'] ?? 'Inter') ?>', system-ui, sans-serif;"<?php endif; ?>>
+
+<?php $todayClosed = in_array(date('Y-m-d'), $closureDates ?? []); ?>
 
 <?php if ($isPreview ?? false): ?>
 <div class="preview-banner">
     <i class="fas fa-eye"></i> Mode prévisualisation — Seul vous pouvez voir cette page
 </div>
 <?php endif; ?>
-
-<?php $todayClosed = in_array(date('Y-m-d'), $closureDates ?? []); ?>
 
 <!-- Header -->
 <header class="display-header">

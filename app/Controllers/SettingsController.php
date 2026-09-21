@@ -171,8 +171,13 @@ class SettingsController extends BaseController
         }
 
         $this->flash('success', 'Options mises à jour.');
-        $section = $_POST['section'] ?? 'general';
-        $this->redirect('settings', ['section' => $section]);
+        $redirectPage = $_POST['redirect'] ?? '';
+        if ($redirectPage === 'dashboard') {
+            $this->redirect('dashboard');
+        } else {
+            $section = $_POST['section'] ?? 'general';
+            $this->redirect('settings', ['section' => $section]);
+        }
     }
 
     public function updateTemplate(): void

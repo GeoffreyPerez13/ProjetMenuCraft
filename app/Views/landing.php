@@ -29,6 +29,7 @@
             <li><a href="#pricing">Tarifs</a></li>
             <li><a href="#demo">Démo</a></li>
             <li><a href="#faq">FAQ</a></li>
+            <li class="nav-link-mobile"><a href="<?= APP_URL ?>?page=login">Se connecter</a></li>
         </ul>
         <div class="nav-actions">
             <button class="dark-mode-toggle" onclick="toggleDarkMode()" title="Mode sombre">
@@ -105,13 +106,13 @@
                 <span class="feature-badge free">Gratuit</span>
                 <div class="feature-icon"><i class="fas fa-palette"></i></div>
                 <h3>Templates personnalisables</h3>
-                <p>7 palettes de couleurs + personnalisation complète et 5 dispositions différentes pour un site unique à votre image.</p>
+                <p>Choisissez parmi 7 palettes de couleurs et 5 mises en page différentes, ou créez votre propre style pour un site à votre image.</p>
             </div>
             <div class="feature-card">
                 <span class="feature-badge free">Gratuit</span>
                 <div class="feature-icon"><i class="fas fa-clock"></i></div>
                 <h3>Horaires & Contact</h3>
-                <p>Affichez vos horaires d'ouverture, coordonnées et intégrez Google Maps automatiquement.</p>
+                <p>Affichez vos horaires d'ouverture et vos coordonnées. Google Maps s'intègre automatiquement pour guider vos clients.</p>
             </div>
             <div class="feature-card">
                 <span class="feature-badge free">Gratuit</span>
@@ -123,43 +124,43 @@
                 <span class="feature-badge free">Gratuit</span>
                 <div class="feature-icon"><i class="fas fa-search"></i></div>
                 <h3>SEO optimisé</h3>
-                <p>Données structurées Schema.org, meta tags, sitemap XML pour un bon référencement naturel.</p>
+                <p>Votre restaurant ressort sur Google grâce au référencement automatique : sitemap, balises et données structurées intégrés.</p>
             </div>
             <div class="feature-card">
                 <span class="feature-badge free">Gratuit</span>
                 <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
                 <h3>RGPD & Légal</h3>
-                <p>CGU, politique de confidentialité, gestion des cookies. Tout est inclus et conforme.</p>
+                <p>Conditions d'utilisation, politique de confidentialité et gestion des cookies : tout est généré et conforme, sans effort de votre part.</p>
             </div>
             <div class="feature-card">
                 <span class="feature-badge premium">Premium</span>
                 <div class="feature-icon"><i class="fab fa-google"></i></div>
                 <h3>Avis Google</h3>
-                <p>Affichez automatiquement vos avis Google sur votre site pour rassurer vos futurs clients.</p>
+                <p>Intégrez vos avis Google directement sur votre site. Vos meilleures notes rassurent et attirent de nouveaux clients.</p>
             </div>
             <div class="feature-card">
                 <span class="feature-badge premium">Premium</span>
                 <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
                 <h3>Statistiques avancées</h3>
-                <p>Suivez les visites, les appareils utilisés, les heures de pointe et plus encore.</p>
+                <p>Suivez vos visites en temps réel, identifiez les heures de pointe et comprenez comment vos clients trouvent votre site.</p>
             </div>
             <div class="feature-card">
                 <span class="feature-badge premium">Premium</span>
                 <div class="feature-icon"><i class="fas fa-calendar-check"></i></div>
                 <h3>Réservations en ligne</h3>
-                <p>Recevez des réservations directement sur votre site avec confirmation automatique par email.</p>
+                <p>Vos clients réservent une table en quelques clics. Confirmations par email, rappels et gestion complète depuis votre tableau de bord.</p>
             </div>
             <div class="feature-card">
                 <span class="feature-badge premium">Premium</span>
                 <div class="feature-icon"><i class="fas fa-map-marked-alt"></i></div>
                 <h3>Plan de salle</h3>
-                <p>Organisez vos salles et tables visuellement. Assignez les réservations à une table en un clic.</p>
+                <p>Créez le plan de votre restaurant visuellement et assignez chaque réservation à une table en un clic.</p>
             </div>
             <div class="feature-card">
                 <span class="feature-badge premium">Premium</span>
                 <div class="feature-icon"><i class="fas fa-motorcycle"></i></div>
                 <h3>Livraison en ligne</h3>
-                <p>Proposez la commande en livraison directement depuis votre site. Panier, frais et suivi intégrés.</p>
+                <p>Proposez la commande et la livraison depuis votre site, sans commission. Connectez aussi vos plateformes (Uber Eats, Deliveroo, Just Eat…).</p>
             </div>
         </div>
     </div>

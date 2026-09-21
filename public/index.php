@@ -70,15 +70,16 @@ if (empty($_SESSION['admin_logged']) && !empty($_COOKIE['remember_token'])) {
     }
 }
 
-// APP_URL dynamique basé sur la requête actuelle (fonctionne avec tous les domaines)
+// APP_URL dynamique : même chemin que SITE_URL mais avec le domaine/schéma de la requête actuelle
+// Cela permet de fonctionner sur juto3955.odns.fr même si SITE_URL = menucraft.fr
 if (!defined('APP_URL')) {
     $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-    $host = $_SERVER['HTTP_HOST'] ?? parse_url(SITE_URL, PHP_URL_HOST);
-    $scriptDir = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
-    define('APP_URL', $scheme . '://' . $host . $scriptDir);
+    $host   = $_SERVER['HTTP_HOST'] ?? parse_url(SITE_URL, PHP_URL_HOST);
+    $path   = parse_url(SITE_URL, PHP_URL_PATH) ?? '/';
+    define('APP_URL', $scheme . '://' . $host . rtrim($path, '/') . '/');
 }
 
-// $siteUrl utilisé pour les redirections — basé sur APP_URL (domaine actuel)
+// $siteUrl utilisé pour les redirections
 $siteUrl = rtrim(APP_URL, '/') . '/';
 
 // Autoload des classes

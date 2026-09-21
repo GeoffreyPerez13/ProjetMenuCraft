@@ -571,9 +571,16 @@ html.dark-mode .landing-nav.scrolled {
 }
 
 /* ─── Responsive ─────────────────────────────────────── */
-@media (max-width: 768px) {
+
+/* Cacher le lien mobile "Se connecter" sur desktop */
+.nav-link-mobile { display: none; }
+
+/* Navigation collapse — avant que les items soient compressés */
+@media (max-width: 960px) {
     .nav-links { display: none; }
+    .nav-btn-ghost { display: none; }
     .mobile-nav-toggle { display: block; }
+    .nav-link-mobile { display: list-item; }
 
     .nav-links.open {
         display: flex;
@@ -588,6 +595,15 @@ html.dark-mode .landing-nav.scrolled {
         gap: 16px;
     }
 
+    .nav-links.open a {
+        padding: 12px 0;
+        border-bottom: 1px solid var(--color-border);
+        font-size: 0.95rem;
+    }
+    .nav-links.open a:last-child { border-bottom: none; }
+}
+
+@media (max-width: 768px) {
     .hero { padding: 120px 0 60px; }
     .hero h1 { font-size: 1.8rem; }
 

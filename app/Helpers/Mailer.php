@@ -4,16 +4,8 @@
  */
 class Mailer
 {
-    private string $from;
-    private string $fromName;
-    private string $replyTo;
-
-    public function __construct()
-    {
-        $this->from     = defined('MAIL_FROM')       ? MAIL_FROM       : 'no-reply@menucraft.com';
-        $this->fromName = defined('MAIL_FROM_NAME')  ? MAIL_FROM_NAME  : 'MenuCraft';
-        $this->replyTo  = defined('MAIL_REPLY_TO')   ? MAIL_REPLY_TO   : 'contact.menucraft@gmail.com';
-    }
+    private string $from = 'no-reply@menucraft.com';
+    private string $fromName = 'MenuCraft';
 
     public function send(string $to, string $subject, string $htmlBody): bool
     {
@@ -21,7 +13,7 @@ class Mailer
 
         $headers = [
             'From: ' . $this->fromName . ' <' . $this->from . '>',
-            'Reply-To: ' . $this->replyTo,
+            'Reply-To: contact.menucraft@gmail.com',
             'MIME-Version: 1.0',
             'Content-Type: multipart/alternative; boundary="' . $boundary . '"',
             'X-Mailer: MenuCraft/1.0',

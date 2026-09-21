@@ -1134,15 +1134,33 @@ html.dark-mode .display-header {
 
 /* ─── Preview Banner ─────────────────────────────────── */
 .preview-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 101;
     background: var(--color-info);
     color: #fff;
     text-align: center;
-    padding: 8px;
-    font-size: 0.85rem;
+    padding: 6px 12px;
+    font-size: 0.82rem;
     font-weight: 600;
-    position: sticky;
-    top: 0;
-    z-index: 101;
+}
+
+html.dark-mode .preview-banner {
+    background: #1e40af;
+}
+
+body.has-preview .display-header {
+    top: 33px;
+}
+
+body.has-preview.display-page {
+    padding-top: 97px;
+}
+
+body.has-preview .closure-bar {
+    top: 97px;
 }
 
 /* ─── Responsive ─────────────────────────────────────── */
