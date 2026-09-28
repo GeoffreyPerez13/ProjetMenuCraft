@@ -76,16 +76,15 @@
 </section>
 
 <!-- Social Proof -->
+<?php if (!empty($liveRestaurants)): ?>
 <section class="social-proof">
     <div class="social-proof-inner">
-        <span>🍕 La Dolce Vita</span>
-        <span>🍣 Sushi Zen</span>
-        <span>🥐 Le Petit Bistro</span>
-        <span>🍔 Burger Palace</span>
-        <span>🌿 Green Garden</span>
-        <span>🦐 L'Océan Bleu</span>
+        <?php foreach ($liveRestaurants as $resto): ?>
+            <a href="<?= APP_URL . htmlspecialchars($resto->slug) ?>" target="_blank" style="text-decoration:none;color:var(--color-text-muted);transition:color 0.2s;">🍽️ <?= htmlspecialchars($resto->name) ?></a>
+        <?php endforeach; ?>
     </div>
 </section>
+<?php endif; ?>
 
 <!-- Fonctionnalités -->
 <section class="section" id="features">

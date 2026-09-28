@@ -63,11 +63,22 @@ if (!isset($flash)) $flash = null;
             </button>
         </form>
 
-        <div style="text-align: center; margin-top: 16px;">
+        <div style="text-align: center; margin-top: 16px; display: flex; justify-content: center; gap: 8px 16px; flex-wrap: wrap;">
+            <a href="<?= $baseUrl ?>?page=forgot-username" style="font-size: 0.85rem; color: var(--color-text-muted);">
+                Identifiant oublié ?
+            </a>
+            <span style="color: var(--color-text-muted);" class="auth-links-separator">·</span>
             <a href="<?= $baseUrl ?>?page=reset-password" style="font-size: 0.85rem; color: var(--color-text-muted);">
                 Mot de passe oublié ?
             </a>
         </div>
+        <style>
+            @media (max-width: 480px) {
+                .auth-links-separator { display: none; }
+                .auth-links-separator ~ a,
+                .auth-links-separator + a { width: 100%; }
+            }
+        </style>
 
         <div class="auth-footer">
             <a href="<?= $baseUrl ?>" style="color: var(--color-text-muted); font-size: 0.8rem;">

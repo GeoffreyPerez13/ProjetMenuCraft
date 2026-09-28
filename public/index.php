@@ -135,6 +135,14 @@ switch ($page) {
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
             $csrf_token = $_SESSION['csrf_token'];
         }
+        $stmtRestaurants = $pdo->query(
+            'SELECT r.name, r.slug FROM restaurants r
+             INNER JOIN admins a ON a.restaurant_id = r.id
+             INNER JOIN admin_options ao ON ao.admin_id = a.id AND ao.option_name = "site_online" AND ao.option_value = "1"
+             WHERE a.email_verified = 1 AND a.suspended = 0 AND r.slug != "demo-restaurant"
+             ORDER BY r.created_at DESC'
+        );
+        $liveRestaurants = $stmtRestaurants->fetchAll();
         require BASE_PATH . '/app/Views/landing.php';
         break;
 
@@ -157,6 +165,35 @@ switch ($page) {
 
     case 'verify-email-change':
         $adminCtrl->verifyEmailChange();
+        break;
+
+    case 'forgot-username':
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $email = trim($_POST['email'] ?? '');
+            if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $stmt = $pdo->prepare('SELECT username FROM admins WHERE email = :e AND email_verified = 1 LIMIT 1');
+                $stmt->execute([':e' => $email]);
+                $admin = $stmt->fetch();
+                if ($admin) {
+                    $mailer = new Mailer();
+                    $mailer->send($email, 'Votre nom d\'utilisateur — MenuCraft',
+                        '<h2>Rappel de votre identifiant</h2>
+                        <p>Vous avez demandé à recevoir votre nom d\'utilisateur MenuCraft.</p>
+                        <p>Votre identifiant est : <strong>' . htmlspecialchars($admin->username) . '</strong></p>
+                        <p><a href="' . htmlspecialchars($siteUrl, ENT_QUOTES, 'UTF-8') . '?page=login" style="background:#b45309;color:#fff;padding:14px 28px;text-decoration:none;border-radius:8px;display:inline-block;font-weight:600;">Se connecter</a></p>
+                        <p style="color:#a8a29e;font-size:13px;">Si vous n\'êtes pas à l\'origine de cette demande, ignorez cet email.</p>'
+                    );
+                }
+            }
+            $_SESSION['flash'] = ['type' => 'success', 'message' => 'Si un compte existe avec cet email, votre nom d\'utilisateur vous a été envoyé.'];
+            header('Location: ' . $siteUrl . '?page=login');
+            exit;
+        }
+        $flash = $_SESSION['flash'] ?? null;
+        unset($_SESSION['flash']);
+        $csrf_token = $_SESSION['csrf_token'] ?? bin2hex(random_bytes(32));
+        $_SESSION['csrf_token'] = $csrf_token;
+        require BASE_PATH . '/app/Views/admin/forgot-username.php';
         break;
 
     case 'reset-password':
