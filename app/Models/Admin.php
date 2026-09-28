@@ -93,6 +93,30 @@ class Admin
         return $this->pdo->prepare($sql)->execute($params);
     }
 
+    public function setEmailChangeToken(int $id, string $newEmail, string $token): bool
+    {
+        $stmt = $this->pdo->prepare(
+            'UPDATE admins SET pending_email = :email, email_change_token = :token WHERE id = :id'
+        );
+        return $stmt->execute([':email' => $newEmail, ':token' => $token, ':id' => $id]);
+    }
+
+    public function verifyEmailChange(string $token): ?object
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT id, pending_email FROM admins WHERE email_change_token = :t AND pending_email IS NOT NULL LIMIT 1'
+        );
+        $stmt->execute([':t' => $token]);
+        $admin = $stmt->fetch();
+        if (!$admin || empty($admin->pending_email)) return null;
+
+        $update = $this->pdo->prepare(
+            'UPDATE admins SET email = :email, pending_email = NULL, email_change_token = NULL, email_verified = 1 WHERE id = :id'
+        );
+        $update->execute([':email' => $admin->pending_email, ':id' => $admin->id]);
+        return $admin;
+    }
+
     public function updatePassword(int $id, string $password): bool
     {
         $stmt = $this->pdo->prepare('UPDATE admins SET password = :p WHERE id = :id');

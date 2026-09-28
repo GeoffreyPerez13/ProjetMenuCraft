@@ -45,7 +45,7 @@ if (!isset($token)) $token = '';
 
             <div class="form-group">
                 <label><i class="fas fa-user"></i> Nom d'utilisateur</label>
-                <input type="text" name="username" class="form-control" required placeholder="Min. 3 caractères" minlength="3">
+                <input type="text" name="username" class="form-control" required placeholder="Lettres, chiffres, . - _" minlength="3" maxlength="30" pattern="^[a-zA-Z][a-zA-Z0-9._-]+$" title="Commence par une lettre, 3-30 caractères, lettres/chiffres/._- uniquement">
             </div>
 
             <div class="form-group">

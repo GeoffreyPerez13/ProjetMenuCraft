@@ -155,6 +155,10 @@ switch ($page) {
         $adminCtrl->verifyEmail();
         break;
 
+    case 'verify-email-change':
+        $adminCtrl->verifyEmailChange();
+        break;
+
     case 'reset-password':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email = trim($_POST['email'] ?? '');

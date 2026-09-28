@@ -158,7 +158,7 @@ class AdminController extends BaseController
 
             // Validation
             $errors = [];
-            if (mb_strlen($username) < 3) $errors[] = 'Le nom d\'utilisateur doit contenir au moins 3 caractères.';
+            $errors = array_merge($errors, Validator::validateUsername($username));
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'Adresse email invalide.';
             if (empty($restaurantName)) $errors[] = 'Le nom du restaurant est requis.';
             if ($password !== $passwordConfirm) $errors[] = 'Les mots de passe ne correspondent pas.';
@@ -270,7 +270,7 @@ class AdminController extends BaseController
             $passwordConfirm = $_POST['password_confirmation'] ?? '';
 
             $errors = [];
-            if (mb_strlen($username) < 3) $errors[] = 'Le nom d\'utilisateur doit contenir au moins 3 caractères.';
+            $errors = array_merge($errors, Validator::validateUsername($username));
             if ($password !== $passwordConfirm) $errors[] = 'Les mots de passe ne correspondent pas.';
             $errors = array_merge($errors, Validator::validatePassword($password));
 
@@ -357,6 +357,21 @@ class AdminController extends BaseController
         }
 
         $this->redirect('login');
+    }
+
+    public function verifyEmailChange(): void
+    {
+        $token = $_GET['token'] ?? '';
+        $adminModel = new Admin($this->pdo);
+
+        $result = $adminModel->verifyEmailChange($token);
+        if ($result) {
+            $this->flash('success', 'Adresse email mise à jour avec succès !');
+        } else {
+            $this->flash('error', 'Lien de confirmation invalide ou expiré.');
+        }
+
+        $this->redirect('settings', ['section' => 'profile']);
     }
 
     public function dashboard(): void

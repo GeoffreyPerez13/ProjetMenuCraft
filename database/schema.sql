@@ -31,6 +31,8 @@ CREATE TABLE IF NOT EXISTS `admins` (
     `reset_token_expiry` DATETIME DEFAULT NULL,
     `email_verified` TINYINT(1) DEFAULT 0,
     `verification_token` VARCHAR(255) DEFAULT NULL,
+    `pending_email` VARCHAR(255) DEFAULT NULL,
+    `email_change_token` VARCHAR(255) DEFAULT NULL,
     `suspended` TINYINT(1) DEFAULT 0,
     `suspended_reason` VARCHAR(500) DEFAULT NULL,
     `last_login_at` DATETIME DEFAULT NULL,

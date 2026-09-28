@@ -313,7 +313,7 @@ $adminRole = ($admin->role ?? 'ADMIN');
                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
                 <div class="form-group">
                     <label>Nom d'utilisateur</label>
-                    <input type="text" name="username" class="form-control" value="<?= htmlspecialchars($admin->username ?? '') ?>" required minlength="3">
+                    <input type="text" name="username" class="form-control" value="<?= htmlspecialchars($admin->username ?? '') ?>" required minlength="3" maxlength="30" pattern="^[a-zA-Z][a-zA-Z0-9._-]+$" title="Commence par une lettre, 3-30 caractères, lettres/chiffres/._- uniquement">
                 </div>
                 <div class="form-group">
                     <label>Email</label>
@@ -323,8 +323,38 @@ $adminRole = ($admin->role ?? 'ADMIN');
                     <label>Nom du restaurant</label>
                     <input type="text" name="restaurant_name" class="form-control" value="<?= htmlspecialchars($admin->restaurant_name ?? '') ?>" required>
                 </div>
+                <div class="form-group" id="profilePasswordGroup" style="display:none;">
+                    <label>Mot de passe actuel <span style="color:var(--color-text-muted);font-weight:400;font-size:0.8rem;">(requis pour modifier l'email ou le nom d'utilisateur)</span></label>
+                    <div style="position:relative;">
+                        <input type="password" name="current_password" class="form-control" id="profileCurrentPassword" autocomplete="current-password">
+                        <button type="button" onclick="let i=document.getElementById('profileCurrentPassword');i.type=i.type==='password'?'text':'password';" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--color-text-muted);"><i class="fas fa-eye"></i></button>
+                    </div>
+                </div>
+                <?php if (!empty($admin->pending_email)): ?>
+                <div style="margin-bottom:16px;padding:12px 16px;background:var(--color-info-bg);border:1px solid var(--color-info);border-radius:var(--radius-sm);font-size:0.85rem;">
+                    <i class="fas fa-info-circle" style="color:var(--color-info);"></i>
+                    Changement d'email en attente vers <strong><?= htmlspecialchars($admin->pending_email) ?></strong>. Vérifiez votre boîte de réception.
+                </div>
+                <?php endif; ?>
                 <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Enregistrer</button>
             </form>
+            <script>
+            (function() {
+                const form = document.querySelector('form[action*="update-profile"]');
+                const usernameInput = form.querySelector('input[name="username"]');
+                const emailInput = form.querySelector('input[name="email"]');
+                const pwdGroup = document.getElementById('profilePasswordGroup');
+                const origUsername = <?= json_encode($admin->username ?? '') ?>;
+                const origEmail = <?= json_encode($admin->email ?? '') ?>;
+                function checkChanges() {
+                    const changed = usernameInput.value !== origUsername || emailInput.value.toLowerCase() !== origEmail.toLowerCase();
+                    pwdGroup.style.display = changed ? 'block' : 'none';
+                    document.getElementById('profileCurrentPassword').required = changed;
+                }
+                usernameInput.addEventListener('input', checkChanges);
+                emailInput.addEventListener('input', checkChanges);
+            })();
+            </script>
         </div>
 
         <?php elseif ($section === 'password'): ?>

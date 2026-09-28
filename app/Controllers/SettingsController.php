@@ -53,16 +53,38 @@ class SettingsController extends BaseController
         $username = trim($_POST['username'] ?? '');
         $email = trim($_POST['email'] ?? '');
         $restaurantName = trim($_POST['restaurant_name'] ?? '');
+        $currentPassword = $_POST['current_password'] ?? '';
 
         $adminModel = new Admin($this->pdo);
         $current = $adminModel->findById($adminId);
 
-        $errors = [];
-        if (mb_strlen($username) < 3) $errors[] = 'Nom d\'utilisateur trop court.';
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'Email invalide.';
+        $usernameChanged = $username !== $current->username;
+        $emailChanged = strtolower($email) !== strtolower($current->email);
 
-        if ($username !== $current->username && $adminModel->usernameExists($username)) {
-            $errors[] = 'Ce nom d\'utilisateur est déjà pris.';
+        // Mot de passe requis si email ou username change
+        if (($usernameChanged || $emailChanged) && !password_verify($currentPassword, $current->password)) {
+            $this->flash('error', 'Mot de passe actuel requis pour modifier le nom d\'utilisateur ou l\'email.');
+            $this->redirect('settings', ['section' => 'profile']);
+            return;
+        }
+
+        $errors = [];
+
+        // Validation username complète
+        if ($usernameChanged) {
+            $errors = array_merge($errors, Validator::validateUsername($username));
+            if ($adminModel->usernameExists($username)) {
+                $errors[] = 'Ce nom d\'utilisateur est déjà pris.';
+            }
+        }
+
+        // Validation email
+        if ($emailChanged) {
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $errors[] = 'Adresse email invalide.';
+            } elseif ($adminModel->emailExists($email)) {
+                $errors[] = 'Cette adresse email est déjà utilisée.';
+            }
         }
 
         if (!empty($errors)) {
@@ -71,11 +93,40 @@ class SettingsController extends BaseController
             return;
         }
 
-        $adminModel->updateProfile($adminId, [
-            'username' => $username,
-            'email' => $email,
-            'restaurant_name' => $restaurantName,
-        ]);
+        // Mise à jour username + restaurant_name (directe)
+        $profileData = ['restaurant_name' => $restaurantName];
+        if ($usernameChanged) {
+            $profileData['username'] = $username;
+        }
+        $adminModel->updateProfile($adminId, $profileData);
+
+        // Changement d'email : vérification par token
+        if ($emailChanged) {
+            $token = bin2hex(random_bytes(32));
+            $adminModel->setEmailChangeToken($adminId, $email, $token);
+
+            $mailer = new Mailer();
+
+            // Email de vérification vers la nouvelle adresse
+            $verifyUrl = APP_URL . '?page=verify-email-change&token=' . $token;
+            $mailer->send($email, 'Confirmez votre nouvelle adresse email — MenuCraft',
+                '<h2>Changement d\'adresse email</h2>
+                <p>Vous avez demandé à changer votre adresse email sur MenuCraft.</p>
+                <p>Cliquez sur le bouton ci-dessous pour confirmer cette nouvelle adresse :</p>
+                <p><a href="' . htmlspecialchars($verifyUrl, ENT_QUOTES, 'UTF-8') . '" style="background:#b45309;color:#fff;padding:14px 28px;text-decoration:none;border-radius:8px;display:inline-block;font-weight:600;">Confirmer mon email</a></p>
+                <p style="color:#a8a29e;font-size:13px;">Si vous n\'êtes pas à l\'origine de cette demande, ignorez cet email.</p>'
+            );
+
+            // Notification à l'ancienne adresse
+            $mailer->send($current->email, 'Tentative de changement d\'email — MenuCraft',
+                '<h2>Changement d\'adresse email demandé</h2>
+                <p>Une demande de changement d\'adresse email a été effectuée sur votre compte MenuCraft.</p>
+                <p>La nouvelle adresse demandée est : <strong>' . htmlspecialchars($email) . '</strong></p>
+                <p style="color:#dc2626;"><strong>Si vous n\'êtes pas à l\'origine de cette demande, changez immédiatement votre mot de passe.</strong></p>'
+            );
+
+            $this->flash('info', 'Un email de confirmation a été envoyé à <strong>' . htmlspecialchars($email) . '</strong>. Votre adresse ne sera modifiée qu\'après validation.');
+        }
 
         // Mettre à jour le nom du restaurant dans la table restaurants
         if ($current->restaurant_id) {
@@ -87,9 +138,11 @@ class SettingsController extends BaseController
         }
 
         $_SESSION['admin_name'] = $restaurantName;
-        $_SESSION['username'] = $username;
+        if ($usernameChanged) $_SESSION['username'] = $username;
 
-        $this->flash('success', 'Profil mis à jour.');
+        if (!$emailChanged) {
+            $this->flash('success', 'Profil mis à jour.');
+        }
         $this->redirect('settings', ['section' => 'profile']);
     }
 

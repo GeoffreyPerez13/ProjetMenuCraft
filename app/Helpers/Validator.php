@@ -63,6 +63,31 @@ class Validator
         }
     }
 
+    public static function validateUsername(string $username): array
+    {
+        $errors = [];
+        if (mb_strlen($username) < 3) {
+            $errors[] = 'Le nom d\'utilisateur doit contenir au moins 3 caractères.';
+        }
+        if (mb_strlen($username) > 30) {
+            $errors[] = 'Le nom d\'utilisateur ne doit pas dépasser 30 caractères.';
+        }
+        if (!preg_match('/^[a-zA-Z]/', $username)) {
+            $errors[] = 'Le nom d\'utilisateur doit commencer par une lettre.';
+        }
+        if (!preg_match('/^[a-zA-Z0-9._-]+$/', $username)) {
+            $errors[] = 'Le nom d\'utilisateur ne peut contenir que des lettres, chiffres, points, tirets et underscores.';
+        }
+        if (preg_match('/[._-]{2,}/', $username)) {
+            $errors[] = 'Le nom d\'utilisateur ne peut pas contenir deux caractères spéciaux consécutifs.';
+        }
+        $reserved = ['admin', 'administrator', 'root', 'superadmin', 'super_admin', 'moderator', 'menucraft', 'system', 'support', 'null', 'undefined', 'test'];
+        if (in_array(strtolower($username), $reserved)) {
+            $errors[] = 'Ce nom d\'utilisateur est réservé.';
+        }
+        return $errors;
+    }
+
     public static function validatePassword(string $password): array
     {
         $errors = [];
